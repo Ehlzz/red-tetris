@@ -44,11 +44,11 @@
     color: #000000;
     user-select: none;
     cursor: pointer;
+    margin: 0.1vw;
 }
 
 .singleplayer-cell.active {
-    background-color: #ff4757;
-    transform: scale(1.05);
+    background-color: #6d6d6d;
 }
 
 .fill-button {

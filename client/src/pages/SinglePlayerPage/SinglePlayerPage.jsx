@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import './SinglePlayerPage.css';
 
@@ -42,18 +42,81 @@ function SinglePlayerPage() {
 			};
 		}, [currentBlock]);
 
-
-	const moveBlockDown = () => {
+	const rotateBlock = () => {
 		if (!currentBlock) return;
+		
+		const { shape, position } = currentBlock;
+		console.log(shape);
+		const rotatedShape = shape[0].map((_, index) =>
+			shape.map(row => row[index]).reverse()
+		);
+		console.log(rotatedShape);
 
-		setGrid(prevGrid => {
-			const newGrid = prevGrid.map(row => row.slice());
-			const { shape, position } = currentBlock;
-			const newY = position.y + 1;
+		let canRotate = true;
+		for (let y = 0; y < rotatedShape.length; y++) {
+			for (let x = 0; x < rotatedShape[y].length; x++) {
+				if (rotatedShape[y][x]) {
+					const gridY = position.y + y;
+					const gridX = position.x + x;
+					console.log('SizeY:', SIZEY, 'SizeX:', SIZEX, 'gridY:', gridY, 'gridX:', gridX);
+					if (gridY >= SIZEY || gridX < 0 || gridX >= SIZEX) {
+						canRotate = false;
+					}
+				}
+			}
+		}
+
+		console.log(canRotate);	
+		
+		if (canRotate) {
 
 			for (let y = 0; y < shape.length; y++) {
 				for (let x = 0; x < shape[y].length; x++) {
-					if (shape[y][x] && newGrid[position.y + y] && newGrid[position.y + y][position.x + x]) {
+					if (shape[y][x] && grid[position.y + y] && grid[position.y + y][position.x + x] !== undefined) {
+						setGrid(prevGrid => {
+							const newGrid = prevGrid.map(row => row.slice());
+							newGrid[position.y + y][position.x + x] = 0;
+							return newGrid;
+						}
+						);
+					}
+				}
+			}
+
+			for (let y = 0; y < rotatedShape.length; y++) {
+				for (let x = 0; x < rotatedShape[y].length; x++) {
+					if (rotatedShape[y][x]) {
+						setGrid(prevGrid => {
+							const newGrid = prevGrid.map(row => row.slice());
+							newGrid[position.y + y][position.x + x] = 1;
+							return newGrid;
+						}
+						);
+					}
+				}
+			}
+			
+
+			setCurrentBlock((prev) => ({
+				...prev,
+				shape: rotatedShape,
+			}));
+		}
+	};
+
+	const moveBlock = (dx, dy) => {
+		if (!currentBlock) return;
+
+		console.log(currentBlock.shape);
+		setGrid(prevGrid => {
+			const newGrid = prevGrid.map(row => row.slice());
+			const { shape, position } = currentBlock;
+			const newY = position.y + dy;
+			const newX = position.x + dx;
+
+			for (let y = 0; y < shape.length; y++) {
+				for (let x = 0; x < shape[y].length; x++) {
+					if (shape[y][x] && newGrid[position.y + y] && newGrid[position.y + y][position.x + x] !== undefined) {
 						newGrid[position.y + y][position.x + x] = 0
 					}
 				}
@@ -62,11 +125,9 @@ function SinglePlayerPage() {
 			let canMove = true;
             for (let y = 0; y < shape.length; y++) {
                 for (let x = 0; x < shape[y].length; x++) {
-                    if (
-                        shape[y][x] &&
-                        (newY + y >= SIZEY || newGrid[newY + y][position.x + x] !== 0)
-                    ) {
-                        canMove = false;
+                    if (shape[y][x] && (newY + y >= SIZEY || newGrid[newY + y][newX + x] === 1) || newX + x < 0 || newX + x >= SIZEX)
+					{
+						canMove = false;
                     }
                 }
             }
@@ -75,14 +136,14 @@ function SinglePlayerPage() {
                 for (let y = 0; y < shape.length; y++) {
                     for (let x = 0; x < shape[y].length; x++) {
                         if (shape[y][x]) {
-                            newGrid[newY + y][position.x + x] = 1;
+                            newGrid[newY + y][newX + x] = 1;
                         }
                     }
                 }
 
                 setCurrentBlock((prev) => ({
                     ...prev,
-                    position: { ...prev.position, y: newY },
+                    position: { ...prev.position, y: newY, x: newX },
                 }));
             }
 			else {
@@ -93,10 +154,11 @@ function SinglePlayerPage() {
                         }
                     }
                 }
-
-                setCurrentBlock(nextBlock);
-                setNextBlock(null);
-                requestTetromino();
+				if (dy === 1) {
+					setCurrentBlock(nextBlock);
+					setNextBlock(null);
+					requestTetromino();
+				}
             }
 
 			return newGrid;
@@ -106,8 +168,8 @@ function SinglePlayerPage() {
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			moveBlockDown();
-		}, 100); // Put a variable for speed when the player 'TETRIS' or times faster when the game is functionnal 
+			moveBlock(0, 1);
+		}, 1000); // Put a variable for speed when the player 'TETRIS' or times faster when the game is functionnal 
 
 		return () => clearInterval(interval);
 	}, [currentBlock]);
@@ -117,14 +179,18 @@ function SinglePlayerPage() {
         const handleKeyDown = (event) => {
 			console.log(event.key);
             if (event.key === "ArrowDown") {
+				moveBlock(0, 1);	
 				console.log("Move down");
 
 			} else if (event.key === "ArrowLeft") {
+				moveBlock(-1, 0);	
 				console.log("Move left");
 			} else if (event.key === "ArrowRight") {
+				moveBlock(1, 0);	
 				console.log("Move right");
 			} else if (event.key === "ArrowUp") {
 				console.log("Rotate");
+				rotateBlock();
 			}
         };
 
@@ -133,7 +199,7 @@ function SinglePlayerPage() {
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, []);
+    }, [currentBlock]);
 
     return (
         <div className="singleplayer-component">
