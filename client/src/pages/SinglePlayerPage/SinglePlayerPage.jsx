@@ -1,43 +1,49 @@
 import { useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
 import './SinglePlayerPage.css';
 
 const SIZEX = 10;
 const SIZEY = 20;
-const blocks = {
-	I: [
-		[1, 1, 1, 1]
-	],
-	J: [
-		[1, 0, 0],
-		[1, 1, 1]
-	],
-	L: [
-		[0, 0, 1],
-		[1, 1, 1]
-	],
-	O: [
-		[1, 1],
-		[1, 1]
-	],
-	S: [
-		[0, 1, 1],
-		[1, 1, 0]
-	],
-	T: [
-		[0, 1, 0],
-		[1, 1, 1]
-	],
-	Z: [
-		[1, 1, 0],
-		[0, 1, 1]
-	],
-};
+
+// Connexion au serveur WebSocket
+const socket = io('http://localhost:5000');
 
 function SinglePlayerPage() {
     const [grid, setGrid] = useState(
         Array.from({ length: SIZEY }, () => Array(SIZEX).fill(0))
     );
 
+    useEffect(() => {
+        socket.on('tetromino', ({ type, shape }) => {
+            console.log('🎮 Tétrimino reçu:', type, shape);
+
+            setGrid(prevGrid => {
+                const newGrid = prevGrid.map(row => row.slice());
+
+                for (let y = 0; y < shape.length; y++) {
+                    for (let x = 0; x < shape[y].length; x++) {
+                        if (shape[y][x]) {
+                            const gridX = x + Math.floor((SIZEX - shape[y].length) / 2);
+                            if (gridX >= 0 && gridX < SIZEX && y < SIZEY) {
+                                newGrid[y][gridX] = 1;
+                            }
+                        }
+                    }
+                }
+				setCurrentBlock({shape: shape, position: { x: Math.floor((SIZEX - shape[0].length) / 2), y: 0 }});
+                return newGrid;
+            });
+        });
+
+        return () => {
+            socket.off('tetromino');
+        };
+    }, []);
+
+    const requestTetromino = () => {
+        console.log('📡 Demande d\'un nouveau tétrimino...');
+        socket.emit('requestTetromino');
+    };
 	const [currentBlock, setCurrentBlock] = useState(null);
 
 	const addRandomBlock = () => {
@@ -151,7 +157,7 @@ function SinglePlayerPage() {
 						<h2>Score</h2>
 						<p>0</p>
 					</div>
-					<button className="singleplayer-start-button" onClick={addRandomBlock}>Add block</button>
+					<button className="singleplayer-start-button" onClick={requestTetromino}>Add block</button>
 				</div>
             </div>
         </div>
