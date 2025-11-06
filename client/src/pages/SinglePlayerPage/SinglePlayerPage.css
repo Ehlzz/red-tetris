@@ -44,7 +44,6 @@
     color: #000000;
     user-select: none;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
 }
 
 .singleplayer-cell.active {
@@ -61,10 +60,20 @@
     color: white;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
 }
 
 .fill-button:hover {
     background-color: #3742fa;
     transform: scale(1.05);
+}
+
+.singleplayer-next-block {
+    height: 15vh;
+    width: 15vh;
+    border: 0.2vw solid #222222;
+    margin-bottom: 1vh;
+    background-color: #313131;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

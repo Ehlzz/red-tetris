@@ -67,7 +67,6 @@ io.on('connection', (socket) => {
       type: randomType, 
       shape: block 
     });
-  });
 
   socket.on('disconnect', () => {
     console.log('❌ Utilisateur déconnecté:', socket.id);

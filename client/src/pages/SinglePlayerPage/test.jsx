@@ -12,54 +12,54 @@ function SinglePlayerPage() {
     const [grid, setGrid] = useState(
         Array.from({ length: SIZEY }, () => Array(SIZEX).fill(0))
     );
-	const [currentBlock, setCurrentBlock] = useState(null);
+    const [currentBlock, setCurrentBlock] = useState(null);
     const [nextBlock, setNextBlock] = useState(null);
 
-	const requestTetromino = () => {
+    const requestTetromino = () => {
         console.log('📡 Demande d\'un nouveau tétrimino...');
         socket.emit('requestTetromino');
     };
 
     useEffect(() => {
-			socket.on('tetromino', ({ type, shape }) => {
-				console.log('🎮 Tétrimino reçu:', type, shape);
-	
-				if (!currentBlock) {
-					setCurrentBlock({
-						shape: shape,
-						position: { x: Math.floor((SIZEX - shape[0].length) / 2), y: 0 },
-					});
-				} else {
-					setNextBlock({
-						shape: shape,
-						position: { x: Math.floor((SIZEX - shape[0].length) / 2), y: 0 },
-					});
-				}
-			});
-	
-			return () => {
-				socket.off('tetromino');
-			};
-		}, [currentBlock]);
+        socket.on('tetromino', ({ type, shape }) => {
+            console.log('🎮 Tétrimino reçu:', type, shape);
 
+            if (!currentBlock) {
+                setCurrentBlock({
+                    shape: shape,
+                    position: { x: Math.floor((SIZEX - shape[0].length) / 2), y: 0 },
+                });
+            } else {
+                setNextBlock({
+                    shape: shape,
+                    position: { x: Math.floor((SIZEX - shape[0].length) / 2), y: 0 },
+                });
+            }
+        });
 
-	const moveBlockDown = () => {
-		if (!currentBlock) return;
+        return () => {
+            socket.off('tetromino');
+        };
+    }, [currentBlock]);
 
-		setGrid(prevGrid => {
-			const newGrid = prevGrid.map(row => row.slice());
-			const { shape, position } = currentBlock;
-			const newY = position.y + 1;
+    const moveBlockDown = () => {
+        if (!currentBlock) return;
 
-			for (let y = 0; y < shape.length; y++) {
-				for (let x = 0; x < shape[y].length; x++) {
-					if (shape[y][x] && newGrid[position.y + y] && newGrid[position.y + y][position.x + x]) {
-						newGrid[position.y + y][position.x + x] = 0
-					}
-				}
-			}
+        setGrid((prevGrid) => {
+            const newGrid = prevGrid.map((row) => row.slice());
+            const { shape, position } = currentBlock;
+            const newY = position.y + 1;
 
-			let canMove = true;
+            for (let y = 0; y < shape.length; y++) {
+                for (let x = 0; x < shape[y].length; x++) {
+                    if (shape[y][x] && newGrid[position.y + y] && newGrid[position.y + y][position.x + x]) {
+                        newGrid[position.y + y][position.x + x] = 0;
+                    }
+                }
+            }
+
+            // Vérifier si le bloc peut descendre
+            let canMove = true;
             for (let y = 0; y < shape.length; y++) {
                 for (let x = 0; x < shape[y].length; x++) {
                     if (
@@ -71,7 +71,7 @@ function SinglePlayerPage() {
                 }
             }
 
-			if (canMove) {
+            if (canMove) {
                 for (let y = 0; y < shape.length; y++) {
                     for (let x = 0; x < shape[y].length; x++) {
                         if (shape[y][x]) {
@@ -84,8 +84,8 @@ function SinglePlayerPage() {
                     ...prev,
                     position: { ...prev.position, y: newY },
                 }));
-            }
-			else {
+            } else {
+                // Si le bloc ne peut pas descendre, il est fixé et le nextBlock devient le currentBlock
                 for (let y = 0; y < shape.length; y++) {
                     for (let x = 0; x < shape[y].length; x++) {
                         if (shape[y][x]) {
@@ -93,57 +93,35 @@ function SinglePlayerPage() {
                         }
                     }
                 }
-
                 setCurrentBlock(nextBlock);
                 setNextBlock(null);
                 requestTetromino();
             }
 
-			return newGrid;
+            return newGrid;
+        });
+    };
 
-		});
-	};
+    useEffect(() => {
+        const interval = setInterval(() => {
+            moveBlockDown();
+        }, 100);
 
-	useEffect(() => {
-		const interval = setInterval(() => {
-			moveBlockDown();
-		}, 100); // Put a variable for speed when the player 'TETRIS' or times faster when the game is functionnal 
-
-		return () => clearInterval(interval);
-	}, [currentBlock]);
-
-
-	useEffect(() => {
-        const handleKeyDown = (event) => {
-			console.log(event.key);
-            if (event.key === "ArrowDown") {
-				console.log("Move down");
-
-			} else if (event.key === "ArrowLeft") {
-				console.log("Move left");
-			} else if (event.key === "ArrowRight") {
-				console.log("Move right");
-			} else if (event.key === "ArrowUp") {
-				console.log("Rotate");
-			}
-        };
-
-        window.addEventListener("keydown", handleKeyDown);
-
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-        };
-    }, []);
+        return () => clearInterval(interval);
+    }, [currentBlock, nextBlock]);
 
     return (
         <div className="singleplayer-component">
             <div className="singleplayer-wrapper">
                 <div className="singleplayer-game" style={{ aspectRatio: `${SIZEX} / ${SIZEY}` }}>
-                    <div className="singleplayer-grid" style={{ 
-                        gridTemplateColumns: `repeat(${SIZEX}, 1fr)`,
-                        gridTemplateRows: `repeat(${SIZEY}, 1fr)`
-                    }}>
-                        {grid.map((row, rowIndex) => 
+                    <div
+                        className="singleplayer-grid"
+                        style={{
+                            gridTemplateColumns: `repeat(${SIZEX}, 1fr)`,
+                            gridTemplateRows: `repeat(${SIZEY}, 1fr)`,
+                        }}
+                    >
+                        {grid.map((row, rowIndex) =>
                             row.map((cell, colIndex) => (
                                 <div
                                     key={`${rowIndex}-${colIndex}`}
@@ -153,7 +131,7 @@ function SinglePlayerPage() {
                         )}
                     </div>
                 </div>
-				<div className="singleplayer-info">
+                <div className="singleplayer-info">
                     <div className="singleplayer-next-block">
                         {nextBlock && (
                             <div>
@@ -178,7 +156,7 @@ function SinglePlayerPage() {
                     <button className="singleplayer-start-button" onClick={requestTetromino}>
                         START
                     </button>
-				</div>
+                </div>
             </div>
         </div>
     );
