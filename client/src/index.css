@@ -1,0 +1,13 @@
+@font-face {
+  font-family: 'Mail Sans Roman Bold';
+  src: url('./assets/fonts/MailSansRoman-Bold.ttf') format('truetype');
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Mail Sans Roman Bold', sans-serif;
+  font-weight: 700;
+  user-select: none;
+  overflow: hidden;
+}
