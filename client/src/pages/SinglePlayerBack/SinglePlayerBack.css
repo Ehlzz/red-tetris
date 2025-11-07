@@ -1,60 +1,150 @@
-.single-player-back {
+.game-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
   height: 100vh;
+  position: relative;
+  width: 100%;
+  background-color: #242834;
+  box-shadow: inset 0 0 50px #7D53FF;
+}
+
+.single-player-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  border-radius: 25px;
 }
 
 .grid {
   display: flex;
   flex-direction: column;
-  gap: 1px;
   background-color: #333;
   padding: 10px;
-  border: 2px solid #000;
+  border: 3px solid #B6FF00;
+  animation: glow 3s infinite;
 }
 
 .row {
   display: flex;
   flex-direction: row;
-  gap: 1px;
 }
 
 .cell {
   width: 30px;
   height: 30px;
-  border: 1px solid #222222;
+  border: 2px solid #242834;
 }
 
 .cell.cyan {
-    background: linear-gradient(135deg, #00ffff, #00bfff);
+    background-color: #3ec2c0;
 }
 
 .cell.blue {
-    background: linear-gradient(135deg, #0000ff, #0000cd);
+    background-color: #256EFF;
 }
 
 .cell.orange {
-    background: linear-gradient(135deg, #ffa500, #ff8c00);
+    background-color: #ff6113;
+
 }
 
 .cell.yellow {
-    background: linear-gradient(135deg, #ffff00, #ffd700);
+    background-color: #F1A208;
+
 }
 
 .cell.green {
-    background: linear-gradient(135deg, #00ff00, #32cd32);
+    background-color: #3DDC97;
+
 }
 
 .cell.purple {
-    background: linear-gradient(135deg, #800080, #8a2be2);
+    background-color: #bb6de2;
 }
 
 .cell.red {
-    background: linear-gradient(135deg, #ff0000, #dc143c);
+    background-color: #FF3E3E;
 }
 
 .cell.hover {
     background: rgba(255, 255, 255, 0.3);
+}
+
+.score-board {
+  margin-top: 20px;
+  padding: 10px;
+  border: 3px solid #B6FF00;
+  background-color: transparent;
+  width: 200px;
+  height: 5vh;
+  text-align: center;
+  color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.start-button {
+  font-size: 16px;
+  background: none;
+  color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+}
+
+.info {
+  color: white;
+  font-size: 18px;
+  /* margin-top: 20px; */
+  text-align: center;
+  height: auto;
+  /* background-color: blue; */
+}
+
+.next-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-block: 20px;
+    padding-block: 30px;
+    background-color: transparent;
+    height: auto;
+    margin: 0;
+    border: 3px solid #B6FF00;
+}
+
+.next-block .row {
+    display: flex;
+}
+
+.next-block .cell {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #ccc;
+    background-color: transparent;
+}
+
+.next-block .cell.filled {
+    background-color: #f0f0f0;
+}
+
+.start-button:hover {
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 100px #B6FF00;
+  }
+  50% {
+    box-shadow: 0 0 150px #B6FF00;
+  }
+  100% {
+    box-shadow: 0 0 100px #B6FF00;
+  }
+}
+
+.test {
+  display: flex;
+  gap: 20px;
 }

@@ -8,6 +8,7 @@ const SinglePlayerBack = () => {
     const [grid, setGrid] = useState(null);
     const [currentBlock, setCurrentBlock] = useState(null);
     const [nextBlock, setNextBlock] = useState(null);
+    const [score, setScore] = useState(0);
 
     useEffect(() => {
         socket.on('receiveGame', (game) => {
@@ -25,6 +26,7 @@ const SinglePlayerBack = () => {
             setGrid(game.grid);
             setCurrentBlock(game.currentBlock);
             setNextBlock(game.nextBlock);
+            setScore(game.score);
         });
 
         return () => {
@@ -60,24 +62,45 @@ const SinglePlayerBack = () => {
 
     return (
 
-        <div className="single-player-back">
-            {!grid && (
-                <button onClick={() => socket.emit('startGame')}>Start Game</button>
-            )}
-            {grid && (
-                <div className="grid">
-                    {grid.slice(2).map((row, rowIndex) => (
-                        <div key={rowIndex} className="row">
-                            {row.map((cell, cellIndex) => (
-                                <div
-                                    key={cellIndex}
-                                    className={`cell ${cell}`}
-                                ></div>
+        <div className="game-container">
+            <div className="single-player-back">
+                <div className="test">
+                    {!grid && (
+                        <button className="start-button" onClick={() => socket.emit('startGame')}>Start Game</button>
+                    )}
+                    {grid && (
+                        <div className="grid">
+                            {grid.slice(2).map((row, rowIndex) => (
+                                <div key={rowIndex} className="row">
+                                    {row.map((cell, cellIndex) => (
+                                        <div
+                                            key={cellIndex}
+                                            className={`cell ${cell}`}
+                                        ></div>
+                                    ))}
+                                </div>
                             ))}
                         </div>
-                    ))}
+                    )}
+                    <div className='info'>
+                        <div className="next-block">
+                            {nextBlock && nextBlock.shape.map((row, rowIndex) => (
+                                <div key={rowIndex} className="row">
+                                    {row.map((cell, cellIndex) => (
+                                        <div
+                                            key={cellIndex}
+                                            className={`cell ${cell ? 'filled' : ''}`} // Ajoutez une classe "filled" pour les cellules occupées
+                                        ></div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="score-board">
+                            <p>{score}</p>
+                        </div>
+                    </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };
