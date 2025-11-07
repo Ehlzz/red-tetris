@@ -13,6 +13,9 @@ function IndexPage() {
           <Link to="/singleplayer" className="nav-button">
             Singleplayer
           </Link>
+          <Link to="/singleplayerback" className="nav-button">
+            Singleplayer Back cett efios
+          </Link>
         </nav>
         
         <div className="content">
