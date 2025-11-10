@@ -1,7 +1,13 @@
 .index-page {
-  padding: 20px;
-  max-width: 800px;
   margin: 0 auto;
+  background-color: #242834;
+  height: 100vh;
+  /* width: 97vw; */
+  /* top: 50%; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .index-page header {
@@ -11,28 +17,35 @@
 
 .index-page h1 {
   color: #333;
-  font-size: 2.5rem;
+  font-size: 4.5rem;
+}
+
+.border {
+  background-color: tomato;
+  height: 100vh;
+  width: 100vw;
 }
 
 .main-navigation {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 20px;
   justify-content: center;
   margin-bottom: 30px;
 }
 
 .nav-button {
-  padding: 12px 24px;
-  background-color: #007bff;
-  color: white;
+  color: #E02A43;
   text-decoration: none;
   border-radius: 8px;
   font-weight: bold;
-  transition: background-color 0.3s;
+  font-size: 2.5rem;
+  transition: transform 0.3s;
 }
 
 .nav-button:hover {
-  background-color: #0056b3;
+  transform: scale(1.1);
 }
 
 .content {

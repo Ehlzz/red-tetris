@@ -5,7 +5,7 @@
   position: relative;
   width: 100%;
   background-color: #242834;
-  box-shadow: inset 0 0 50px #7D53FF;
+  /* box-shadow: inset 0 0 500px #7D53FF; */
 }
 
 .single-player-back {
@@ -19,10 +19,10 @@
 .grid {
   display: flex;
   flex-direction: column;
-  background-color: #333;
+  background-color: #353541;
   padding: 10px;
-  border: 3px solid #B6FF00;
-  animation: glow 3s infinite;
+  border: 3px solid #D82940;
+  /* animation: glow 3s infinite; */
 }
 
 .row {
@@ -37,30 +37,30 @@
 }
 
 .cell.cyan {
-    background-color: #3ec2c0;
+    background-color: #E02A43;
 }
 
 .cell.blue {
-    background-color: #256EFF;
+    background-color: #B62336;
 }
 
 .cell.orange {
-    background-color: #ff6113;
+    background-color: #941C2C;
 
 }
 
 .cell.yellow {
-    background-color: #F1A208;
+    background-color: #ec1e28;
 
 }
 
 .cell.green {
-    background-color: #3DDC97;
+    background-color: #a72e3e;
 
 }
 
 .cell.purple {
-    background-color: #bb6de2;
+    background-color: #990c1f;
 }
 
 .cell.red {
@@ -74,7 +74,7 @@
 .score-board {
   margin-top: 20px;
   padding: 10px;
-  border: 3px solid #B6FF00;
+  border: 3px solid #D82940;
   background-color: transparent;
   width: 200px;
   height: 5vh;
@@ -91,6 +91,67 @@
   color: #f0f0f0;
   border: none;
   cursor: pointer;
+}
+
+.start-message {
+  padding: 20px;
+  margin: 20px 0;
+  text-align: center;
+  color: #f0f0f0;
+  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.game-over-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #ff4c4c;
+  padding: 40px;
+  border: 4px solid #D82940;
+  border-radius: 15px;
+  text-align: center;
+  z-index: 2;
+  font-size: 3rem;
+  animation: pulse 2s infinite;
+}
+
+.start-message p {
+  margin: 0;
+  font-size: 2.3rem;
+}
+
+.start-message strong {
+  color: #D82940;
+  font-size: 2.4rem;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 5px #D82940;
+  }
+  50% {
+    box-shadow: 0 0 20px #D82940;
+  }
+  100% {
+    box-shadow: 0 0 5px #D82940;
+  }
 }
 
 .info {
@@ -111,7 +172,7 @@
     background-color: transparent;
     height: auto;
     margin: 0;
-    border: 3px solid #B6FF00;
+    border: 3px solid #D82940;
 }
 
 .next-block .row {
@@ -127,9 +188,6 @@
 
 .next-block .cell.filled {
     background-color: #f0f0f0;
-}
-
-.start-button:hover {
 }
 
 @keyframes glow {

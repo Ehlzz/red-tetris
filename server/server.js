@@ -208,8 +208,6 @@ io.on('connection', (socket) => {
 
 	}
 
-
-
 	function moveBlock(direction) {
 		const player = players[socket.id];
 		if (!player || player.isGameOver) return false;
@@ -219,11 +217,15 @@ io.on('connection', (socket) => {
 				player.currentBlock = player.nextBlock;
 				player.nextBlock = getRandomBlock();
 				player.position = { x: 4, y: 0 };
+				
+				if (isCollision({ x: 0, y: 0 })) {
+					player.isGameOver = true;
+					socket.emit('gameOver', { score: player.score });
+					console.log('💀 Game Over pour:', socket.id, 'Score:', player.score);
+					return false;
+				}
+				
 				refreshGame();
-			}
-			if (direction.y === 1 && isCollision({ x: 0, y: 0 })) {
-				player.isGameOver = true;
-				console.log('💀 Game Over pour:', socket.id);
 			}
 			return false;
 		}
