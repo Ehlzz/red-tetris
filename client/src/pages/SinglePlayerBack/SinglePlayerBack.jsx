@@ -107,7 +107,7 @@ const SinglePlayerBack = () => {
                     <div className='info'>
                         {!gameStarted && (
                             <>
-                                <div className="background-overlay"></div>
+                                {/* <div className="background-overlay"></div> */}
                                 <div className="start-message">
                                     <p>Press <strong>SPACE</strong> to start the game !</p>
                                 </div>
