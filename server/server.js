@@ -175,10 +175,11 @@ io.on('connection', (socket) => {
 
 		player.grid = newGrid;
 		player.score += linesCleared * 100;
-		while (player.columnsCleared >= 3) {
-			player.columnsCleared = Math.min(0, player.columnsCleared - 3);
-			player.speed = Math.max(100, player.speed - player.columnsCleared * 75);
+		while (player.columnsCleared >= 7) {
+			player.columnsCleared = Math.min(0, player.columnsCleared - 7);
+			player.speed = Math.max(100, Math.floor(player.speed * 0.77));
 			player.updateSpeed();
+			console.log('⚡ Vitesse augmentée pour:', socket.id, 'Nouvelle vitesse:', player.speed);
 		}
 	}
 

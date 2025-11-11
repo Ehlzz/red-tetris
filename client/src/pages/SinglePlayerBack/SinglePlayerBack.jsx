@@ -13,7 +13,7 @@ const SinglePlayerBack = () => {
     const [gameOver, setGameOver] = useState(false);
     
     const createEmptyGrid = () => {
-        return Array(20).fill().map(() => Array(10).fill(''));
+        return Array(22).fill().map(() => Array(10).fill(''));
     };
     
     const [displayGrid, setDisplayGrid] = useState(createEmptyGrid());
