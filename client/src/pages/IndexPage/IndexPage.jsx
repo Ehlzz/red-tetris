@@ -69,7 +69,22 @@ const IndexPage = () => {
           ))}
         </div>
         <div className='base'>
-          <h1 className='title'>Red Tetris</h1>
+          <div className='top-main'>
+            <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+              width="512.000000pt" height="512.000000pt" viewBox="0 0 512.000000 512.000000"
+              preserveAspectRatio="xMidYMid meet" className='logo'>
+              <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
+              fill="#fd1e2d" stroke="none">
+              <path d="M1600 3840 l0 -320 -320 0 -320 0 0 -320 0 -320 640 0 640 0 0 -320
+              0 -320 320 0 320 0 0 -320 0 -320 -640 0 -640 0 0 320 0 320 -320 0 -320 0 0
+              -320 0 -320 320 0 320 0 0 -320 0 -320 960 0 960 0 0 320 0 320 320 0 320 0 0
+              320 0 320 -640 0 -640 0 0 320 0 320 -320 0 -320 0 0 320 0 320 640 0 640 0 0
+              -320 0 -320 320 0 320 0 0 320 0 320 -320 0 -320 0 0 320 0 320 -960 0 -960 0
+              0 -320z"/>
+              </g>
+              </svg>
+          <h1 className='title'>Glyph</h1>
+          </div>
           <main>
             <nav className="main-navigation">
               <Link to="/singleplayerback" className="nav-button">

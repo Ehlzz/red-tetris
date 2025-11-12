@@ -23,7 +23,7 @@
   background-color: #353541;
   padding: 10px;
   border: 3px solid #D82940;
-  /* animation: glow 3s infinite; */
+  margin-inline: 20px;
 }
 
 .row {
@@ -74,7 +74,6 @@
 
 .score-board {
   margin-top: 20px;
-  padding: 10px;
   border: 3px solid #D82940;
   background-color: transparent;
   width: 200px;
@@ -168,16 +167,15 @@
 .info {
   color: white;
   font-size: 18px;
-  /* margin-top: 20px; */
   text-align: center;
   height: auto;
-  /* background-color: blue; */
+  width: 0;
+  overflow: visible;
 }
 
 .score-label {
     font-size: 1.5rem;
     margin-bottom: 10px;
-    /* border: 3px solid #D82940; */
     display: flex;
     justify-content: space-between;
     padding: 5px;
@@ -186,7 +184,6 @@
 .lvl-stage {
     font-size: 1.5rem;
     margin-bottom: 10px;
-    /* border: 3px solid #D82940; */
     display: flex;
     justify-content: space-between;
     padding: 5px;
@@ -201,6 +198,7 @@
     background-color: transparent;
     height: auto;
     margin: 0;
+    width: 200px;
     border: 3px solid #D82940;
 }
 
@@ -244,5 +242,4 @@
 
 .test {
   display: flex;
-  gap: 20px;
 }
