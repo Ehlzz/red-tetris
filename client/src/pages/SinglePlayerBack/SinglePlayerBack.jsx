@@ -104,6 +104,7 @@ const SinglePlayerBack = () => {
                         ))}
                     </div>
                     
+
                     <div className='info'>
                         {!gameStarted && (
                             <>

@@ -16,9 +16,47 @@ const IndexPage = () => {
       });
     });
 
+    const scrambleText = (element) => {
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      const originalText = element.dataset.originalText;
+      let iterations = 0;
+      
+      const interval = setInterval(() => {
+        element.textContent = originalText
+          .split('')
+          .map((letter, index) => {
+            if(index < iterations) {
+              return originalText[index];
+            }
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join('');
+        
+        if(iterations >= originalText.length) {
+          clearInterval(interval);
+        }
+        
+        iterations += 1;
+      }, 25);
+    };
+
+    const navButtons = document.querySelectorAll('.nav-button');
+    
+    navButtons.forEach(button => {
+      button.dataset.originalText = button.textContent;
+      
+      button.addEventListener('mouseenter', () => {
+        scrambleText(button);
+      });
+    });
+
     return () => {
       cells.forEach((cell) => {
         cell.removeEventListener("mouseover", () => {});
+      });
+      
+      navButtons.forEach(button => {
+        button.removeEventListener('mouseenter', () => {});
       });
     };
   }, []);

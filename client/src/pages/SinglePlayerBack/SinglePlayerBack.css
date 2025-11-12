@@ -174,6 +174,24 @@
   /* background-color: blue; */
 }
 
+.score-label {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    /* border: 3px solid #D82940; */
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+}
+
+.lvl-stage {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    /* border: 3px solid #D82940; */
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+}
+
 .next-block {
     display: flex;
     flex-direction: column;

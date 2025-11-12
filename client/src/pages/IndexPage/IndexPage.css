@@ -30,7 +30,7 @@
 
 .main-navigation{
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   align-items: center;
   justify-content: center;
   gap: 3rem;
@@ -39,7 +39,7 @@
 
 .nav-button{
   text-decoration: none;
-  color: red;
+  color: #fd1e2d;
   font-size: 3.5rem;
   /* background-color: white; */
   padding: 20px 50px;
