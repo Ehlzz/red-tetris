@@ -63,6 +63,7 @@ app.get('/', (req, res) => {
 
 
 const players = {};
+const rooms = {};
 io.on('connection', (socket) => {
 	console.log('🔌 Utilisateur connecté:', socket.id);
 
@@ -175,11 +176,10 @@ io.on('connection', (socket) => {
 
 		player.grid = newGrid;
 		player.score += linesCleared * 100;
-		while (player.columnsCleared >= 7) {
-			player.columnsCleared = Math.min(0, player.columnsCleared - 7);
-			player.speed = Math.max(100, Math.floor(player.speed * 0.77));
+		while (player.columnsCleared >= 3) {
+			player.columnsCleared = Math.min(0, player.columnsCleared - 3);
+			player.speed = Math.max(100, player.speed - player.columnsCleared * 75);
 			player.updateSpeed();
-			console.log('⚡ Vitesse augmentée pour:', socket.id, 'Nouvelle vitesse:', player.speed);
 		}
 	}
 
@@ -209,6 +209,8 @@ io.on('connection', (socket) => {
 
 	}
 
+
+
 	function moveBlock(direction) {
 		const player = players[socket.id];
 		if (!player || player.isGameOver) return false;
@@ -218,15 +220,11 @@ io.on('connection', (socket) => {
 				player.currentBlock = player.nextBlock;
 				player.nextBlock = getRandomBlock();
 				player.position = { x: 4, y: 0 };
-				
-				if (isCollision({ x: 0, y: 0 })) {
-					player.isGameOver = true;
-					socket.emit('gameOver', { score: player.score });
-					console.log('💀 Game Over pour:', socket.id, 'Score:', player.score);
-					return false;
-				}
-				
 				refreshGame();
+			}
+			if (direction.y === 1 && isCollision({ x: 0, y: 0 })) {
+				player.isGameOver = true;
+				console.log('💀 Game Over pour:', socket.id);
 			}
 			return false;
 		}
@@ -291,6 +289,34 @@ io.on('connection', (socket) => {
 		refreshGame();
 	});
 
+	socket.on('createLobby', (playerName) => {
+		const roomId = `room-${Math.random().toString(36).substr(2, 9)}`;
+		rooms[roomId] = {
+			players: [{name: playerName.playerName, id: socket.id}],
+			chief: socket.id,
+			roomId: roomId
+		};
+		socket.join(roomId);
+		socket.emit('lobbyCreated', { room: rooms[roomId] });
+		console.log(`🛠️ Lobby créé: ${roomId} par ${socket.id}`);
+	});
+
+	socket.on('joinLobby', ({ args }) => {
+		console.log(args);
+		const room = rooms[args.roomId];
+		if (room) {
+			room.players.push({name: args.playerName, id: socket.id});
+			socket.join(args.roomId);
+			room.players.forEach(player => {
+				console.log(player);
+				io.to(player.id).emit('lobbyJoined', { roomId: args.roomId, room: room });
+			});
+			console.log(`🔑 ${socket.id} a rejoint le lobby: ${args.roomId}`)
+		} else {
+			socket.emit('error', { message: 'Lobby introuvable.' })
+		}
+	})
+					
 });
 
 server.listen(PORT, () => {
