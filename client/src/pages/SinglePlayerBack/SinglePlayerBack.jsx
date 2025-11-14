@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import './SinglePlayerBack.css';
 import { io } from 'socket.io-client';
+import { Link } from 'react-router-dom';
 
 const socket = io('http://localhost:5000');
 
@@ -11,6 +12,8 @@ const SinglePlayerBack = () => {
     const [score, setScore] = useState(0);
     const [gameStarted, setGameStarted] = useState(false);
     const [gameOver, setGameOver] = useState(false);
+    const [playerLevel, setPlayerLevel] = useState(1);
+    const [totalLinesCleared, setTotalLinesCleared] = useState(0);
     
     const createEmptyGrid = () => {
         return Array(22).fill().map(() => Array(10).fill(''));
@@ -38,12 +41,15 @@ const SinglePlayerBack = () => {
             setNextBlock(game.nextBlock);
             setScore(game.score);
             setDisplayGrid(game.grid);
+            setPlayerLevel(game.level);
+            setTotalLinesCleared(game.totalColumnsCleared);
         });
 
         socket.on('gameOver', ({ score }) => {
         console.log('💀 Game Over! Score final:', score);
         setGameOver(true);
         setScore(score);
+        setGameStarted(false);
     });
 
         return () => {
@@ -59,12 +65,12 @@ const SinglePlayerBack = () => {
         const handleKeyDown = (event) => {
 			console.log(event.key);
             
-            if (!gameStarted && event.key === " ") {
+            if (!gameStarted && !gameOver && event.key === " ") {
                 socket.emit('startGame');
                 return;
             }
             
-            if (gameStarted) {
+            if (gameStarted && !gameOver) {
                 if (event.key === "ArrowDown") {
                     socket.emit('moveBlock', { x: 0, y: 1 });
                 } else if (event.key === "ArrowLeft") {
@@ -84,7 +90,7 @@ const SinglePlayerBack = () => {
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, [gameStarted]);
+    }, [gameStarted, gameOver]);
 
     return (
 
@@ -106,40 +112,69 @@ const SinglePlayerBack = () => {
                     
 
                     <div className='info'>
-                        {!gameStarted && (
+                        {!gameStarted && !gameOver && (
                             <>
-                                {/* <div className="background-overlay"></div> */}
                                 <div className="start-message">
                                     <p>Press <strong>SPACE</strong> to start the game !</p>
                                 </div>
                             </>
                         )}
                         
-                        {gameStarted && (
-                            <div className="next-block">
-                                {nextBlock && nextBlock.shape.map((row, rowIndex) => (
-                                    <div key={rowIndex} className="row">
-                                        {row.map((cell, cellIndex) => (
-                                            <div
-                                                key={cellIndex}
-                                                className={`cell ${cell ? 'filled' : ''}`}
-                                            ></div>
-                                        ))}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                        <div className="next-block">
+                            {nextBlock && nextBlock.shape.map((row, rowIndex) => (
+                                <div key={rowIndex} className="row">
+                                    {row.map((cell, cellIndex) => (
+                                        <div
+                                            key={cellIndex}
+                                            className={`cell ${cell ? 'filled' : ''}`}
+                                        ></div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
                         
-                        <div className="score-board">
-                            <p>{score}</p>
+                            <div className="score-board">
+                                <p>Score : {score}</p>
+                            </div>
+                        <div className='info-game'>
+                            <div className="current-lvl">
+                                <p>Level : {playerLevel}</p>
+                            </div>
+                            <div className="lines-cleared">
+                                <p>Line : {totalLinesCleared}</p>
+                            </div>
                         </div>
 
                         {gameOver && (
                             <>
                                 <div className="background-overlay"></div>
                                 <div className="game-over-message">
-                                    <p>Game Over!</p>
-                                    <p>Final Score: {score}</p>
+                                    <div className="game-over-text">
+                                        <h1>Game Over!</h1>
+                                        <div className="final-stats">
+                                            <p>Total Lines Cleared: {totalLinesCleared}</p>
+                                            <p>Level: {playerLevel}</p>
+                                            <p>Final Score: {score}</p>
+                                        </div>
+                                    </div>
+                                    <div className="game-over-btn">
+                                        <Link to="/index" className="nav-button">
+                                            Return
+                                        </Link>
+                                        <button className="caca" onClick={() => {
+                                            setGameOver(false);
+                                            setScore(0);
+                                            setPlayerLevel(1);
+                                            setTotalLinesCleared(0);
+                                            setGameStarted(false);
+                                            setCurrentBlock(null);
+                                            setNextBlock(null);
+                                            setDisplayGrid(createEmptyGrid());
+                                            socket.emit('resetGame');
+                                        }}>
+                                            Play again
+                                        </button>
+                                    </div>
                                 </div>
                             </>
                         )}

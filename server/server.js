@@ -85,7 +85,8 @@ io.on('connection', (socket) => {
 		speed: 1000,
 		level: 1,
 		isGameOver: false,
-		columnsCleared: 0
+		columnsCleared: 0,
+		totalColumnsCleared: 0
 		};
 
 		socket.emit('receiveGame', players[socket.id]);
@@ -172,12 +173,14 @@ io.on('connection', (socket) => {
 		for (let i = 0; i < linesCleared; i++) {
 			newGrid.unshift(Array(10).fill(null));
 		}
-
+		
 		player.grid = newGrid;
 		player.score += linesCleared * 100;
+		player.totalColumnsCleared += linesCleared;
 		while (player.columnsCleared >= 7) {
 			player.columnsCleared = Math.min(0, player.columnsCleared - 7);
 			player.speed = Math.max(100, Math.floor(player.speed * 0.77));
+			player.level += 1;
 			player.updateSpeed();
 			console.log('⚡ Vitesse augmentée pour:', socket.id, 'Nouvelle vitesse:', player.speed);
 		}
