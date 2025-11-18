@@ -1,21 +1,9 @@
 import { Link } from 'react-router-dom';
 import React, { useEffect } from 'react';
 import './IndexPage.css';
+import GridBackground from '../../components/gridBackground';
 
 const IndexPage = () => {
-  useEffect(() => {
-    const cells = document.querySelectorAll(".celltest");
-
-    cells.forEach((cell) => {
-      cell.addEventListener("mouseover", () => {
-        cell.classList.add("active");
-
-        setTimeout(() => {
-          cell.classList.remove("active");
-        }, 1000);
-      });
-    });
-
     const scrambleText = (element) => {
       const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
       const originalText = element.dataset.originalText;
@@ -40,34 +28,29 @@ const IndexPage = () => {
       }, 25);
     };
 
-    const navButtons = document.querySelectorAll('.nav-button');
-    
-    navButtons.forEach(button => {
-      button.dataset.originalText = button.textContent;
-      
-      button.addEventListener('mouseenter', () => {
-        scrambleText(button);
-      });
-    });
+    useEffect(() => {
+      const navButtons = document.querySelectorAll('.nav-button');
+      const handlers = [];
 
-    return () => {
-      cells.forEach((cell) => {
-        cell.removeEventListener("mouseover", () => {});
-      });
-      
       navButtons.forEach(button => {
-        button.removeEventListener('mouseenter', () => {});
+        button.dataset.originalText = button.textContent;
+        const handler = () => {
+          scrambleText(button);
+        };
+        handlers.push({ button, handler });
+        button.addEventListener('mouseenter', handler);
       });
-    };
-  }, []);
+
+      return () => {
+        handlers.forEach(({ button, handler }) => {
+          button.removeEventListener('mouseenter', handler);
+        });
+      };
+    }, []);
 
   return (
       <div className="index-page">
-        <div className='gridtest'>
-          {Array.from({ length: 100 * 100 }).map((_, i) => (
-            <div key={i} className="celltest" />
-          ))}
-        </div>
+        <GridBackground />
         <div className='base'>
           <div className='top-main'>
             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
@@ -90,7 +73,7 @@ const IndexPage = () => {
               <Link to="/singleplayerback" className="nav-button">
                 Singleplayer
               </Link>
-              <Link to="/singleplayerback" className="nav-button">
+              <Link to="/multiplayerfront" className="nav-button">
                 Multiplayer
               </Link>
             </nav>
