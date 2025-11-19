@@ -18,9 +18,11 @@ const MultiPlayerFront = () => {
                     <nav className="main-navigation">
                         <div className="content-multi">
                             <input type="text" className="nav-input" placeholder="Enter Username"/>
-                            <button className="nav-button-multi">
-                                Create Game
-                            </button>
+                            <Link to="/lobby-game-page">
+                                <button className="nav-button-multi">
+                                    Create Game
+                                </button>
+                            </Link>
                         </div>
                         <div className="content-multi">
                             <input type="text" className="nav-input" placeholder="Enter Game Code"/>

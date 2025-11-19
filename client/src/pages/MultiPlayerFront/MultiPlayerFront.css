@@ -22,13 +22,16 @@
   color: #fd1e2d;
   font-size: 1.5rem;
   padding: 10px 20px;
-  width: auto;
+  width: 350px;
   align-items: center;
   background-color: #1d212b;
-  /* background: transparent; */
   border: none;
   font-family: 'OffbitTrial-Regular', sans-serif;
   font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
 }
 
 .arrow-back{
@@ -43,7 +46,6 @@
   flex-direction: column;
   justify-content: center;
   gap: 20px;
-  width: 500px;
 }
 
 .nav-button-multi{
