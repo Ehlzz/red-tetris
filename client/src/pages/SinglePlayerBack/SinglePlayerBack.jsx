@@ -158,7 +158,7 @@ const SinglePlayerBack = () => {
                                         </div>
                                     </div>
                                     <div className="game-over-btn">
-                                        <Link to="/index" className="nav-button">
+                                        <Link to="/index" className="nav-button-home">
                                             Return
                                         </Link>
                                         <button className="caca" onClick={() => {

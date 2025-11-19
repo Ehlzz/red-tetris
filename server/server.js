@@ -182,7 +182,6 @@ io.on('connection', (socket) => {
 			player.speed = Math.max(100, Math.floor(player.speed * 0.77));
 			player.level += 1;
 			player.updateSpeed();
-			console.log('⚡ Vitesse augmentée pour:', socket.id, 'Nouvelle vitesse:', player.speed);
 		}
 	}
 
