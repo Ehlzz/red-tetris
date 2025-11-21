@@ -1,7 +1,7 @@
 import './LobbyGamePage.css';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import GridBackground from '../../components/gridBackground';
+import GridBackground from '../../components/gridBackground/gridBackground';
 
 const LobbyGamePage = () => {
     const [players, setPlayers] = useState([

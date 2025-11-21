@@ -356,6 +356,13 @@ io.on('connection', (socket) => {
 		refreshGame();
 	});
 
+	socket.on('resetGame', () => {
+		console.log('🔄 Reset du jeu pour:', socket.id);
+		// Supprimer le joueur existant pour le réinitialiser
+		delete players[socket.id];
+		console.log('✨ Jeu réinitialisé pour:', socket.id);
+	});
+
 });
 
 server.listen(PORT, () => {

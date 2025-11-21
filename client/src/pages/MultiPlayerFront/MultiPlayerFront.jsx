@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import "./MultiPlayerFront.css";
-import GridBackground from "../../components/gridBackground";
+import GridBackground from "../../components/gridBackground/gridBackground";
 import { Link } from "react-router-dom";
 
 const MultiPlayerFront = () => {

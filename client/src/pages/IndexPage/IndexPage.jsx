@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import React, { useEffect } from 'react';
 import './IndexPage.css';
-import GridBackground from '../../components/gridBackground';
+import GridBackground from '../../components/gridBackground/gridBackground';
 
 const IndexPage = () => {
     const scrambleText = (element) => {

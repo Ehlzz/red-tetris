@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react';
 import './SinglePlayerBack.css';
 import { io } from 'socket.io-client';
 import { Link } from 'react-router-dom';
+import GameOverSolo from '../../components/gameOverSolo/gameOverSolo';
 
 const socket = io('http://localhost:5000');
 
@@ -147,35 +148,22 @@ const SinglePlayerBack = () => {
 
                         {gameOver && (
                             <>
-                                <div className="background-overlay"></div>
-                                <div className="game-over-message">
-                                    <div className="game-over-text">
-                                        <h1>Game Over!</h1>
-                                        <div className="final-stats">
-                                            <p>Total Lines Cleared: {totalLinesCleared}</p>
-                                            <p>Level: {playerLevel}</p>
-                                            <p>Final Score: {score}</p>
-                                        </div>
-                                    </div>
-                                    <div className="game-over-btn">
-                                        <Link to="/index" className="nav-button-home">
-                                            Return
-                                        </Link>
-                                        <button className="caca" onClick={() => {
-                                            setGameOver(false);
-                                            setScore(0);
-                                            setPlayerLevel(1);
-                                            setTotalLinesCleared(0);
-                                            setGameStarted(false);
-                                            setCurrentBlock(null);
-                                            setNextBlock(null);
-                                            setDisplayGrid(createEmptyGrid());
-                                            socket.emit('resetGame');
-                                        }}>
-                                            Play again
-                                        </button>
-                                    </div>
-                                </div>
+                                <GameOverSolo 
+                                    score={score}
+                                    totalLinesCleared={totalLinesCleared}
+                                    playerLevel={playerLevel}
+                                    onRestart={() => {
+                                        setGameOver(false);
+                                        setScore(0);
+                                        setPlayerLevel(1);
+                                        setTotalLinesCleared(0);
+                                        setGameStarted(false);
+                                        setCurrentBlock(null);
+                                        setNextBlock(null);
+                                        setDisplayGrid(createEmptyGrid());
+                                        socket.emit('resetGame');
+                                    }}
+                                />
                             </>
                         )}
                     </div>

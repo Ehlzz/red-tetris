@@ -279,18 +279,6 @@
   }
 }
 
-@keyframes glow {
-  0% {
-    box-shadow: 0 0 100px #B6FF00;
-  }
-  50% {
-    box-shadow: 0 0 150px #B6FF00;
-  }
-  100% {
-    box-shadow: 0 0 100px #B6FF00;
-  }
-}
-
 @keyframes slideIn {
   0% {
     transform: translate(-50%, -60%);
