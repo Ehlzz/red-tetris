@@ -29,31 +29,37 @@ const blockColors = {
 
 const blocks = {
 	I: [
-		[1, 1, 1, 1]
+		[0, 0, 0, 0],
+		[1, 1, 1, 1],
 	],
-	J: [
+	J: [ 
 		[1, 0, 0],
-		[1, 1, 1]
+		[1, 1, 1],
+		[0, 0, 0]
 	],
 	L: [
 		[0, 0, 1],
-		[1, 1, 1]
+		[1, 1, 1],
+		[0, 0, 0]
 	],
 	O: [
-		[1, 1],
-		[1, 1]
+		[0, 1, 1, 0],
+		[0, 1, 1, 0],
 	],
 	S: [
 		[0, 1, 1],
-		[1, 1, 0]
+		[1, 1, 0],
+		[0, 0, 0]
 	],
 	T: [
 		[0, 1, 0],
-		[1, 1, 1]
+		[1, 1, 1],
+		[0, 0, 0]
 	],
 	Z: [
 		[1, 1, 0],
-		[0, 1, 1]
+		[0, 1, 1],
+		[0, 0, 0]
 	],
 };
 
@@ -270,16 +276,73 @@ io.on('connection', (socket) => {
 		moveBlock(direction);
 	});
 
+	function canRotate(shape, offsetX = 0, offsetY = 0) {
+		const player = players[socket.id];
+		if (!player) return false;
+		
+		for (let y = 0; y < shape.length; y++) {
+			for (let x = 0; x < shape[y].length; x++) {
+				if (shape[y][x]) {
+					const newX = player.position.x + x + offsetX;
+					const newY = player.position.y + y + offsetY;
+					
+					if (newX < 0 || newX >= 10 || newY >= 22) {
+						console.log('Rotation impossible: hors limites');
+						return false;
+					}
+					
+					if (newY >= 0 && player.grid[newY][newX] && player.grid[newY][newX] !== 'hover') {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	function rotateMatrix(matrix) {
+		return matrix[0].map((_, index) =>
+			matrix.map(row => row[index]).reverse()
+		);
+	}
+
+	function getRotationOffset(type, shape, rotatedShape) {
+		const currentWidth = shape[0].length;
+		const currentHeight = shape.length;
+		const newWidth = rotatedShape[0].length;
+		const newHeight = rotatedShape.length;
+		
+		const offsetX = Math.floor((currentWidth - newWidth) / 2);
+		const offsetY = Math.floor((currentHeight - newHeight) / 2);
+		
+		switch(type) {
+			case 'O':
+				return { x: 0, y: 0 };
+			case 'I':
+			case 'J':
+			case 'L':
+			case 'S':
+			case 'T':
+			case 'Z':
+				return { x: offsetX, y: offsetY };
+			default:
+				return { x: 0, y: 0 };
+		}
+	}
+
 	socket.on('rotateBlock', () => {
 		const player = players[socket.id];
 		if (!player || player.isGameOver) return;
-		const { shape } = player.currentBlock;
+		const { shape, type } = player.currentBlock;
 
-		const rotatedShape = shape[0].map((_, index) =>
-		shape.map(row => row[index]).reverse()
-		);
+		const rotatedShape = rotateMatrix(shape);
+		const offset = getRotationOffset(type, shape, rotatedShape);
 
+		if (!canRotate(rotatedShape, offset.x, offset.y)) return;
+	
 		player.currentBlock.shape = rotatedShape;
+		player.position.x += offset.x;
+		player.position.y += offset.y;
 
 		setHoverBlock();
 		refreshGame();

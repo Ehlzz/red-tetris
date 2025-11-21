@@ -7,8 +7,8 @@ const LobbyGamePage = () => {
     const [players, setPlayers] = useState([
         { id: 1, name: 'Alice', isHost: true, isReady: false },
         { id: 2, name: 'Bob', isHost: false, isReady: true },
-        // { id: 3, name: 'Charlie', isHost: false, isReady: false },
-        // { id: 4, name: 'Diana', isHost: false, isReady: false },
+        { id: 3, name: 'Charlie', isHost: false, isReady: true },
+        { id: 4, name: 'Diana', isHost: false, isReady: true },
     ]);
     const [currentPlayerId] = useState(1);
 
