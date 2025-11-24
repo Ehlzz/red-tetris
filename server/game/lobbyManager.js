@@ -2,6 +2,7 @@ const rooms = {};
 const roomTimers = {};
 
 function createLobby(socket) {
+    console.log('CREATE LOBBY CALLED')
     const roomId = `room-${Math.random().toString(36).substr(2, 9)}`;
     rooms[roomId] = {
         players: [],
@@ -22,13 +23,17 @@ function joinLobby(socket, io, args) {
     const room = rooms[args.roomId];
     
     if (room) {
+        if (room.players.length >= 4) {
+            socket.emit('error', { message: 'Lobby plein.', room: args.roomId });
+            return;
+        }
         const playerIndex = room.players.findIndex(p => p.name === args.playerName);
         if (playerIndex !== -1) {
             socket.emit('error', { message: 'Nom de joueur déjà pris dans ce lobby.', name: true, room: args.roomId });
             return;
         }
         socket.join(args.roomId);
-        room.players.push({name: args.playerName, id: socket.id});
+        room.players.push({name: args.playerName, id: socket.id, isReady: false});
         console.log('added player to room', room.players);
         clearRoomTimer(args.roomId);
         if (room.players.length === 1) {
@@ -41,6 +46,20 @@ function joinLobby(socket, io, args) {
         console.log(`🔑 ${socket.id} (${args.playerName}) a rejoint le lobby: ${args.roomId}`);
     } else {
         socket.emit('error', { message: 'Lobby introuvable.' });
+    }
+}
+
+function toggleReadyLobby(socket, io, roomId) {
+    const room = rooms[roomId];
+    if (room) {
+        const player = room.players.find(p => p.id === socket.id);
+        if (player) {
+            player.isReady = !player.isReady;
+            console.log(`✅ ${socket.id} (${player.name}) a changé son statut prêt à ${player.isReady} dans le lobby: ${roomId}`);
+            room.players.forEach(p => {
+                io.to(p.id).emit('refreshRoom', { room: room });
+            });
+        }
     }
 }
 
@@ -92,4 +111,4 @@ function getRoomById(roomId) {
     return rooms[roomId];
 }
 
-module.exports = { rooms, createLobby, joinLobby, removePlayerFromLobby, getRoomById };
+module.exports = { rooms, createLobby, joinLobby, removePlayerFromLobby, getRoomById, toggleReadyLobby};

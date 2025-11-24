@@ -1,0 +1,241 @@
+.lobby-game-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: #F0F0F0;
+  box-shadow: inset 0 0 0 22px #fd1e2d;
+}
+
+.base-lobby {
+  background-color: #242834;
+  padding: 20px;
+  z-index: 2;
+  min-width: 600px;
+  max-width: 800px;
+}
+
+.top-main-lobby {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.lobby-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.lobby-info {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.lobby-subtitle {
+  font-size: 2rem;
+  color: #fd1e2d;
+  margin: 0 0 15px 0;
+  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-weight: 700;
+}
+
+.room-code {
+  font-size: 1.2rem;
+  color: #fd1e2d;
+  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-weight: 700;
+}
+
+.room-code .code {
+  background-color: #1d212b;
+  padding: 5px 15px;
+  border: 2px solid #fd1e2d;
+  margin-left: 10px;
+  font-weight: 700;
+}
+
+.copy-button {
+  margin-left: 15px;
+  padding: 5px 10px;
+  font-size: 1rem;
+  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-weight: 700;
+  color: #fd1e2d;
+  background-color: #1d212b;
+  border: 2px solid #fd1e2d;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.copy-button:hover {
+  background-color: #fd1e2d;
+  color: #1d212b;
+}
+
+.players-container {
+  background-color: #1d212b;
+  padding: 10px;
+  border: 3px solid #fd1e2d;
+}
+
+.players-title {
+  color: #fd1e2d;
+  font-size: 1.8rem;
+  margin: 0 0 20px 0;
+  text-align: center;
+  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-weight: 700;
+}
+
+.player-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.player-item {
+  background-color: #242834;
+  padding: 15px;
+  border: 2px solid #4a5568;
+  transition: all 0.3s ease;
+}
+
+.player-item.ready {
+  border-color: #48bb78;
+  background-color: rgba(72, 187, 120, 0.1);
+}
+
+.player-item.current-player {
+  border-color: #fd1e2d;
+  background-color: rgba(253, 30, 45, 0.1);
+}
+
+.player-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.player-name-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.crown-icon {
+  flex-shrink: 0;
+}
+
+.player-name {
+  color: #fd1e2d;
+  font-size: 1.4rem;
+  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-weight: 700;
+}
+
+.host-badge {
+  background-color: #fd1e2d;
+  color: #242834;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-radius: 0;
+}
+
+.ready-status {
+  font-size: 1.1rem;
+  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-weight: 700;
+}
+
+.ready-status.ready {
+  color: #48bb78;
+}
+
+.ready-status.not-ready {
+  color: #f56565;
+}
+
+.lobby-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.ready-button, .start-game-button {
+  padding: 15px 40px;
+  font-size: 1.8rem;
+  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-weight: 700;
+  border: 3px solid #fd1e2d;
+  background-color: #1d212b;
+  color: #fd1e2d;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.ready-button:hover, .start-game-button:hover {
+  background-color: #fd1e2d;
+  color: #1d212b;
+}
+
+.ready-button.ready {
+  background-color: #48bb78;
+  border-color: #48bb78;
+  color: #1d212b;
+}
+
+.ready-button.ready:hover {
+  background-color: #1d212b;
+  color: #48bb78;
+}
+
+.start-game-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.start-game-button.disabled:hover {
+  background-color: #1d212b;
+  color: #fd1e2d;
+}
+
+.start-game-button.enabled {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(253, 30, 45, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(253, 30, 45, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(253, 30, 45, 0); }
+}
+
+.animated-dots span {
+  animation: blink 1.4s infinite both;
+}
+
+.animated-dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.animated-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.animated-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0%, 80%, 100% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+}

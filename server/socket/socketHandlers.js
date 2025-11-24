@@ -1,6 +1,6 @@
 const { initPlayer, getPlayer } = require('../game/playerManager');
 const { moveBlock, rotateBlock, dropBlock } = require('../game/gameLogic');
-const { createLobby, joinLobby, removePlayerFromLobby } = require('../game/lobbyManager');
+const { createLobby, joinLobby, removePlayerFromLobby, toggleReadyLobby } = require('../game/lobbyManager');
 
 function handleSocketConnection(socket, io) {
     console.log('🔌 Utilisateur connecté:', socket.id);
@@ -46,8 +46,8 @@ function handleSocketConnection(socket, io) {
         dropBlock(socket, player);
     });
 
-    socket.on('createLobby', (playerName) => {
-        createLobby(socket, playerName);
+    socket.on('createLobby', () => {
+        createLobby(socket);
     });
 
     socket.on('joinLobby', ({ args }) => {
@@ -57,6 +57,10 @@ function handleSocketConnection(socket, io) {
     socket.on('disconnect', () => {
         console.log('❌ Utilisateur déconnecté:', socket.id);
         removePlayerFromLobby(socket);
+    });
+
+    socket.on('toggleReady', (args) => {
+        toggleReadyLobby(socket, io, args.roomId);
     });
 }
 

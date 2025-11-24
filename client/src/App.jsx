@@ -8,6 +8,8 @@ const socket = io('http://localhost:5000', {
   reconnectionDelay: 1000,
   reconnectionAttempts: 5
 });
+import MultiPlayerFront from './pages/MultiPlayerFront/MultiPlayerFront';
+import LobbyGamePage from './pages/LobbyGamePage/LobbyGamePage';
 
 function App() {
 
@@ -22,6 +24,10 @@ function App() {
         <Route path="/multiplayer/:roomId/:playerName" element={<MultiPlayerHome socket={socket} />} />
         {/* Route pour rejoindre avec juste le roomId */}
         <Route path="/multiplayer/:roomId" element={<MultiPlayerHome socket={socket} />} />
+        <Route path="/multiplayerFront" element={<MultiPlayerFront socket={socket} />} />
+        <Route path="/lobby-game-page" element={<LobbyGamePage socket={socket}/>} />
+        <Route path="/lobby-game-page/:roomId/:playerName" element={<LobbyGamePage socket={socket} />} />
+        <Route path="/lobby-game-page/:roomId" element={<LobbyGamePage socket={socket} />} />
       </Routes>
     </BrowserRouter>
   );

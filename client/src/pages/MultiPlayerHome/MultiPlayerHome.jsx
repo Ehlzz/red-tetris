@@ -52,13 +52,11 @@ const MultiPlayerHome = ({ socket }) => {
             }
         };
 
-        socket.on("lobbyCreated", handleLobbyCreated);
         socket.on("lobbyJoined", handleLobbyJoined);
         socket.on("playerLeft", handlePlayerLeft);
         socket.on("error", handleError);
 
         return () => {
-            socket.off("lobbyCreated", handleLobbyCreated);
             socket.off("lobbyJoined", handleLobbyJoined);
             socket.off("playerLeft", handlePlayerLeft);
             socket.off("error", handleError);

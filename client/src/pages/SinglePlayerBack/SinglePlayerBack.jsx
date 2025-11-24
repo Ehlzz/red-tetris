@@ -1,6 +1,8 @@
 import {useEffect, useState} from 'react';
 import './SinglePlayerBack.css';
 import { io } from 'socket.io-client';
+import { Link } from 'react-router-dom';
+import GameOverSolo from '../../components/gameOverSolo/gameOverSolo';
 
 
 const SinglePlayerBack = ({ socket }) => {
@@ -8,6 +10,16 @@ const SinglePlayerBack = ({ socket }) => {
     const [currentBlock, setCurrentBlock] = useState(null);
     const [nextBlock, setNextBlock] = useState(null);
     const [score, setScore] = useState(0);
+    const [gameStarted, setGameStarted] = useState(false);
+    const [gameOver, setGameOver] = useState(false);
+    const [playerLevel, setPlayerLevel] = useState(1);
+    const [totalLinesCleared, setTotalLinesCleared] = useState(0);
+    
+    const createEmptyGrid = () => {
+        return Array(22).fill().map(() => Array(10).fill(''));
+    };
+    
+    const [displayGrid, setDisplayGrid] = useState(createEmptyGrid());
 
     useEffect(() => {
         socket.on('receiveGame', (game) => {
@@ -26,7 +38,17 @@ const SinglePlayerBack = ({ socket }) => {
             setCurrentBlock(game.currentBlock);
             setNextBlock(game.nextBlock);
             setScore(game.score);
+            setDisplayGrid(game.grid);
+            setPlayerLevel(game.level);
+            setTotalLinesCleared(game.totalColumnsCleared);
         });
+
+        socket.on('gameOver', ({ score }) => {
+        console.log('💀 Game Over! Score final:', score);
+        setGameOver(true);
+        setScore(score);
+        setGameStarted(false);
+    });
 
         return () => {
             socket.off('receiveGame');
@@ -39,16 +61,24 @@ const SinglePlayerBack = ({ socket }) => {
     useEffect(() => {
         const handleKeyDown = (event) => {
 			console.log(event.key);
-            if (event.key === "ArrowDown") {
-                socket.emit('moveBlock', { x: 0, y: 1 });
-			} else if (event.key === "ArrowLeft") {
-                socket.emit('moveBlock', { x: -1, y: 0 });
-			} else if (event.key === "ArrowRight") {
-                socket.emit('moveBlock', { x: 1, y: 0 });
-			} else if (event.key === "ArrowUp") {
-                socket.emit('rotateBlock');
-			} else if (event.key === " ") {
-                socket.emit('dropBlock');
+            
+            if (!gameStarted && !gameOver && event.key === " ") {
+                socket.emit('startGame');
+                return;
+            }
+            
+            if (gameStarted && !gameOver) {
+                if (event.key === "ArrowDown") {
+                    socket.emit('moveBlock', { x: 0, y: 1 });
+                } else if (event.key === "ArrowLeft") {
+                    socket.emit('moveBlock', { x: -1, y: 0 });
+                } else if (event.key === "ArrowRight") {
+                    socket.emit('moveBlock', { x: 1, y: 0 });
+                } else if (event.key === "ArrowUp") {
+                    socket.emit('rotateBlock');
+                } else if (event.key === " ") {
+                    socket.emit('dropBlock');
+                }
             }
         };
 
@@ -57,46 +87,81 @@ const SinglePlayerBack = ({ socket }) => {
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
-    }, []);
+    }, [gameStarted, gameOver]);
 
     return (
 
         <div className="game-container">
             <div className="single-player-back">
                 <div className="test">
-                    {!grid && (
-                        <button className="start-button" onClick={() => socket.emit('startGame')}>Start Game</button>
-                    )}
-                    {grid && (
-                        <div className="grid">
-                            {grid.slice(2).map((row, rowIndex) => (
-                                <div key={rowIndex} className="row">
-                                    {row.map((cell, cellIndex) => (
-                                        <div
-                                            key={cellIndex}
-                                            className={`cell ${cell}`}
-                                        ></div>
-                                    ))}
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                    <div className="grid">
+                        {displayGrid.slice(2).map((row, rowIndex) => (
+                            <div key={rowIndex} className="row">
+                                {row.map((cell, cellIndex) => (
+                                    <div
+                                        key={cellIndex}
+                                        className={`cell ${cell}`}
+                                    ></div>
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                    
+
                     <div className='info'>
+                        {!gameStarted && !gameOver && (
+                            <>
+                                <div className="start-message">
+                                    <p>Press <strong>SPACE</strong> to start the game !</p>
+                                </div>
+                            </>
+                        )}
+                        
                         <div className="next-block">
                             {nextBlock && nextBlock.shape.map((row, rowIndex) => (
                                 <div key={rowIndex} className="row">
                                     {row.map((cell, cellIndex) => (
                                         <div
                                             key={cellIndex}
-                                            className={`cell ${cell ? 'filled' : ''}`} // Ajoutez une classe "filled" pour les cellules occupées
+                                            className={`cell ${cell ? 'filled' : ''}`}
                                         ></div>
                                     ))}
                                 </div>
                             ))}
                         </div>
-                        <div className="score-board">
-                            <p>{score}</p>
+                        
+                            <div className="score-board">
+                                <p>Score : {score}</p>
+                            </div>
+                        <div className='info-game'>
+                            <div className="current-lvl">
+                                <p>Level : {playerLevel}</p>
+                            </div>
+                            <div className="lines-cleared">
+                                <p>Line : {totalLinesCleared}</p>
+                            </div>
                         </div>
+
+                        {gameOver && (
+                            <>
+                                <GameOverSolo 
+                                    score={score}
+                                    totalLinesCleared={totalLinesCleared}
+                                    playerLevel={playerLevel}
+                                    onRestart={() => {
+                                        setGameOver(false);
+                                        setScore(0);
+                                        setPlayerLevel(1);
+                                        setTotalLinesCleared(0);
+                                        setGameStarted(false);
+                                        setCurrentBlock(null);
+                                        setNextBlock(null);
+                                        setDisplayGrid(createEmptyGrid());
+                                        socket.emit('resetGame');
+                                    }}
+                                />
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
