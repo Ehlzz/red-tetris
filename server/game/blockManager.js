@@ -35,17 +35,17 @@ function checkLines(player, socket) {
     player.grid = newGrid;
     player.score += linesCleared * 100;
     player.totalColumnsCleared += linesCleared;
-    if (playerInRoom) {
-        playerInRoom.score = player.score;
-        playerInRoom.totalColumnsCleared = player.totalColumnsCleared;
-    }
     while (player.columnsCleared >= 7) {
         player.columnsCleared = Math.min(0, player.columnsCleared - 7);
         player.speed = Math.max(100, Math.floor(player.speed * 0.77));
         player.level += 1;
         player.updateSpeed();
     }
-    playerInRoom.level = player.level;
+    if (playerInRoom) {
+        playerInRoom.score = player.score;
+        playerInRoom.totalColumnsCleared = player.totalColumnsCleared;
+        playerInRoom.level = player.level;
+    }
 }
 
 function setHoverBlock(player) {
