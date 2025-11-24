@@ -3,7 +3,11 @@ import IndexPage from './pages/IndexPage/IndexPage';
 import SinglePlayerBack from './pages/SinglePlayerBack/SinglePlayerBack';
 import MultiPlayerHome from './pages/MultiPlayerHome/MultiPlayerHome';
 import { io } from "socket.io-client";
-const socket = io('http://localhost:5000');
+const socket = io('http://localhost:5000', {
+  reconnection: true,
+  reconnectionDelay: 1000,
+  reconnectionAttempts: 5
+});
 
 function App() {
 

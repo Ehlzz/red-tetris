@@ -14,6 +14,7 @@ const MultiPlayerHome = ({ socket }) => {
     const [isJoining, setIsJoining] = useState(false);
     const [hasJoined, setHasJoined] = useState(false);
     const [nameError, setNameError] = useState(false);
+    const joinSent = useRef(false);
 
     useEffect(() => {
         const handleLobbyCreated = (game) => {
@@ -29,6 +30,10 @@ const MultiPlayerHome = ({ socket }) => {
             if (!roomId) {
                 navigate(`/multiplayer/${game.roomId}/${playerName}`);
             }
+        };
+
+        const handlePlayerLeft = (game) => {
+            setRoom(game.room);
         };
         
         const handleError = (error) => {
@@ -47,15 +52,15 @@ const MultiPlayerHome = ({ socket }) => {
             }
         };
 
-        const socket = socketRef.current;
-
         socket.on("lobbyCreated", handleLobbyCreated);
         socket.on("lobbyJoined", handleLobbyJoined);
+        socket.on("playerLeft", handlePlayerLeft);
         socket.on("error", handleError);
 
         return () => {
             socket.off("lobbyCreated", handleLobbyCreated);
             socket.off("lobbyJoined", handleLobbyJoined);
+            socket.off("playerLeft", handlePlayerLeft);
             socket.off("error", handleError);
         };
     }, [playerName, navigate, roomId]);
@@ -67,17 +72,20 @@ const MultiPlayerHome = ({ socket }) => {
     }, [roomId, urlPlayerName]);
 
     useEffect(() => {
-        if (roomId && urlPlayerName && !hasJoined) {
+        if (roomId && urlPlayerName && !joinSent.current) {
+            joinSent.current = true;
+
             setPlayerName(urlPlayerName);
+
             socket.emit("joinLobby", {
                 args: {
                     roomId,
                     playerName: urlPlayerName,
                 }
             });
-            setHasJoined(true);
         }
-    }, [roomId, urlPlayerName, hasJoined]);
+    }, [roomId, urlPlayerName]);
+
 
     if (!playerName) {
         return (
@@ -158,12 +166,12 @@ const MultiPlayerHome = ({ socket }) => {
                                         cursor: "pointer"
                                     }}
                                     onClick={() => {
-                                        const url = `${window.location.origin}/${lobbyCode}`;
+                                        const url = `${window.location.origin}/multiplayer/${lobbyCode}`;
                                         navigator.clipboard.writeText(url);
                                         alert("Lien copié !");
                                     }}
                                 >
-                                    {window.location.origin}/{lobbyCode}
+                                    {window.location.origin}/multiplayer/{lobbyCode}
                                 </strong>
                             </p>
 
@@ -203,7 +211,7 @@ const MultiPlayerHome = ({ socket }) => {
                             onKeyPress={(e) => {
                                 if (e.key === 'Enter' && input.trim()) {
                                     const code = input.trim();
-                                    navigate(`/${code}/${playerName}`);
+                                    navigate(`/multiplayer/${code}/${playerName}`);
                                     setInput("");
                                 }
                             }}
@@ -213,7 +221,7 @@ const MultiPlayerHome = ({ socket }) => {
                             onClick={() => {
                                 if (input.trim()) {
                                     const code = input.trim();
-                                    navigate(`/${code}/${playerName}`);
+                                    navigate(`/multiplayer/${code}/${playerName}`);
                                     setInput("");
                                 }
                             }}

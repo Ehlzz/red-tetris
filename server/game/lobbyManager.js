@@ -17,6 +17,7 @@ function createLobby(socket) {
 
 
 function joinLobby(socket, io, args) {
+    console.log('joinLobby called');
     console.log(args, socket.id);
     const room = rooms[args.roomId];
     
@@ -28,8 +29,12 @@ function joinLobby(socket, io, args) {
         }
         socket.join(args.roomId);
         room.players.push({name: args.playerName, id: socket.id});
-        console.log(room.players);
+        console.log('added player to room', room.players);
         clearRoomTimer(args.roomId);
+        if (room.players.length === 1) {
+            room.chief = socket.id;
+            console.log(`👑 Chef du lobby ${args.roomId}: ${room.chief}`);
+        }
         room.players.forEach(player => {
             io.to(player.id).emit('lobbyJoined', { roomId: args.roomId, room: room });
         });
@@ -76,6 +81,9 @@ function removePlayerFromLobby(socket) {
                 room.chief = room.players[0].id;
                 console.log(`👑 Nouveau chef du lobby ${roomId}: ${room.chief}`)
             };
+            room.players.forEach(player => {
+                socket.to(player.id).emit('playerLeft', { room });
+            });
         }
     });
 }
