@@ -66,7 +66,7 @@ const IndexPage = () => {
               0 -320z"/>
               </g>
               </svg>
-          <h1 className='title'>Glyph</h1>
+          <h1 className='index-title'>Glyph</h1>
           </div>
           <main>
             <nav className="main-navigation">

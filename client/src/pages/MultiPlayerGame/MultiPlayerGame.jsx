@@ -1,10 +1,12 @@
 import {useEffect, useState} from 'react';
-import './SinglePlayerBack.css';
+import './MultiPlayerGame.css';
 import { io } from 'socket.io-client';
 import { Link } from 'react-router-dom';
+import { useParams, useNavigate } from "react-router-dom";
 import GameOverSolo from '../../components/gameOverSolo/gameOverSolo';
 
-const SinglePlayerBack = ({ socket }) => {
+const MultiPlayerGame = ({ socket }) => {
+    const { roomId, playerName: urlPlayerName } = useParams();
     const [grid, setGrid] = useState(null);
     const [currentBlock, setCurrentBlock] = useState(null);
     const [nextBlock, setNextBlock] = useState(null);
@@ -13,6 +15,7 @@ const SinglePlayerBack = ({ socket }) => {
     const [gameOver, setGameOver] = useState(false);
     const [playerLevel, setPlayerLevel] = useState(1);
     const [totalLinesCleared, setTotalLinesCleared] = useState(0);
+    const [room, setRoom] = useState(null);
     
     const createEmptyGrid = () => {
         return Array(22).fill().map(() => Array(10).fill(''));
@@ -35,6 +38,10 @@ const SinglePlayerBack = ({ socket }) => {
 
         socket.on('refreshGame', (game) => {
             console.log('🔄 Jeu rafraîchi:', game);
+            if (game.room) {
+                console.log('🔄 Room info:', game.room);
+                setRoom(game.room);
+            }
             setGrid(game.grid);
             setCurrentBlock(game.currentBlock);
             setNextBlock(game.nextBlock);
@@ -42,6 +49,10 @@ const SinglePlayerBack = ({ socket }) => {
             setDisplayGrid(game.grid);
             setPlayerLevel(game.level);
             setTotalLinesCleared(game.totalColumnsCleared);
+        });
+
+        socket.on('refreshRoom', (game) => {
+            setRoom(game.room);
         });
 
         socket.on('gameOver', ({ score }) => {
@@ -94,7 +105,25 @@ const SinglePlayerBack = ({ socket }) => {
     return (
 
         <div className="game-container">
-            <div className="single-player-back">
+            <div className="multi-player-back">
+                <div className="leaderboard">
+                    <h2>Lobby: {roomId}</h2>
+                    {room && (
+                        <div className="players-list">
+                            <h3>Players:</h3>
+                            <ul>
+                                {room.players.map((player) => (
+                                    <li key={player.id} style={{ color: player.isGameOver ? 'red' : 'white' }}>
+                                        Name : {player.name}<br></br>
+                                        Score : {player.score}<br></br>
+                                        Columns Cleared : {player.totalColumnsCleared}<br></br>
+                                        Level : {player.level}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
                 <div className="test">
                     <div className="grid">
                         {displayGrid.slice(2).map((row, rowIndex) => (
@@ -171,4 +200,4 @@ const SinglePlayerBack = ({ socket }) => {
     );
 };
 
-export default SinglePlayerBack;
+export default MultiPlayerGame;

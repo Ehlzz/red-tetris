@@ -15,11 +15,15 @@
   z-index: 2;
 }
 
-.title{
+.index-title{
   font-size: 4rem;
   color: #fd1e2d;
   z-index: 3;
   margin-left: 50px;
+}
+
+.subtitle {
+  color: #fd1e2d;
 }
 
 .main-navigation{
@@ -59,7 +63,6 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  /* justify-content: center; */
   margin-bottom: 50px;
 }
 
