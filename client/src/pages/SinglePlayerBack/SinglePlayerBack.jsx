@@ -2,9 +2,8 @@ import {useEffect, useState} from 'react';
 import './SinglePlayerBack.css';
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
 
-const SinglePlayerBack = () => {
+const SinglePlayerBack = ({ socket }) => {
     const [grid, setGrid] = useState(null);
     const [currentBlock, setCurrentBlock] = useState(null);
     const [nextBlock, setNextBlock] = useState(null);

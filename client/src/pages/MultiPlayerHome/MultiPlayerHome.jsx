@@ -1,58 +1,134 @@
-import { useState, useEffect } from 'react';
-import './MultiPlayerHome.css';
-import { io } from 'socket.io-client';
+import { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import "./MultiPlayerHome.css";
 
-const socket = io('http://localhost:5000');
 
-const MultiPlayerHome = () => {
-    const [input, setInput] = useState('');
+const MultiPlayerHome = ({ socket }) => {
+    const { roomId, playerName: urlPlayerName } = useParams();
+    const navigate = useNavigate();
+
+    const [playerName, setPlayerName] = useState(urlPlayerName || "");
+    const [input, setInput] = useState("");
     const [room, setRoom] = useState(null);
-    const [lobbyCode, setLobbyCode] = useState('');
-    
-    useEffect(() => {
+    const [lobbyCode, setLobbyCode] = useState("");
+    const [isJoining, setIsJoining] = useState(false);
+    const [hasJoined, setHasJoined] = useState(false);
+    const [nameError, setNameError] = useState(false);
 
-        socket.on('lobbyCreated', (game) => {
-            console.log('🆕 Partie créée avec le code:', game.room.roomId);
+    useEffect(() => {
+        const handleLobbyCreated = (game) => {
             setLobbyCode(game.room.roomId);
             setRoom(game.room);
-        });
-
-        socket.on('lobbyJoined', (game) => {
-            console.log(game);
-            console.log('✅ Rejoint la partie avec le code:', game.roomId);
-            console.log('👥 Joueurs dans la partie:', game.room.players);
-
+            navigate(`/multiplayer/${game.room.roomId}/${playerName}`);
+        };
+        
+        const handleLobbyJoined = (game) => {
             setLobbyCode(game.roomId);
             setRoom(game.room);
-        });
+            setHasJoined(true);
+            if (!roomId) {
+                navigate(`/multiplayer/${game.roomId}/${playerName}`);
+            }
+        };
+        
+        const handleError = (error) => {
+            setHasJoined(false);
+            setRoom(null);
+            setLobbyCode("");
+            if (error.name) {
+                setNameError(true);
+                setPlayerName("");
+                setIsJoining(true);
+            }
+            if (error.room) {
+                navigate(`/multiplayer/${error.room}`);
+            } else {
+                navigate("/multiplayer");
+            }
+        };
+
+        const socket = socketRef.current;
+
+        socket.on("lobbyCreated", handleLobbyCreated);
+        socket.on("lobbyJoined", handleLobbyJoined);
+        socket.on("error", handleError);
 
         return () => {
-            socket.off('lobbyCreated');
-            socket.off('lobbyJoined');
+            socket.off("lobbyCreated", handleLobbyCreated);
+            socket.off("lobbyJoined", handleLobbyJoined);
+            socket.off("error", handleError);
         };
-    }, []);
+    }, [playerName, navigate, roomId]);
 
-    const [playerName, setPlayerName] = useState('');
+    useEffect(() => {
+        if (roomId && !urlPlayerName) {
+            setIsJoining(true);
+        }
+    }, [roomId, urlPlayerName]);
+
+    useEffect(() => {
+        if (roomId && urlPlayerName && !hasJoined) {
+            setPlayerName(urlPlayerName);
+            socket.emit("joinLobby", {
+                args: {
+                    roomId,
+                    playerName: urlPlayerName,
+                }
+            });
+            setHasJoined(true);
+        }
+    }, [roomId, urlPlayerName, hasJoined]);
 
     if (!playerName) {
         return (
             <div className="mp-home">
-            <div className="mp-content">
-                <h1 className="title">TETRIS <span>ONLINE</span></h1>
-                <div style={{ color: 'white' }}>
-                <p>Veuillez entrer votre nom pour continuer</p>
-                <input 
-                    type="text" 
-                    placeholder="Votre nom"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                />
-                <button onClick={() => {
-                    setPlayerName(input);
-                    setInput('');
-                }}>CONFIRMER</button>
+                <div className="mp-content">
+                    <h1 className="title">
+                        TETRIS <span>ONLINE</span>
+                    </h1>
+                    <div style={{ color: "white" }}>
+                        {nameError && (
+                            <p style={{ color: "red" }}>
+                                Le nom choisi est déjà utilisé dans cette partie. Veuillez en choisir un autre.
+                            </p>
+                        )}
+                        <p>
+                            {isJoining
+                                ? "Entrez votre nom pour rejoindre la partie"
+                                : "Veuillez entrer votre nom pour continuer"}
+                        </p>
+                        <input
+                            type="text"
+                            placeholder="Votre nom"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter' && input.trim()) {
+                                    const name = input.trim();
+                                    setPlayerName(name);
+                                    if (isJoining && roomId) {
+                                        navigate(`/multiplayer/${roomId}/${name}`);
+                                    }
+                                    setInput("");
+                                }
+                            }}
+                        />
+                        <button
+                            onClick={() => {
+                                if (input.trim()) {
+                                    const name = input.trim();
+                                    setPlayerName(name);
+                                    if (isJoining && roomId) {
+                                        navigate(`/multiplayer/${roomId}/${name}`);
+                                    }
+                                    setInput("");
+                                }
+                            }}
+                        >
+                            CONFIRMER
+                        </button>
+                    </div>
                 </div>
-            </div>
             </div>
         );
     }
@@ -60,34 +136,92 @@ const MultiPlayerHome = () => {
     return (
         <div className="mp-home">
             <div className="mp-content">
-                <h1 className="title">TETRIS <span>ONLINE</span></h1>
-                {lobbyCode ? (
+                <h1 className="title">
+                    TETRIS <span>ONLINE</span>
+                </h1>
+
+                {lobbyCode && room ? (
                     <>
-                    <div style={{ color: 'white'}}>
-                        <p>Partie créée! Code de la partie: <strong style={{ userSelect: 'text', fontSize: '2vw' }}>{lobbyCode}</strong></p>
-                        <p>En attente de joueurs... ({room.players.length} actuellement)</p>
-                        {room && room.chief == socket.id && (
-                            <button onClick={() => socket.emit('startGame', lobbyCode)}>DÉMARRER LA PARTIE</button>
-                        )}
-                        <div>
-                            {room.players.map((player) => (
-                                <div key={player.id}>{player.name}</div>
-                            ))}
+                        <div style={{ color: "white" }}>
+                            <p>
+                                Code de la partie :{" "}
+                                <strong style={{ userSelect: "text", fontSize: "2vw" }}>
+                                    {lobbyCode}
+                                </strong>
+                            </p>
+
+                            <p>Lien à partager :{" "}
+                                <strong 
+                                    style={{ 
+                                        userSelect: "text", 
+                                        fontSize: "1.2vw",
+                                        cursor: "pointer"
+                                    }}
+                                    onClick={() => {
+                                        const url = `${window.location.origin}/${lobbyCode}`;
+                                        navigator.clipboard.writeText(url);
+                                        alert("Lien copié !");
+                                    }}
+                                >
+                                    {window.location.origin}/{lobbyCode}
+                                </strong>
+                            </p>
+
+                            <p>En attente de joueurs... ({room.players.length} joueurs)</p>
+
+                            {room && room.chief === socket.id && (
+                                <button onClick={() => socket.emit("startGame", lobbyCode)}>
+                                    DÉMARRER LA PARTIE
+                                </button>
+                            )}
+
+                            <div>
+                                {room.players.map((player) => (
+                                    <div key={player.id}>
+                                        {player.name} 
+                                        {player.id === room.chief && " 👑"}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
                     </>
                 ) : (
                     <>
-                        <button onClick={() => socket.emit('createLobby', { playerName })}>CRÉER UNE PARTIE</button>
-                        <input 
-                            type="text" 
+                        <button
+                            onClick={() => {
+                                socket.emit("createLobby", { playerName });
+                            }}
+                        >
+                            CRÉER UNE PARTIE
+                        </button>
+
+                        <input
+                            type="text"
                             placeholder="Entrez le code de la partie"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter' && input.trim()) {
+                                    const code = input.trim();
+                                    navigate(`/${code}/${playerName}`);
+                                    setInput("");
+                                }
+                            }}
                         />
-                        
-                        <button onClick={() => socket.emit('joinLobby', { args: { roomId: input, playerName } } )}>REJOINDRE UNE PARTIE</button>
-                        <p>Ou rejoignez une partie avec un code</p>
+
+                        <button
+                            onClick={() => {
+                                if (input.trim()) {
+                                    const code = input.trim();
+                                    navigate(`/${code}/${playerName}`);
+                                    setInput("");
+                                }
+                            }}
+                        >
+                            REJOINDRE UNE PARTIE
+                        </button>
+
+                        <p>Ou rejoignez une partie avec un lien</p>
                     </>
                 )}
             </div>

@@ -10,7 +10,7 @@ function IndexPage() {
       
       <main>
         <nav className="main-navigation">
-          <Link to="/multiplayerHome" className="nav-button">
+          <Link to="/multiplayer" className="nav-button">
             Multiplayer
           </Link>
           <Link to="/singleplayerback" className="nav-button">
