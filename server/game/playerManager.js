@@ -12,6 +12,7 @@ function initPlayer(socketId) {
         speed: 1000,
         level: 1,
         isGameOver: false,
+        totalColumnsCleared: 0,
         columnsCleared: 0
     };
 

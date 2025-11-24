@@ -1,6 +1,6 @@
 const { initPlayer, getPlayer } = require('../game/playerManager');
 const { moveBlock, rotateBlock, dropBlock } = require('../game/gameLogic');
-const { createLobby, joinLobby, removePlayerFromLobby, toggleReadyLobby } = require('../game/lobbyManager');
+const { createLobby, joinLobby, removePlayerFromLobby, toggleReadyLobby, getRoomById } = require('../game/lobbyManager');
 
 function handleSocketConnection(socket, io) {
     console.log('🔌 Utilisateur connecté:', socket.id);
@@ -31,6 +31,19 @@ function handleSocketConnection(socket, io) {
         player.updateSpeed = () => startLoop();
     });
 
+    socket.on('startMultiplayerGame', (roomId) => {
+        console.log('▶️ Jeu multijoueur démarré pour:', socket.id, 'dans le lobby:', roomId);
+        const room = getRoomById(roomId);
+        
+        room.players.forEach(player => {
+            player.score = 0;
+            player.totalColumnsCleared = 0;
+            player.level = 1;
+            io.to(player.id).emit('startMultiplayerGame', {name: player.name, room: room});
+        });
+
+    });
+
     socket.on('moveBlock', (direction) => {
         const player = getPlayer(socket.id);
         moveBlock(socket, player, direction);
@@ -54,6 +67,10 @@ function handleSocketConnection(socket, io) {
         joinLobby(socket, io, args);
     });
 
+    socket.on('leaveLobby', () => {
+        removePlayerFromLobby(socket);
+    });
+
     socket.on('disconnect', () => {
         console.log('❌ Utilisateur déconnecté:', socket.id);
         removePlayerFromLobby(socket);
@@ -62,6 +79,30 @@ function handleSocketConnection(socket, io) {
     socket.on('toggleReady', (args) => {
         toggleReadyLobby(socket, io, args.roomId);
     });
+
+    socket.on('gameOver', () => {
+        const player = getPlayer(socket.id);
+        if (player) {
+            player.isGameOver = true;
+            console.log('💀 Game Over pour:', socket.id);
+        }
+    });
+
+    socket.on('sendScore', (args) => {
+        const room = getRoomById(args.roomId);
+        if (!room) return;
+        
+        const player = room.players.find(p => p.id === socket.id);
+        if (!player) return;
+        
+        player.score = args.playerScore;
+        console.log(`🏆 Score reçu de ${socket.id} dans le lobby ${args.roomId}: ${player.score}`);
+
+        room.players.forEach(p => {
+            io.to(p.id).emit('refreshRoom', { room: room });
+        });
+    });
+
 }
 
 module.exports = { handleSocketConnection };

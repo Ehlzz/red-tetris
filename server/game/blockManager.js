@@ -1,5 +1,7 @@
 const { getRandomBlock } = require('../utils/blockUtils');
 const { isCollision } = require('./collisionManager');
+const { getPlayerRoom, getRoomById } = require('./lobbyManager');
+const { getPlayer } = require('./playerManager');
 
 function fixBlock(player) {
     if (!player) return;
@@ -17,25 +19,33 @@ function fixBlock(player) {
     });
 }
 
-function checkLines(player) {
+function checkLines(player, socket) {
     if (!player) return;
 
     let newGrid = player.grid.filter(row => !row.every(cell => cell !== null));
     const linesCleared = player.grid.length - newGrid.length;
     player.columnsCleared += linesCleared;		
-    
     for (let i = 0; i < linesCleared; i++) {
         newGrid.unshift(Array(10).fill(null));
     }
-
+    const room = getRoomById(getPlayerRoom(socket.id));
+    let playerInRoom = null;
+    if (room) 
+        playerInRoom = room.players.find(p => p.id === socket.id);
     player.grid = newGrid;
     player.score += linesCleared * 100;
-    
-    while (player.columnsCleared >= 3) {
-        player.columnsCleared = Math.min(0, player.columnsCleared - 3);
-        player.speed = Math.max(100, player.speed - player.columnsCleared * 75);
+    player.totalColumnsCleared += linesCleared;
+    if (playerInRoom) {
+        playerInRoom.score = player.score;
+        playerInRoom.totalColumnsCleared = player.totalColumnsCleared;
+    }
+    while (player.columnsCleared >= 7) {
+        player.columnsCleared = Math.min(0, player.columnsCleared - 7);
+        player.speed = Math.max(100, Math.floor(player.speed * 0.77));
+        player.level += 1;
         player.updateSpeed();
     }
+    playerInRoom.level = player.level;
 }
 
 function setHoverBlock(player) {

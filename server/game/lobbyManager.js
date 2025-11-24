@@ -1,5 +1,6 @@
 const rooms = {};
 const roomTimers = {};
+const playersRoom = {};
 
 function createLobby(socket) {
     console.log('CREATE LOBBY CALLED')
@@ -24,15 +25,21 @@ function joinLobby(socket, io, args) {
     
     if (room) {
         if (room.players.length >= 4) {
-            socket.emit('error', { message: 'Lobby plein.', room: args.roomId });
+            socket.emit('error', { errorType: 'lobbyFull'});
             return;
         }
+        if (args.playerName.length < 1 || args.playerName.length > 12) {
+            socket.emit('error', { errorType: 'nameLength', room: args.roomId });
+            return;
+        }
+
         const playerIndex = room.players.findIndex(p => p.name === args.playerName);
         if (playerIndex !== -1) {
-            socket.emit('error', { message: 'Nom de joueur déjà pris dans ce lobby.', name: true, room: args.roomId });
+            socket.emit('error', { errorType: 'name', room: args.roomId });
             return;
         }
         socket.join(args.roomId);
+        playersRoom[socket.id] = args.roomId;
         room.players.push({name: args.playerName, id: socket.id, isReady: false});
         console.log('added player to room', room.players);
         clearRoomTimer(args.roomId);
@@ -45,7 +52,7 @@ function joinLobby(socket, io, args) {
         });
         console.log(`🔑 ${socket.id} (${args.playerName}) a rejoint le lobby: ${args.roomId}`);
     } else {
-        socket.emit('error', { message: 'Lobby introuvable.' });
+        socket.emit('error', { errorType: 'lobbyNotFound' });
     }
 }
 
@@ -91,6 +98,7 @@ function removePlayerFromLobby(socket) {
         if (playerIndex !== -1) {
             room.players.splice(playerIndex, 1);
             socket.leave(roomId);
+            delete playersRoom[socket.id];
             console.log(`🚪 ${socket.id} a quitté le lobby: ${roomId}`);
             if (room.players.length === 0) {
                 console.log('🗑️ Lobby vide, démarrage du timer de suppression:', roomId);
@@ -111,4 +119,8 @@ function getRoomById(roomId) {
     return rooms[roomId];
 }
 
-module.exports = { rooms, createLobby, joinLobby, removePlayerFromLobby, getRoomById, toggleReadyLobby};
+function getPlayerRoom(socketId) {
+    return playersRoom[socketId];
+}
+
+module.exports = { rooms, createLobby, joinLobby, removePlayerFromLobby, getRoomById, toggleReadyLobby, getPlayerRoom};

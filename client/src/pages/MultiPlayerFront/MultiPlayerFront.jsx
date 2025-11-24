@@ -2,12 +2,15 @@ import {useEffect, useState, useRef} from "react";
 import "./MultiPlayerFront.css";
 import GridBackground from "../../components/gridBackground/gridBackground";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const MultiPlayerFront = ({ socket }) => {
+    const location = useLocation();
+    const { errorType, roomId } = location.state || {};
     const [nameInput, setNameInput] = useState("");
     const [roomInput, setRoomInput] = useState("");
     const [playerName, setPlayerName] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,6 +24,28 @@ const MultiPlayerFront = ({ socket }) => {
             socket.off("lobbyCreated", handleLobbyCreated);
         };
     }, [playerName, navigate, socket]);
+
+    useEffect(() => {
+        setRoomInput(roomId || "");
+    }, [roomId]);
+
+    useEffect(() => {
+        socket.emit('leaveLobby');
+    }, []);
+
+    useEffect(() => {
+        if (errorType === 'name') {
+            setErrorMessage("This name is already taken. Please choose another one.");
+        } else if (errorType === 'lobbyFull') {
+            setErrorMessage("The lobby is full. Please try another one.");
+        } else if (errorType === 'lobbyNotFound') {
+            setErrorMessage("The lobby doesn't exist. Please check the Room ID.");
+        } else if (errorType === 'nameLength') {
+            setErrorMessage("Name must be between 1 and 12 characters long.");
+        } else {
+            setErrorMessage("");
+        }
+    }, [errorType]);
 
     
     const handleJoinGame = () => {
@@ -50,6 +75,8 @@ const MultiPlayerFront = ({ socket }) => {
                     <h1 className='index-title'>Multiplayer</h1>
                     </div>
                     <main>
+                    <p className="subtitle">{errorMessage}</p>
+                    
                     <nav className="main-navigation">
                         <div className="content-multi">
                             <input
@@ -58,6 +85,14 @@ const MultiPlayerFront = ({ socket }) => {
                                 placeholder="Enter Username"
                                 value={nameInput}
                                 onChange={(e) => setNameInput(e.target.value)}
+                                maxLength={12}
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter' && roomInput.trim() === '') {
+                                        handleCreateGame();
+                                    } else if (e.key === 'Enter' && roomInput.trim() !== '') {
+                                        handleJoinGame();
+                                    }
+                                }}
                             />
                             <button className="nav-button-multi" onClick={handleCreateGame}>
                                 Create Game 
@@ -70,6 +105,14 @@ const MultiPlayerFront = ({ socket }) => {
                                 placeholder="Enter Room ID"
                                 value={roomInput}
                                 onChange={(e) => setRoomInput(e.target.value)}
+                                maxLength={14}
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter' && roomInput.trim() === '') {
+                                        handleCreateGame();
+                                    } else if (e.key === 'Enter' && roomInput.trim() !== '') {
+                                        handleJoinGame();
+                                    }
+                                }}
                             />
                             <button className="nav-button-multi" onClick={handleJoinGame}>
                                 Join Game

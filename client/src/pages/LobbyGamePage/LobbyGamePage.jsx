@@ -48,11 +48,9 @@ const LobbyGamePage = ({ socket }) => {
                 setPlayerName("");
                 setIsJoining(true);
             }
-            if (error.room) {
-                navigate(`/lobby-game-page/${error.room}`);
-            } else {
-                navigate("/lobby-game-page");
-            }
+            navigate("/multiplayerfront", {
+                state: { errorType: error.errorType, roomId: error.room }
+            });
         };
 
         const handleRefreshRoom = (game) => {
@@ -70,11 +68,17 @@ const LobbyGamePage = ({ socket }) => {
             });
             setAllPlayersReady(allReady);
         };
+
+        const handleGameStarted = (args) => {
+            navigate(`/game/${roomId}/${args.name}`);
+        }
+        
         socket.on("lobbyCreated", handleLobbyCreated);
         socket.on("lobbyJoined", handleLobbyJoined);
         socket.on("playerLeft", handlePlayerLeft);
         socket.on("error", handleError);
         socket.on("refreshRoom", handleRefreshRoom);
+        socket.on("startMultiplayerGame", handleGameStarted);
 
         return () => {
             socket.off("lobbyCreated", handleLobbyCreated);
@@ -82,6 +86,7 @@ const LobbyGamePage = ({ socket }) => {
             socket.off("playerLeft", handlePlayerLeft);
             socket.off("error", handleError);
             socket.off("refreshRoom", handleRefreshRoom);
+            socket.off("startMultiplayerGame", handleGameStarted);
         };
     }, [playerName, navigate, roomId, room]);
 
@@ -118,9 +123,16 @@ const LobbyGamePage = ({ socket }) => {
         });
     };
 
+    const handleStartGame = () => {
+        if (checkCanStart()) {
+            socket.emit("startMultiplayerGame", roomId);
+        }
+    };
+
     return (
         <div className="lobby-game-page">
             <GridBackground />
+            {room && (
             <div className='base-lobby'>
                 <div className='top-main-lobby'>
                     <Link to="/multiplayerfront">
@@ -128,7 +140,6 @@ const LobbyGamePage = ({ socket }) => {
                     </Link>
                     <h1 className='index-title'>Game Lobby</h1>
                 </div>
-                
                 <main className="lobby-main">
                     <div className="lobby-info">
                         <h2 className="lobby-subtitle">
@@ -186,6 +197,7 @@ const LobbyGamePage = ({ socket }) => {
                             <button 
                                 className={`start-game-button ${checkCanStart() ? 'enabled' : 'disabled'}`}
                                 disabled={!checkCanStart()}
+                                onClick={handleStartGame}
                             >
                                 START GAME
                             </button>
@@ -193,6 +205,7 @@ const LobbyGamePage = ({ socket }) => {
                     </div>
                 </main>
             </div>
+            )}
         </div>
     );
 };
