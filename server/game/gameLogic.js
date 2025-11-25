@@ -7,16 +7,15 @@ const { getPlayerRoom, getRoomById } = require('./lobbyManager');
 function refreshGame(socket, player) {
     if (!player) return;
     const room = getRoomById(getPlayerRoom(socket.id));
-    let playerInRoom = null;
     if (room) {
-        playerInRoom = room.players.find(p => p.id === socket.id);
-        if (player.isGameOver) {
-            room.players.forEach(p => {
-                if (p.id === socket.id) {
+        room.players.forEach(p => {
+            if (p.id === socket.id) {
+                if (player.isGameOver) {
                     p.isGameOver = true;
                 }
-            });
-        }
+                p.grid = getDynamicGrid(player);
+            }
+        });
         socket.emit('refreshGame', {
             ...player,
             grid: getDynamicGrid(player),

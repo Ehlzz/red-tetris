@@ -45,6 +45,7 @@ function checkLines(player, socket) {
         playerInRoom.score = player.score;
         playerInRoom.totalColumnsCleared = player.totalColumnsCleared;
         playerInRoom.level = player.level;
+        playerInRoom.grid = player.grid;
     }
 }
 
