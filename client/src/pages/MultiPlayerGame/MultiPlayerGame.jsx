@@ -129,7 +129,6 @@ const MultiPlayerGame = ({ socket }) => {
         <div className="game-container">
             <div className="multi-player-back">
                 <div className="leaderboard">
-                    <h2>Lobby: {roomId}</h2>
                     {room && (
                         <div className="players-list">
                             {room.players.map((player) => {
@@ -151,8 +150,23 @@ const MultiPlayerGame = ({ socket }) => {
                                         <div className="leaderboard-player-info">
                                             <p className="player-name">{player.name}</p>
                                             <p className="player-score">Score: {player.score}</p>
+                                            <p className="player-level">Level: {player.level}</p>
+                                            <p className="player-level">Line cleared: {player.totalColumnsCleared}</p>
                                             {player.isGameOver && <p className="game-over-indicator">💀 Game Over</p>}
                                         </div>
+                                        <div className="next-block">
+                                            {player.nextBlock && player.nextBlock.shape.map((row, rowIndex) => (
+                                                <div key={rowIndex} className="row">
+                                                    {row.map((cell, cellIndex) => (
+                                                        <div
+                                                            key={cellIndex}
+                                                            className={`cell ${cell ? 'filled' : ''}`}
+                                                        ></div>
+                                                    ))}
+                                                </div>
+                                            ))}
+                                        </div>
+
                                     </div>
                                 );
                             })}
