@@ -42,6 +42,8 @@ const MultiPlayerFront = ({ socket }) => {
             setErrorMessage("The lobby doesn't exist. Please check the Room ID.");
         } else if (errorType === 'nameLength') {
             setErrorMessage("Name must be between 1 and 12 characters long.");
+        } else if (errorType === 'noName') {
+            setErrorMessage("Please enter a name to join the game.");
         } else {
             setErrorMessage("");
         }
