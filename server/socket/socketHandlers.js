@@ -32,16 +32,51 @@ function handleSocketConnection(socket, io) {
     });
 
     socket.on('startMultiplayerGame', (roomId) => {
-        console.log('▶️ Jeu multijoueur démarré pour:', socket.id, 'dans le lobby:', roomId);
         const room = getRoomById(roomId);
-        
         room.players.forEach(player => {
             player.score = 0;
             player.totalColumnsCleared = 0;
             player.level = 1;
-            io.to(player.id).emit('startMultiplayerGame', {name: player.name, room: room});
+            io.to(player.id).emit('startMultiplayerGame', { name: player.name, room: room });
         });
+        
+        let countdown = 3;
+        const interval = setInterval(() => {
+            io.to(roomId).emit('countdown', countdown);
 
+            if (countdown === 0) {
+                clearInterval(interval);
+                // Lancer la partie pour tous les joueurs du lobby
+                room.players.forEach(playerData => {
+                    const player = initPlayer(playerData.id);
+                    io.to(playerData.id).emit('receiveGame', player);
+                    
+                    // Démarrer la boucle de jeu
+                    let loop;
+                    function startLoop() {
+                        clearInterval(loop);
+                        const p = getPlayer(playerData.id);
+                        if (!p) return;
+                        
+                        loop = setInterval(() => {
+                            const currentPlayer = getPlayer(playerData.id);
+                            if (!currentPlayer || currentPlayer.isGameOver) {
+                                clearInterval(loop);
+                                return;
+                            }
+                            const socketInstance = io.sockets.sockets.get(playerData.id);
+                            if (socketInstance) {
+                                moveBlock(socketInstance, currentPlayer, { x: 0, y: 1 });
+                            }
+                        }, p.speed);
+                    }
+                    
+                    startLoop();
+                    player.updateSpeed = () => startLoop();
+                });
+            }
+            countdown--;
+        }, 1000);
     });
 
     socket.on('moveBlock', (direction) => {
@@ -102,7 +137,21 @@ function handleSocketConnection(socket, io) {
             io.to(p.id).emit('refreshRoom', { room: room });
         });
     });
+    
+    socket.on('requestGame', () => {
+        const player = initPlayer(socket.id);
+        if (player) {
+            console.log('État du jeu envoyé à:', socket.id);
+        }
+    });
 
+    socket.on('resetGame', () => {
+		console.log('🔄 Reset du jeu pour:', socket.id);
+
+        initPlayer(socket.id);
+		console.log('✨ Jeu réinitialisé pour:', socket.id);
+	});
 }
+
 
 module.exports = { handleSocketConnection };

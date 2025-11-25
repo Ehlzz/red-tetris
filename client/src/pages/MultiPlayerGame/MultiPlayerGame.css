@@ -324,3 +324,13 @@
 .lines-cleared {
   border-left: none;
 }
+
+.countdown {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #F0F0F0;
+  font-size: 2rem;
+  z-index: 2;
+}

@@ -16,6 +16,7 @@ const MultiPlayerGame = ({ socket }) => {
     const [playerLevel, setPlayerLevel] = useState(1);
     const [totalLinesCleared, setTotalLinesCleared] = useState(0);
     const [room, setRoom] = useState(null);
+    const [countdown, setCountdown] = useState(null);
     
     const createEmptyGrid = () => {
         return Array(22).fill().map(() => Array(10).fill(''));
@@ -24,14 +25,35 @@ const MultiPlayerGame = ({ socket }) => {
     const [displayGrid, setDisplayGrid] = useState(createEmptyGrid());
 
     useEffect(() => {
+        socket.on('countdown', (count) => {
+            console.log('⏳ Décompte reçu:', count);
+            setCountdown(count);
+        });
+
+        socket.on('startMultiplayerGame', (data) => {
+            console.log('🎮 Partie multijoueur démarrée:', data);
+            setRoom(data.room);
+        });
+
+        return () => {
+            socket.off('countdown');
+            socket.off('startMultiplayerGame');
+    };
+}, [socket]);
+
+    useEffect(() => {
         socket.on('receiveGame', (game) => {
             console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
             console.log('🟩 Grille initialisée:', game.grid);
             console.log('🎮 Bloc courant:', game.currentBlock);
             console.log('⏭ Bloc suivant:', game.nextBlock);
+            setCountdown(null); // Enlever le countdown
             setGrid(game.grid);
             setCurrentBlock(game.currentBlock);
             setNextBlock(game.nextBlock);
+            setScore(game.score || 0);
+            setPlayerLevel(game.level || 1);
+            setTotalLinesCleared(game.totalColumnsCleared || 0);
             setGameStarted(true);
             setDisplayGrid(game.grid);
         })
@@ -75,10 +97,10 @@ const MultiPlayerGame = ({ socket }) => {
         const handleKeyDown = (event) => {
 			console.log(event.key);
             
-            if (!gameStarted && !gameOver && event.key === " ") {
-                socket.emit('startGame');
-                return;
-            }
+            // if (!gameStarted ) {
+            //     socket.emit('startGame');
+            //     return;
+            // }
             
             if (gameStarted && !gameOver) {
                 if (event.key === "ArrowDown") {
@@ -142,9 +164,14 @@ const MultiPlayerGame = ({ socket }) => {
                     <div className='info'>
                         {!gameStarted && !gameOver && (
                             <>
-                                <div className="start-message">
+                                {/* <div className="start-message">
                                     <p>Press <strong>SPACE</strong> to start the game !</p>
-                                </div>
+                                </div> */}
+                                {countdown !== null && (
+                                    <div className="countdown">
+                                        <span>{countdown > 0 ? countdown : ''}</span>
+                                    </div>
+                                )}
                             </>
                         )}
                         
