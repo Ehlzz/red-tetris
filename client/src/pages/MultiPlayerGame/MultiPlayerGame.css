@@ -37,9 +37,9 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  height: 90%;
+  height: 93%;
   left: 2vw;
-  gap: 2vw;
+  gap: 1vw;
 }
 
 .leaderboard-player-component {

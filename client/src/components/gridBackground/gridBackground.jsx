@@ -24,7 +24,7 @@ const GridBackground = () => {
 
     return (
         <div className='gridtest'>
-          {Array.from({ length: 100 * 100 }).map((_, i) => (
+          {Array.from({ length: 20 * 10 }).map((_, i) => (
             <div key={i} className="celltest" />
           ))}
         </div>

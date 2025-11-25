@@ -15,7 +15,7 @@ const LobbyGamePage = ({ socket }) => {
     
     useEffect(() => {
         if (!playerName && roomId) {
-            navigate("/multiplayerfront", {
+            navigate("/multiplayer", {
                 state: { errorType: 'noName', roomId: roomId }
             });
         }
@@ -28,13 +28,13 @@ const LobbyGamePage = ({ socket }) => {
         const handleLobbyCreated = (game) => {
             console.log('Lobby created recu')
             setRoom(game.room);
-            navigate(`/lobby-game-page/${game.room.roomId}/${playerName}`);
+            navigate(`/lobby/${game.room.roomId}/${playerName}`);
         };
         
         const handleLobbyJoined = (game) => {
             setRoom(game.room);
             if (!roomId) {
-                navigate(`/lobby-game-page/${game.roomId}/${playerName}`);
+                navigate(`/lobby/${game.roomId}/${playerName}`);
             }
         };
 
@@ -47,7 +47,7 @@ const LobbyGamePage = ({ socket }) => {
             if (error.name) {
                 setPlayerName("");
             }
-            navigate("/multiplayerfront", {
+            navigate("/multiplayer", {
                 state: { errorType: error.errorType, roomId: error.room }
             });
         };
@@ -128,7 +128,7 @@ const LobbyGamePage = ({ socket }) => {
             {room && (
             <div className='base-lobby'>
                 <div className='top-main-lobby'>
-                    <Link to="/multiplayerfront">
+                    <Link to="/multiplayer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" className="arrow-back"><path fill="#fd1e2d" d="M11 20h2V8h2V6h-2V4h-2v2H9v2h2zM7 10V8h2v2zm0 0v2H5v-2zm10 0V8h-2v2zm0 0v2h2v-2z"/></svg>
                     </Link>
                     <h1 className='index-title'>Game Lobby</h1>

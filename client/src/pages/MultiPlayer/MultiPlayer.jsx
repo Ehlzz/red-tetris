@@ -1,10 +1,10 @@
 import {useEffect, useState, useRef} from "react";
-import "./MultiPlayerFront.css";
+import "./MultiPlayer.css";
 import GridBackground from "../../components/gridBackground/gridBackground";
 import { Link } from "react-router-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 
-const MultiPlayerFront = ({ socket }) => {
+const MultiPlayer = ({ socket }) => {
     const location = useLocation();
     const { errorType, roomId } = location.state || {};
     const [nameInput, setNameInput] = useState("");
@@ -15,7 +15,7 @@ const MultiPlayerFront = ({ socket }) => {
 
     useEffect(() => {
         const handleLobbyCreated = (game) => {
-            navigate(`/lobby-game-page/${game.room.roomId}/${playerName}`);
+            navigate(`/lobby/${game.room.roomId}/${playerName}`);
         };
 
         socket.on("lobbyCreated", handleLobbyCreated);
@@ -54,7 +54,7 @@ const MultiPlayerFront = ({ socket }) => {
         const name = nameInput.trim();
         const roomId = roomInput.trim();
         if (roomId) {
-            navigate(`/lobby-game-page/${roomId}/${name}`);
+            navigate(`/lobby/${roomId}/${name}`);
         }
         setNameInput("");
         setRoomInput("");
@@ -71,14 +71,14 @@ const MultiPlayerFront = ({ socket }) => {
             <GridBackground />
                 <div className='base'>
                     <div className='top-main'>
-                    <Link to="/index">
+                    <Link to="/">
                         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" className="arrow-back"><path fill="#fd1e2d" d="M11 20h2V8h2V6h-2V4h-2v2H9v2h2zM7 10V8h2v2zm0 0v2H5v-2zm10 0V8h-2v2zm0 0v2h2v-2z"/></svg>
                     </Link>
                     <h1 className='index-title'>Multiplayer</h1>
                     </div>
                     <main>
                     <p className="subtitle">{errorMessage}</p>
-                    
+
                     <nav className="main-navigation">
                         <div className="content-multi">
                             <input
@@ -127,4 +127,4 @@ const MultiPlayerFront = ({ socket }) => {
     );
 };
 
-export default MultiPlayerFront;
+export default MultiPlayer;

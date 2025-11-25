@@ -1,10 +1,10 @@
 import {useEffect, useState} from 'react';
-import './SinglePlayerBack.css';
+import './SinglePlayer.css';
 import { io } from 'socket.io-client';
 import { Link } from 'react-router-dom';
 import GameOverSolo from '../../components/gameOverSolo/gameOverSolo';
 
-const SinglePlayerBack = ({ socket }) => {
+const SinglePlayer = ({ socket }) => {
     const [grid, setGrid] = useState(null);
     const [currentBlock, setCurrentBlock] = useState(null);
     const [nextBlock, setNextBlock] = useState(null);
@@ -171,4 +171,4 @@ const SinglePlayerBack = ({ socket }) => {
     );
 };
 
-export default SinglePlayerBack;
+export default SinglePlayer;

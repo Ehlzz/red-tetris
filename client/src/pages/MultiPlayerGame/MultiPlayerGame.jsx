@@ -192,9 +192,6 @@ const MultiPlayerGame = ({ socket }) => {
                     <div className='info'>
                         {!gameStarted && !gameOver && (
                             <>
-                                {/* <div className="start-message">
-                                    <p>Press <strong>SPACE</strong> to start the game !</p>
-                                </div> */}
                                 {countdown !== null && (
                                     <div className="countdown">
                                         <span>{countdown > 0 ? countdown : ''}</span>

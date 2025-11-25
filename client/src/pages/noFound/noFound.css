@@ -1,0 +1,47 @@
+.not-found-page {
+    text-align: center;
+    margin-top: 2rem;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: red;
+}
+
+.content-not-found {
+    font-size: 1.5rem;
+    color: #ff4d4d;
+    margin-bottom: 1.5rem;
+    z-index: 3;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-link {
+    text-decoration: none;
+    color: red;
+    font-size: 3rem;
+    z-index: 3;
+}
+
+.not-found-page h1 {
+    font-size: 12rem;
+    z-index: 3;
+    margin: 0;
+}
+
+.error-text {
+    font-size: 7rem;
+    z-index: 3;
+    margin: 0;
+}
+
+.back-home-txt {
+    font-size: 2rem;
+    z-index: 3;
+    margin-top: 1rem;
+}

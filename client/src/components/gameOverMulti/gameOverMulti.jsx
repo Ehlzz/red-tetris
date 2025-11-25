@@ -20,7 +20,7 @@ const GameOverMulti = ({ score, totalLinesCleared, playerLevel, roomName, player
                         </button>
                     </div>
                     <div className="game-over-btn">
-                        <Link to={`/lobby-game-page/${roomName}/${playerName}`} className="play-again">
+                        <Link to={`/lobby/${roomName}/${playerName}`} className="play-again">
                             Back to Lobby
                         </Link>
                     </div>
