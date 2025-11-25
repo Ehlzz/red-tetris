@@ -34,10 +34,7 @@ function handleSocketConnection(socket, io) {
     socket.on('startMultiplayerGame', (roomId) => {
         const room = getRoomById(roomId);
         room.players.forEach(player => {
-            player.score = 0;
-            player.totalColumnsCleared = 0;
-            player.level = 1;
-            io.to(player.id).emit('startMultiplayerGame', { name: player.name, room: room });
+            io.to(player.id).emit('startMultiplayerGame', {name: player.name, room: room});
         });
         
         let countdown = 3;
@@ -122,36 +119,6 @@ function handleSocketConnection(socket, io) {
             console.log('💀 Game Over pour:', socket.id);
         }
     });
-
-    socket.on('sendScore', (args) => {
-        const room = getRoomById(args.roomId);
-        if (!room) return;
-        
-        const player = room.players.find(p => p.id === socket.id);
-        if (!player) return;
-        
-        player.score = args.playerScore;
-        console.log(`🏆 Score reçu de ${socket.id} dans le lobby ${args.roomId}: ${player.score}`);
-
-        room.players.forEach(p => {
-            io.to(p.id).emit('refreshRoom', { room: room });
-        });
-    });
-    
-    socket.on('requestGame', () => {
-        const player = initPlayer(socket.id);
-        if (player) {
-            console.log('État du jeu envoyé à:', socket.id);
-        }
-    });
-
-    socket.on('resetGame', () => {
-		console.log('🔄 Reset du jeu pour:', socket.id);
-
-        initPlayer(socket.id);
-		console.log('✨ Jeu réinitialisé pour:', socket.id);
-	});
 }
-
 
 module.exports = { handleSocketConnection };

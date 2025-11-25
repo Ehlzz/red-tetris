@@ -132,17 +132,30 @@ const MultiPlayerGame = ({ socket }) => {
                     <h2>Lobby: {roomId}</h2>
                     {room && (
                         <div className="players-list">
-                            <h3>Players:</h3>
-                            <ul>
-                                {room.players.map((player) => (
-                                    <li key={player.id} style={{ color: player.isGameOver ? 'red' : 'white' }}>
-                                        Name : {player.name}<br></br>
-                                        Score : {player.score}<br></br>
-                                        Columns Cleared : {player.totalColumnsCleared}<br></br>
-                                        Level : {player.level}
-                                    </li>
-                                ))}
-                            </ul>
+                            {room.players.map((player) => {
+                                if (player.id === socket.id) return null;
+                                return (
+                                    <div className="leaderboard-player-component" key={player.id}>
+                                        <div className="player-preview-grid">
+                                            {player.grid && player.grid.slice(2).map((row, rowIndex) => (
+                                                <div key={rowIndex} className="row">
+                                                    {row.map((cell, cellIndex) => (
+                                                        <div
+                                                            key={cellIndex}
+                                                            className={`player-preview-cell ${cell}`}
+                                                        ></div>
+                                                    ))}
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="leaderboard-player-info">
+                                            <p className="player-name">{player.name}</p>
+                                            <p className="player-score">Score: {player.score}</p>
+                                            {player.isGameOver && <p className="game-over-indicator">💀 Game Over</p>}
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
                 </div>

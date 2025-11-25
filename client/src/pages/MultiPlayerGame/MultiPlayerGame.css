@@ -17,13 +17,39 @@
   border-radius: 25px;
 }
 
-.grid {
+.player-preview-grid {
   display: flex;
   flex-direction: column;
   background-color: #353541;
-  padding: 10px;
-  border: 3px solid #fd1e2d;
-  margin-inline: 20px;
+  border: 1px solid #fd1e2d;
+  margin-inline: 6.6px;
+}
+
+.player-preview-cell {
+  width: 10px;
+  height: 10px;
+  border: 0.6px solid #242834;
+}
+
+.players-list {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 1vw;
+  left: 0.2vw;
+}
+
+.leaderboard-player-component {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.leaderboard-player-info {
+  display: flex;
+  flex-direction: column;
+  color: white;
 }
 
 .row {
@@ -37,38 +63,46 @@
   border: 2px solid #242834;
 }
 
-.cell.cyan {
+.cell.cyan,
+.player-preview-cell.cyan {
     background-color: #E02A43;
 }
 
-.cell.blue {
+.cell.blue,
+.player-preview-cell.blue {
     background-color: #B62336;
 }
 
-.cell.orange {
+.cell.orange,
+.player-preview-cell.orange {
     background-color: #941C2C;
 
 }
 
-.cell.yellow {
+.cell.yellow,
+.player-preview-cell.yellow {
     background-color: #ec1e28;
 
 }
 
-.cell.green {
+.cell.green,
+.player-preview-cell.green {
     background-color: #a72e3e;
 
 }
 
-.cell.purple {
+.cell.purple,
+.player-preview-cell.purple {
     background-color: #990c1f;
 }
 
-.cell.red {
+.cell.red,
+.player-preview-cell.red {
     background-color: #FF3E3E;
 }
 
-.cell.hover {
+.cell.hover,
+.player-preview-cell.hover {
     background: rgba(255, 255, 255, 0.3);
 }
 

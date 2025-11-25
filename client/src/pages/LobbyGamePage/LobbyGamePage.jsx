@@ -9,13 +9,17 @@ const LobbyGamePage = ({ socket }) => {
     const navigate = useNavigate();
     const [playerName, setPlayerName] = useState(urlPlayerName || "");
     const [room, setRoom] = useState(null);
-    const [lobbyCode, setLobbyCode] = useState("");
-    const [isJoining, setIsJoining] = useState(false);
     const [allPlayersReady, setAllPlayersReady] = useState(false);
-    const [nameError, setNameError] = useState(false);
     const [isReady, setIsReady] = useState(false);
     const joinSent = useRef(false);
     
+    useEffect(() => {
+        if (!playerName && roomId) {
+            navigate("/multiplayerfront", {
+                state: { errorType: 'noName', roomId: roomId }
+            });
+        }
+    }, []);
 
     const checkCanStart = () => {
         return socket.id == room.chief && allPlayersReady && room.players.length >= 2;
@@ -23,13 +27,11 @@ const LobbyGamePage = ({ socket }) => {
     useEffect(() => {
         const handleLobbyCreated = (game) => {
             console.log('Lobby created recu')
-            setLobbyCode(game.room.roomId);
             setRoom(game.room);
             navigate(`/lobby-game-page/${game.room.roomId}/${playerName}`);
         };
         
         const handleLobbyJoined = (game) => {
-            setLobbyCode(game.roomId);
             setRoom(game.room);
             if (!roomId) {
                 navigate(`/lobby-game-page/${game.roomId}/${playerName}`);
@@ -42,11 +44,8 @@ const LobbyGamePage = ({ socket }) => {
         
         const handleError = (error) => {
             setRoom(null);
-            setLobbyCode("");
             if (error.name) {
-                setNameError(true);
                 setPlayerName("");
-                setIsJoining(true);
             }
             navigate("/multiplayerfront", {
                 state: { errorType: error.errorType, roomId: error.room }
@@ -94,12 +93,6 @@ const LobbyGamePage = ({ socket }) => {
     const toggleReady = (playerId) => {
         socket.emit("toggleReady", {roomId: roomId});
     };
-
-    useEffect(() => {
-        if (roomId && !urlPlayerName) {
-            setIsJoining(true);
-        }
-    }, [roomId, urlPlayerName]);
 
     useEffect(() => {
         if (roomId && urlPlayerName && !joinSent.current) {

@@ -3,32 +3,33 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 const { handleSocketConnection } = require('./socket/socketHandlers');
-const lobbyRoutes = require('./routes/lobbyRoutes');
 
 const app = express();
 const server = http.createServer(app);
+
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: "*", // autoriser depuis n'importe où (pour tests réseau local)
         methods: ["GET", "POST"]
     }
 });
 
 const PORT = 5000;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Routes
 app.get('/', (req, res) => {
     res.json({ message: 'Bonjour depuis le serveur Node.js 🚀' });
 });
 
+// Socket.io
 io.on('connection', (socket) => {
     handleSocketConnection(socket, io);
 });
 
-server.listen(PORT, () => {
-    console.log(`✅ Serveur démarré sur http://localhost:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Serveur lancé et accessible : http://0.0.0.0:${PORT}`);
 });
-
-app.use('/lobby', lobbyRoutes);

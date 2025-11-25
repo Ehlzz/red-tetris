@@ -28,10 +28,6 @@ function checkLines(player, socket) {
     for (let i = 0; i < linesCleared; i++) {
         newGrid.unshift(Array(10).fill(null));
     }
-    const room = getRoomById(getPlayerRoom(socket.id));
-    let playerInRoom = null;
-    if (room) 
-        playerInRoom = room.players.find(p => p.id === socket.id);
     player.grid = newGrid;
     player.score += linesCleared * 100;
     player.totalColumnsCleared += linesCleared;
@@ -40,11 +36,6 @@ function checkLines(player, socket) {
         player.speed = Math.max(100, Math.floor(player.speed * 0.77));
         player.level += 1;
         player.updateSpeed();
-    }
-    if (playerInRoom) {
-        playerInRoom.score = player.score;
-        playerInRoom.totalColumnsCleared = player.totalColumnsCleared;
-        playerInRoom.level = player.level;
     }
 }
 
