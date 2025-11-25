@@ -3,7 +3,6 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 const { handleSocketConnection } = require('./socket/socketHandlers');
-const lobbyRoutes = require('./routes/lobbyRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -25,14 +24,12 @@ app.use(express.json());
 app.get('/', (req, res) => {
     res.json({ message: 'Bonjour depuis le serveur Node.js 🚀' });
 });
-app.use('/lobby', lobbyRoutes);
 
 // Socket.io
 io.on('connection', (socket) => {
     handleSocketConnection(socket, io);
 });
 
-// IMPORTANT: un seul listen, et en 0.0.0.0
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Serveur lancé et accessible : http://0.0.0.0:${PORT}`);
 });

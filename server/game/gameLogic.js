@@ -14,6 +14,10 @@ function refreshGame(socket, player) {
                     p.isGameOver = true;
                 }
                 p.grid = getDynamicGrid(player);
+                p.nextBlock = player.nextBlock;
+                p.score = player.score;
+                p.level = player.level;
+                p.totalColumnsCleared = player.totalColumnsCleared;
             }
         });
         socket.emit('refreshGame', {

@@ -19,7 +19,6 @@ const LobbyGamePage = ({ socket }) => {
                 state: { errorType: 'noName', roomId: roomId }
             });
         }
-
     }, []);
 
     const checkCanStart = () => {

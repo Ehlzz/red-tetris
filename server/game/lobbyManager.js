@@ -3,7 +3,6 @@ const roomTimers = {};
 const playersRoom = {};
 
 function createLobby(socket) {
-    console.log('CREATE LOBBY CALLED')
     const roomId = `room-${Math.random().toString(36).substr(2, 9)}`;
     rooms[roomId] = {
         players: [],
@@ -19,8 +18,6 @@ function createLobby(socket) {
 
 
 function joinLobby(socket, io, args) {
-    console.log('joinLobby called');
-    console.log(args, socket.id);
     const room = rooms[args.roomId];
     
     if (room) {
@@ -41,7 +38,6 @@ function joinLobby(socket, io, args) {
         socket.join(args.roomId);
         playersRoom[socket.id] = args.roomId;
         room.players.push({name: args.playerName, id: socket.id, isReady: false});
-        console.log('added player to room', room.players);
         clearRoomTimer(args.roomId);
         if (room.players.length === 1) {
             room.chief = socket.id;

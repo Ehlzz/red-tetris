@@ -110,29 +110,30 @@ const MultiPlayerGame = ({ socket }) => {
                     <h2>Lobby: {roomId}</h2>
                     {room && (
                         <div className="players-list">
-                            {room.players.map((player) => (
-                                <div className="leaderboard-player-component" key={player.id}>
-                                    <div className="player-preview-grid">
-                                        {player.grid && player.id != socket.id && player.grid.slice(2).map((row, rowIndex) => (
-                                            <div key={rowIndex} className="row">
-                                                {row.map((cell, cellIndex) => (
-                                                    <div
-                                                        key={cellIndex}
-                                                        className={`player-preview-cell ${cell}`}
-                                                    ></div>
-                                                ))}
-                                            </div>
-                                        ))}
-                                    </div>
-                                    {player.id !== socket.id && (
+                            {room.players.map((player) => {
+                                if (player.id === socket.id) return null;
+                                return (
+                                    <div className="leaderboard-player-component" key={player.id}>
+                                        <div className="player-preview-grid">
+                                            {player.grid && player.grid.slice(2).map((row, rowIndex) => (
+                                                <div key={rowIndex} className="row">
+                                                    {row.map((cell, cellIndex) => (
+                                                        <div
+                                                            key={cellIndex}
+                                                            className={`player-preview-cell ${cell}`}
+                                                        ></div>
+                                                    ))}
+                                                </div>
+                                            ))}
+                                        </div>
                                         <div className="leaderboard-player-info">
                                             <p className="player-name">{player.name}</p>
                                             <p className="player-score">Score: {player.score}</p>
                                             {player.isGameOver && <p className="game-over-indicator">💀 Game Over</p>}
                                         </div>
-                                    )}
-                                </div>
-                            ))}
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
                 </div>
