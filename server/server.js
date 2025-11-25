@@ -9,7 +9,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "*", // autoriser depuis n'importe où (pour tests réseau local)
+        origin: "http://localhost:5173",
         methods: ["GET", "POST"]
     }
 });
@@ -30,6 +30,6 @@ io.on('connection', (socket) => {
     handleSocketConnection(socket, io);
 });
 
-server.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Serveur lancé et accessible : http://0.0.0.0:${PORT}`);
+server.listen(PORT, 'localhost', () => {
+    console.log(`✅ Serveur lancé et accessible : http://localhost:${PORT}`);
 });

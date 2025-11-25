@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';
 import { Link } from 'react-router-dom';
 import { useParams, useNavigate } from "react-router-dom";
 import GameOverSolo from '../../components/gameOverSolo/gameOverSolo';
+import GameOverMulti from '../../components/gameOverMulti/gameOverMulti';
 
 const MultiPlayerGame = ({ socket }) => {
     const { roomId, playerName: urlPlayerName } = useParams();
@@ -47,7 +48,7 @@ const MultiPlayerGame = ({ socket }) => {
             console.log('🟩 Grille initialisée:', game.grid);
             console.log('🎮 Bloc courant:', game.currentBlock);
             console.log('⏭ Bloc suivant:', game.nextBlock);
-            setCountdown(null); // Enlever le countdown
+            setCountdown(null);
             setGrid(game.grid);
             setCurrentBlock(game.currentBlock);
             setNextBlock(game.nextBlock);
@@ -135,6 +136,7 @@ const MultiPlayerGame = ({ socket }) => {
                                 if (player.id === socket.id) return null;
                                 return (
                                     <div className="leaderboard-player-component" key={player.id}>
+                                        {player.isGameOver && <div className="overlay-game-over">💀</div>}
                                         <div className="player-preview-grid">
                                             {player.grid && player.grid.slice(2).map((row, rowIndex) => (
                                                 <div key={rowIndex} className="row">
@@ -152,19 +154,18 @@ const MultiPlayerGame = ({ socket }) => {
                                             <p className="player-score">Score: {player.score}</p>
                                             <p className="player-level">Level: {player.level}</p>
                                             <p className="player-level">Line cleared: {player.totalColumnsCleared}</p>
-                                            {player.isGameOver && <p className="game-over-indicator">💀 Game Over</p>}
-                                        </div>
-                                        <div className="next-block">
-                                            {player.nextBlock && player.nextBlock.shape.map((row, rowIndex) => (
-                                                <div key={rowIndex} className="row">
-                                                    {row.map((cell, cellIndex) => (
-                                                        <div
-                                                            key={cellIndex}
-                                                            className={`cell ${cell ? 'filled' : ''}`}
-                                                        ></div>
-                                                    ))}
-                                                </div>
-                                            ))}
+                                            <div className="next-block-other">
+                                                {player.nextBlock && player.nextBlock.shape.map((row, rowIndex) => (
+                                                    <div key={rowIndex} className="row">
+                                                        {row.map((cell, cellIndex) => (
+                                                            <div
+                                                                key={cellIndex}
+                                                                className={`cell ${cell ? 'filled' : ''}`}
+                                                            ></div>
+                                                        ))}
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
 
                                     </div>
@@ -229,21 +230,12 @@ const MultiPlayerGame = ({ socket }) => {
 
                         {gameOver && (
                             <>
-                                <GameOverSolo 
+                                <GameOverMulti 
                                     score={score}
                                     totalLinesCleared={totalLinesCleared}
                                     playerLevel={playerLevel}
-                                    onRestart={() => {
-                                        setGameOver(false);
-                                        setScore(0);
-                                        setPlayerLevel(1);
-                                        setTotalLinesCleared(0);
-                                        setGameStarted(false);
-                                        setCurrentBlock(null);
-                                        setNextBlock(null);
-                                        setDisplayGrid(createEmptyGrid());
-                                        socket.emit('resetGame');
-                                    }}
+                                    roomName={roomId}
+                                    playerName={room.players.find(p => p.id === socket.id).name}
                                 />
                             </>
                         )}
