@@ -3,7 +3,6 @@ import './MultiPlayerGame.css';
 import { io } from 'socket.io-client';
 import { Link } from 'react-router-dom';
 import { useParams, useNavigate } from "react-router-dom";
-import GameOverSolo from '../../components/gameOverSolo/gameOverSolo';
 import GameOverMulti from '../../components/gameOverMulti/gameOverMulti';
 
 const MultiPlayerGame = ({ socket }) => {
@@ -79,11 +78,12 @@ const MultiPlayerGame = ({ socket }) => {
         });
 
         socket.on('gameOver', ({ score }) => {
-        console.log('💀 Game Over! Score final:', score);
-        setGameOver(true);
-        setScore(score);
-        setGameStarted(false);
-    });
+            socket.emit('gameOver', { roomId: roomId });
+            console.log('💀 Game Over! Score final:', score);
+            setGameOver(true);
+            setScore(score);
+            setGameStarted(false);
+        });
 
         return () => {
             socket.off('receiveGame');
@@ -97,11 +97,6 @@ const MultiPlayerGame = ({ socket }) => {
     useEffect(() => {
         const handleKeyDown = (event) => {
 			console.log(event.key);
-            
-            // if (!gameStarted ) {
-            //     socket.emit('startGame');
-            //     return;
-            // }
             
             if (gameStarted && !gameOver) {
                 if (event.key === "ArrowDown") {

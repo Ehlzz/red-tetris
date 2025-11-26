@@ -112,11 +112,22 @@ function handleSocketConnection(socket, io) {
         toggleReadyLobby(socket, io, args.roomId);
     });
 
-    socket.on('gameOver', () => {
+    socket.on('gameOver', (data) => {
         const player = getPlayer(socket.id);
         if (player) {
             player.isGameOver = true;
             console.log('💀 Game Over pour:', socket.id);
+            
+            if (data && data.roomId) {
+                const room = getRoomById(data.roomId);
+                if (room) {
+                    room.players.forEach(p => {
+                        if (p.id === socket.id) {
+                            p.isGameOver = true;
+                        }
+                    });
+                }
+            }
         }
     });
 }
