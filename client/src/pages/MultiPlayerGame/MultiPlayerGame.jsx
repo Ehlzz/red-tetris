@@ -80,9 +80,14 @@ const MultiPlayerGame = ({ socket }) => {
         socket.on('gameOver', ({ score }) => {
             socket.emit('gameOver', { roomId: roomId });
             console.log('💀 Game Over! Score final:', score);
-            setGameOver(true);
             setScore(score);
             setGameStarted(false);
+        });
+        
+        socket.on('multiplayerGameEnd', (data) => {
+            console.log('🏆 Fin de la partie multijoueur:', data);
+            setGameOver(true);
+            setRoom(data.room);
         });
 
         return () => {
@@ -91,6 +96,7 @@ const MultiPlayerGame = ({ socket }) => {
             socket.off('sendTetromino');
             socket.off('refreshGame');
             socket.off('gameOver');
+            socket.off('multiplayerGameEnd');
         };
     }, []);
 
@@ -220,7 +226,7 @@ const MultiPlayerGame = ({ socket }) => {
                             </div>
                         </div>
 
-                        {gameOver && (
+                        { gameOver && (
                             <>
                                 <GameOverMulti 
                                     score={score}

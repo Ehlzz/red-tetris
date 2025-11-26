@@ -125,6 +125,22 @@ function handleSocketConnection(socket, io) {
                         if (p.id === socket.id) {
                             p.isGameOver = true;
                         }
+                    const playersAlive = room.players.filter(p => !p.isGameOver);
+                    console.log(`👥👥👥 Joueurs encore vivants: ${playersAlive.length}`);
+                    
+                    if (playersAlive.length <= 1) {
+                        console.log('🏆 Fin de la partie multijoueur!');
+                        room.players.forEach(p => {
+                            io.to(p.id).emit('multiplayerGameEnd', {
+                                winner: playersAlive.length === 1 ? playersAlive[0] : null,
+                                room: room
+                            });
+                        });
+                    } else {
+                        room.players.forEach(p => {
+                            io.to(p.id).emit('refreshRoom', { room: room });
+                        });
+                    }
                     });
                 }
             }
