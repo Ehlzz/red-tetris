@@ -1,10 +1,11 @@
 import './LobbyGamePage.css';
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import GridBackground from '../../components/gridBackground/gridBackground';
 
 const LobbyGamePage = ({ socket }) => {
+    const location = useLocation();
     const { roomId, playerName: urlPlayerName } = useParams();
     const navigate = useNavigate();
     const [playerName, setPlayerName] = useState(urlPlayerName || "");
@@ -12,12 +13,21 @@ const LobbyGamePage = ({ socket }) => {
     const [allPlayersReady, setAllPlayersReady] = useState(false);
     const [isReady, setIsReady] = useState(false);
     const joinSent = useRef(false);
+    const [copiedCode, setCopiedCode] = useState(false);
+    const [copiedLink, setCopiedLink] = useState(false);
+
     
     useEffect(() => {
         if (!playerName && roomId) {
             navigate("/multiplayer", {
                 state: { errorType: 'noName', roomId: roomId }
             });
+        }
+    }, []);
+
+    useEffect(() => {
+        if (location.state && location.state.room) {
+            setRoom(location.state.room);
         }
     }, []);
 
@@ -111,9 +121,15 @@ const LobbyGamePage = ({ socket }) => {
 
 
     const copyRoomCode = () => {
-        navigator.clipboard.writeText(roomId).then(() => {
-            setTimeout(() => setCopySuccess(false), 2000);
-        });
+        navigator.clipboard.writeText(roomId).then(() => {});
+        setCopiedCode(true);
+        setTimeout(() => setCopiedCode(false), 2000);
+    };
+
+    const copyLink = () => {
+        navigator.clipboard.writeText('' + window.location.host + `/lobby/${roomId}/`).then(() => {});
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2000);
     };
 
     const handleStartGame = () => {
@@ -150,7 +166,8 @@ const LobbyGamePage = ({ socket }) => {
                         <div className="room-code">
                             <span>Room Code: </span>
                             <span className="code" onClick={copyRoomCode}>{roomId}</span>
-                            <button className="copy-button" onClick={copyRoomCode}>Copy</button>
+                            <button className="copy-button" onClick={copyRoomCode}>Code{copiedCode && <span className="copied-feedback">✓</span>}</button>
+                            <button className="copy-button" onClick={copyLink}>Link{copiedLink && <span className="copied-feedback">✓</span>}</button>
                         </div>
                     </div>
                     <div className="players-container">

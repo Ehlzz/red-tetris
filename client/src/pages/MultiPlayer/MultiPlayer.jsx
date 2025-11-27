@@ -43,7 +43,9 @@ const MultiPlayer = ({ socket }) => {
         } else if (errorType === 'nameLength') {
             setErrorMessage("Name must be between 1 and 12 characters long.");
         } else if (errorType === 'noName') {
-            setErrorMessage("Please enter a name to join the game.");
+            setErrorMessage("Please enter a name to join the game. (1-12 characters)");
+        } else if (errorType === 'lobbyInGame') {
+            setErrorMessage("The lobby is currently in a game.");
         } else {
             setErrorMessage("");
         }
@@ -61,7 +63,10 @@ const MultiPlayer = ({ socket }) => {
     };
     const handleCreateGame = () => {
         const playerName = nameInput.trim();
-        if (!playerName || playerName.length < 1) return;
+        if (!playerName || playerName.length < 1) {
+            setErrorMessage("Please enter a name to create the game. (1-12 characters)");
+            return;
+        }
         setPlayerName(playerName);
         socket.emit("createLobby", {});
     }
@@ -107,11 +112,38 @@ const MultiPlayer = ({ socket }) => {
                                 placeholder="Enter Room ID"
                                 value={roomInput}
                                 onChange={(e) => {
-                                    if (roomInput === 'room-' && e.target.value.length < 6) {
-                                        setRoomInput('room-');
+                                    if (!e.target.value.startsWith("room-")) {
+                                        setRoomInput("room-");
                                         return;
                                     }
-                                    setRoomInput(e.target.value)
+                                    setRoomInput(e.target.value);
+                                }}
+                                onPaste={(e) => {
+                                    const pasteData = e.clipboardData.getData("text");
+                                    if (pasteData.length > 9 && !pasteData.startsWith("room-")) {
+                                        return;
+                                    }
+                                    if (pasteData.startsWith("room-")) {
+                                        e.preventDefault();
+                                        setRoomInput("room-" + pasteData.slice(5));
+                                    } else {
+                                        e.preventDefault();
+                                        setRoomInput("room-" + pasteData);
+                                    }
+                                }}
+                                onKeyDown={(e) => {
+                                    const prefix = "room-";
+                                    const pos = e.target.selectionStart;
+
+                                    if (e.key === "Backspace" && pos <= prefix.length) {
+                                        setRoomInput("room-");
+                                        e.preventDefault();
+                                    }
+
+                                    if (e.key === "Delete" && pos < prefix.length) {
+                                        setRoomInput("room-");
+                                        e.preventDefault();
+                                    }
                                 }}
                                 maxLength={14}
                                 onKeyPress={(e) => {
@@ -122,6 +154,7 @@ const MultiPlayer = ({ socket }) => {
                                     }
                                 }}
                             />
+
                             <button className="nav-button-multi" onClick={handleJoinGame}>
                                 Join Game
                             </button>

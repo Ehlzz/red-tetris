@@ -7,8 +7,6 @@ import GameOverMulti from '../../components/gameOverMulti/gameOverMulti';
 
 const MultiPlayerGame = ({ socket }) => {
     const { roomId, playerName: urlPlayerName } = useParams();
-    const [grid, setGrid] = useState(null);
-    const [currentBlock, setCurrentBlock] = useState(null);
     const [nextBlock, setNextBlock] = useState(null);
     const [score, setScore] = useState(0);
     const [gameStarted, setGameStarted] = useState(false);
@@ -23,6 +21,12 @@ const MultiPlayerGame = ({ socket }) => {
     };
     
     const [displayGrid, setDisplayGrid] = useState(createEmptyGrid());
+
+    // useEffect(() => {
+    //     setTimeout(() => {
+    //         if (!gameStarted && !gameOver) {
+
+    // }, []);
 
     useEffect(() => {
         socket.on('countdown', (count) => {
@@ -45,11 +49,8 @@ const MultiPlayerGame = ({ socket }) => {
         socket.on('receiveGame', (game) => {
             console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
             console.log('🟩 Grille initialisée:', game.grid);
-            console.log('🎮 Bloc courant:', game.currentBlock);
             console.log('⏭ Bloc suivant:', game.nextBlock);
             setCountdown(null);
-            setGrid(game.grid);
-            setCurrentBlock(game.currentBlock);
             setNextBlock(game.nextBlock);
             setScore(game.score || 0);
             setPlayerLevel(game.level || 1);
@@ -64,8 +65,6 @@ const MultiPlayerGame = ({ socket }) => {
                 console.log('🔄 Room info:', game.room);
                 setRoom(game.room);
             }
-            setGrid(game.grid);
-            setCurrentBlock(game.currentBlock);
             setNextBlock(game.nextBlock);
             setScore(game.score);
             setDisplayGrid(game.grid);
@@ -233,6 +232,7 @@ const MultiPlayerGame = ({ socket }) => {
                                     totalLinesCleared={totalLinesCleared}
                                     playerLevel={playerLevel}
                                     roomName={roomId}
+                                    room={room}
                                     playerName={room.players.find(p => p.id === socket.id).name}
                                 />
                             </>

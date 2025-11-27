@@ -21,6 +21,10 @@ function joinLobby(socket, io, args) {
     const room = rooms[args.roomId];
     
     if (room) {
+        if (room.gameStarted) {
+            socket.emit('error', { errorType: 'lobbyInGame'});
+            return;
+        }
         if (room.players.length >= 4) {
             socket.emit('error', { errorType: 'lobbyFull'});
             return;
@@ -29,9 +33,13 @@ function joinLobby(socket, io, args) {
             socket.emit('error', { errorType: 'nameLength', room: args.roomId });
             return;
         }
-
-        const playerIndex = room.players.findIndex(p => p.name === args.playerName);
-        if (playerIndex !== -1) {
+        const checkPlayerIndex = room.players.findIndex(p => p.name === args.playerName && p.id === socket.id);
+        if (checkPlayerIndex !== -1) {
+            return;
+        };
+        
+        const checkNameIndex = room.players.findIndex(p => p.name === args.playerName);
+        if (checkNameIndex !== -1) {
             socket.emit('error', { errorType: 'name', room: args.roomId });
             return;
         }

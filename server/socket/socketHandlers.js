@@ -36,7 +36,7 @@ function handleSocketConnection(socket, io) {
         room.players.forEach(player => {
             io.to(player.id).emit('startMultiplayerGame', {name: player.name, room: room});
         });
-        
+        room.gameStarted = true;
         let countdown = 3;
         const interval = setInterval(() => {
             io.to(roomId).emit('countdown', countdown);
@@ -130,6 +130,7 @@ function handleSocketConnection(socket, io) {
                     
                     if (playersAlive.length <= 1) {
                         console.log('🏆 Fin de la partie multijoueur!');
+                        room.gameStarted = false;
                         room.players.forEach(p => {
                             io.to(p.id).emit('multiplayerGameEnd', {
                                 winner: playersAlive.length === 1 ? playersAlive[0] : null,

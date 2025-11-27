@@ -1,7 +1,8 @@
 import './gameOverMulti.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-const GameOverMulti = ({ score, totalLinesCleared, playerLevel, roomName, playerName }) => {
+const GameOverMulti = ({ score, totalLinesCleared, playerLevel, roomName, playerName, room }) => {
+    const navigate = useNavigate();
     return (
         <>
             <div className="background-overlay"></div>
@@ -15,9 +16,11 @@ const GameOverMulti = ({ score, totalLinesCleared, playerLevel, roomName, player
                         </div>
                     </div>
                     <div className="game-over-btn">
-                        <Link to={`/lobby/${roomName}/${playerName}`} className="play-again">
+                        <div className="play-again" onClick={() => {{
+                            navigate(`/lobby/${roomName}/${playerName}`, {state: {room: room}});
+                        }}}>
                             Back to Lobby
-                        </Link>
+                        </div>
                     </div>
                     
                 </div>
