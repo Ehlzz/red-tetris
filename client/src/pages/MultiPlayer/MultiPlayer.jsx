@@ -26,7 +26,7 @@ const MultiPlayer = ({ socket }) => {
     }, [playerName, navigate, socket]);
 
     useEffect(() => {
-        setRoomInput(roomId || "");
+        setRoomInput(roomId || "room-");
     }, [roomId]);
 
     useEffect(() => {
@@ -106,7 +106,13 @@ const MultiPlayer = ({ socket }) => {
                                 className="nav-input"
                                 placeholder="Enter Room ID"
                                 value={roomInput}
-                                onChange={(e) => setRoomInput(e.target.value)}
+                                onChange={(e) => {
+                                    if (roomInput === 'room-' && e.target.value.length < 6) {
+                                        setRoomInput('room-');
+                                        return;
+                                    }
+                                    setRoomInput(e.target.value)
+                                }}
                                 maxLength={14}
                                 onKeyPress={(e) => {
                                     if (e.key === 'Enter' && roomInput.trim() === '') {
