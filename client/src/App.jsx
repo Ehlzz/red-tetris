@@ -20,7 +20,6 @@ function App() {
         <Route path="/" element={<IndexPage />} />
         <Route path="/singleplayer" element={<SinglePlayer socket={socket} />} />
         <Route path="/multiplayer" element={<MultiPlayer socket={socket} />} />
-        <Route path="/lobby" element={<LobbyGamePage socket={socket}/>} />
         <Route path="/lobby/:roomId/:playerName" element={<LobbyGamePage socket={socket} />} />
         <Route path="/lobby/:roomId" element={<LobbyGamePage socket={socket} />} />
         <Route path="/game/:roomId/:playerName" element={<MultiPlayerGame socket={socket} />} />
