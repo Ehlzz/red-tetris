@@ -392,3 +392,9 @@
   font-size: 2rem;
   z-index: 2;
 }
+
+@media (max-width: 1024px) {
+  .leaderboard {
+    display: none;
+  }
+}
