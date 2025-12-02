@@ -324,3 +324,30 @@
 .lines-cleared {
   border-left: none;
 }
+
+@media (max-width: 1024px) {
+  .cell {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .next-block .cell {
+    width: 15px;
+    height: 15px;
+  }
+
+  .next-block{
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px !important;
+  }
+
+  .scd-info {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

@@ -61,3 +61,20 @@
   font-family: 'OffbitTrial-Regular', sans-serif;
   font-weight: 700;
 }
+
+@media (max-width: 768px) {
+  .nav-input{
+    width: 250px;
+    font-size: 1.2rem;
+  }
+
+  .arrow-back{
+    width: 48px;
+    height: 48px;
+  }
+
+  .nav-button-multi{
+    font-size: 2.5rem;
+    padding: 15px 30px;
+  }
+}

@@ -259,6 +259,140 @@
   80% { opacity: 1; transform: translateY(-5px); }
   100% { opacity: 0; transform: translateY(-10px); }
 }
-@media (max-width: 700px) {
-  
+@media (max-width: 768px) {
+  .lobby-game-page {
+    height: 100vh;
+    overflow-y: auto;
+    padding: 20px 10px;
+    box-sizing: border-box;
+  }
+
+  .base-lobby {
+    min-width: unset;
+    max-width: 500px;
+    padding: 15px;
+    margin: 0 auto;
+  }
+
+  .lobby-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .room-code {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .room-code .code {
+    margin-left: 0;
+    padding: 8px 12px;
+    font-size: 1.1rem;
+  }
+
+  .copy-button {
+    margin-left: 0;
+    padding: 8px 15px;
+    width: 100%;
+    max-width: 150px;
+  }
+
+  .players-title {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+  }
+
+  .player-item {
+    padding: 12px;
+  }
+
+  .player-info {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .player-name-container {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .player-name {
+    font-size: 1.2rem;
+  }
+
+  .ready-status {
+    font-size: 1rem;
+    align-self: center;
+  }
+
+  .lobby-actions {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px 0;
+  }
+
+  .ready-button, .start-game-button {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1.4rem;
+  }
+
+  .copied-feedback {
+    font-size: 12px;
+    top: -25px;
+    right: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .lobby-game-page {
+    padding: 10px 5px;
+  }
+
+  .base-lobby {
+    padding: 10px;
+  }
+
+  .lobby-subtitle {
+    font-size: 1.3rem;
+  }
+
+  .room-code {
+    font-size: 0.9rem;
+  }
+
+  .room-code .code {
+    padding: 6px 10px;
+    font-size: 1rem;
+  }
+
+  .copy-button {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+
+  .players-title {
+    font-size: 1.2rem;
+  }
+
+  .player-name {
+    font-size: 1.1rem;
+  }
+
+  .ready-status {
+    font-size: 0.9rem;
+  }
+
+  .ready-button, .start-game-button {
+    padding: 10px 15px;
+    font-size: 1.2rem;
+  }
+
+  .host-badge {
+    font-size: 0.7rem;
+    padding: 1px 6px;
+  }
 }

@@ -139,7 +139,7 @@ const LobbyGamePage = ({ socket }) => {
     };
 
     return (
-        <div className="lobby-game-page">
+        <div className="index-page">
             <GridBackground />
             {room && (
             <div className='base-lobby'>

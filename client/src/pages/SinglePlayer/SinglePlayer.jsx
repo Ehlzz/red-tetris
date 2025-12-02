@@ -108,16 +108,15 @@ const SinglePlayer = ({ socket }) => {
                             </div>
                         ))}
                     </div>
-                    
-
+                
+                    {!gameStarted && !gameOver && (
+                        <>
+                            <div className="start-message">
+                                <p>Press <strong>SPACE</strong> to start the game !</p>
+                            </div>
+                        </>
+                    )}
                     <div className='info'>
-                        {!gameStarted && !gameOver && (
-                            <>
-                                <div className="start-message">
-                                    <p>Press <strong>SPACE</strong> to start the game !</p>
-                                </div>
-                            </>
-                        )}
                         
                         <div className="next-block">
                             {nextBlock && nextBlock.shape.map((row, rowIndex) => (
@@ -131,40 +130,41 @@ const SinglePlayer = ({ socket }) => {
                                 </div>
                             ))}
                         </div>
-                        
+                        <div className='scd-info'>
                             <div className="score-board">
                                 <p>Score : {score}</p>
                             </div>
-                        <div className='info-game'>
-                            <div className="current-lvl">
-                                <p>Level : {playerLevel}</p>
-                            </div>
-                            <div className="lines-cleared">
-                                <p>Line : {totalLinesCleared}</p>
+                            <div className='info-game'>
+                                <div className="current-lvl">
+                                    <p>Level : {playerLevel}</p>
+                                </div>
+                                <div className="lines-cleared">
+                                    <p>Line : {totalLinesCleared}</p>
+                                </div>
                             </div>
                         </div>
 
-                        {gameOver && (
-                            <>
-                                <GameOverSolo 
-                                    score={score}
-                                    totalLinesCleared={totalLinesCleared}
-                                    playerLevel={playerLevel}
-                                    onRestart={() => {
-                                        setGameOver(false);
-                                        setScore(0);
-                                        setPlayerLevel(1);
-                                        setTotalLinesCleared(0);
-                                        setGameStarted(false);
-                                        setCurrentBlock(null);
-                                        setNextBlock(null);
-                                        setDisplayGrid(createEmptyGrid());
-                                        socket.emit('resetGame');
-                                    }}
-                                />
-                            </>
-                        )}
                     </div>
+                    {gameOver && (
+                        <>
+                            <GameOverSolo 
+                                score={score}
+                                totalLinesCleared={totalLinesCleared}
+                                playerLevel={playerLevel}
+                                onRestart={() => {
+                                    setGameOver(false);
+                                    setScore(0);
+                                    setPlayerLevel(1);
+                                    setTotalLinesCleared(0);
+                                    setGameStarted(false);
+                                    setCurrentBlock(null);
+                                    setNextBlock(null);
+                                    setDisplayGrid(createEmptyGrid());
+                                    socket.emit('resetGame');
+                                }}
+                            />
+                        </>
+                    )}
                 </div>
             </div>
         </div>

@@ -72,10 +72,10 @@ const MultiPlayer = ({ socket }) => {
     }
 
     return (
-        <div className="multi-player-front">
+        <div className="index-page">
             <GridBackground />
                 <div className='base'>
-                    <div className='top-main'>
+                    <div className='top-main-lobby'>
                     <Link to="/">
                         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" className="arrow-back"><path fill="#fd1e2d" d="M11 20h2V8h2V6h-2V4h-2v2H9v2h2zM7 10V8h2v2zm0 0v2H5v-2zm10 0V8h-2v2zm0 0v2h2v-2z"/></svg>
                     </Link>
