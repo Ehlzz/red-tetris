@@ -3,8 +3,10 @@ const { isCollision } = require('./collisionManager');
 const { getPlayerRoom, getRoomById } = require('./lobbyManager');
 const { getPlayer } = require('./playerManager');
 
-function fixBlock(player) {
+function fixBlock(player, socket) {
     if (!player) return;
+
+    const fixedPositions = [];
 
     player.currentBlock.shape.forEach((row, y) => {
         row.forEach((cell, x) => {
@@ -13,10 +15,16 @@ function fixBlock(player) {
                 const gridX = player.position.x + x;
                 if (gridY >= 0 && gridY < 22 && gridX >= 0 && gridX < 10) {
                     player.grid[gridY][gridX] = player.currentBlock.color;
+                    fixedPositions.push({ x: gridX + 1, y: gridY - 1 });
                 }
             }
         });
     });
+    
+    if (socket && fixedPositions.length > 0) {
+        socket.emit('blockFixed', { positions: fixedPositions });
+        console.log('🧱 Bloc fixé avec particules aux positions:', fixedPositions);
+    }
 }
 
 function checkLines(player, socket) {

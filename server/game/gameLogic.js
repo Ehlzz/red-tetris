@@ -38,7 +38,7 @@ function moveBlock(socket, player, direction) {
     
     if (isCollision(player, direction)) {
         if (!player.isGameOver && direction.y === 1) {
-            fixBlock(player);
+            fixBlock(player, socket);
             checkLines(player, socket);
             player.currentBlock = player.nextBlock;
             player.nextBlock = getRandomBlock();
