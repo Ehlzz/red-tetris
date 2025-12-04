@@ -3,22 +3,18 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* background-color: rgba(0, 0, 0, 0.8); */
   background-color: #242834;
-  color: #fd1e2d;
+  color: rgb(253, 28, 43);
   padding: 40px;
   border: 4px solid #fd1e2d;
-  text-align: center;
   width: auto;
   height: auto;
   z-index: 2;
   font-size: 3rem;
-  /* animation: pulse 2s infinite; */
   animation: slideIn 1s;
   display: flex;
+  flex-direction: column;
   text-align: start;
-  align-items: end;
-  justify-content: center;
   gap: 40px;
 }
 
@@ -79,5 +75,135 @@
   100% {
     transform: translate(-50%, -50%);
     opacity: 1;
+  }
+}
+
+.leaderboard-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 400px;
+}
+
+.leaderboard-section h2 {
+  color: #fd1e2d;
+  font-size: 2.5rem;
+  margin: 0 0 15px 0;
+  text-align: center;
+  border-bottom: 2px solid #fd1e2d;
+  padding-bottom: 10px;
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  background-color: #1d212b;
+  border: 2px solid #4a5568;
+  transition: all 0.3s ease;
+}
+
+.leaderboard-item.winner {
+  border-color: #ffd700;
+  background-color: rgba(255, 215, 0, 0.1);
+  animation: winnerGlow 2s ease-in-out infinite alternate;
+}
+
+.leaderboard-item.current-player {
+  border-color: #fd1e2d;
+  background-color: rgba(253, 30, 45, 0.1);
+}
+
+.rank {
+  font-size: 1.8rem;
+  font-weight: bold;
+  min-width: 60px;
+  text-align: center;
+  color: #fd1e2d;
+}
+
+.leaderboard-item.winner .rank {
+  color: #ffd700;
+  font-size: 2rem;
+}
+
+.player-info-over {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.player-name {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #fd1e2d;
+}
+
+.leaderboard-item.winner .player-name {
+  color: #ffd700;
+}
+
+.player-score {
+  font-size: 1.6rem;
+  color: #F0F0F0;
+  font-weight: bold;
+}
+
+.player-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 1rem;
+  color: #a0a0a0;
+  min-width: 80px;
+}
+
+@keyframes winnerGlow {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 220, 21, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  }
+}
+
+@media (max-width: 768px) {
+  .game-over-message {
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    width: 90%;
+  }
+  
+  .leaderboard-section {
+    min-width: unset;
+    width: 100%;
+  }
+  
+  .leaderboard-item {
+    padding: 10px 15px;
+  }
+  
+  .rank {
+    font-size: 1.4rem;
+    min-width: 40px;
+  }
+  
+  .player-name {
+    font-size: 1.2rem;
+  }
+  
+  .player-score {
+    font-size: 1.3rem;
   }
 }
