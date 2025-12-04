@@ -16,6 +16,9 @@ const SinglePlayer = ({ socket }) => {
     const [isShaking, setIsShaking] = useState(false);
     const [particles, setParticles] = useState([]);
     const particleTimeouts = useRef(new Set());
+    const [showLevelUp, setShowLevelUp] = useState(false);
+    const [newLevel, setNewLevel] = useState(1);
+    const previousLevel = useRef(1);
     
     const createEmptyGrid = () => {
         return Array(22).fill().map(() => Array(10).fill(''));
@@ -38,6 +41,16 @@ const SinglePlayer = ({ socket }) => {
 
         socket.on('refreshGame', (game) => {
             console.log('🔄 Jeu rafraîchi:', game);
+            
+            if (game.level > previousLevel.current) {
+                setNewLevel(game.level);
+                setShowLevelUp(true);
+                
+                setTimeout(() => setShowLevelUp(false), 2000);
+            }
+            
+            previousLevel.current = game.level;
+            
             setGrid(game.grid);
             setCurrentBlock(game.currentBlock);
             setNextBlock(game.nextBlock);
@@ -162,6 +175,20 @@ const SinglePlayer = ({ socket }) => {
                             ))}
                         </div>
                     </div>
+                    
+                    {showLevelUp && (
+                        <div className="level-up-animation">
+                            <div className="level-up-content">
+                                <h2>LEVEL UP!</h2>
+                                <p>Level {newLevel}</p>
+                                <div className="level-up-sparkles">
+                                    <span>🔥</span>
+                                    <span>🔥</span>
+                                    <span>🔥</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 
                     {!gameStarted && !gameOver && (
                         <>

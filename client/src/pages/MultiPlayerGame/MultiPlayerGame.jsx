@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useRef} from 'react';
 import './MultiPlayerGame.css';
 import { io } from 'socket.io-client';
 import { Link } from 'react-router-dom';
@@ -15,18 +15,15 @@ const MultiPlayerGame = ({ socket }) => {
     const [totalLinesCleared, setTotalLinesCleared] = useState(0);
     const [room, setRoom] = useState(null);
     const [countdown, setCountdown] = useState(null);
+    const [isShaking, setIsShaking] = useState(false);
+    const [particles, setParticles] = useState([]);
+    const particleTimeouts = useRef(new Set());
     
     const createEmptyGrid = () => {
         return Array(22).fill().map(() => Array(10).fill(''));
     };
     
     const [displayGrid, setDisplayGrid] = useState(createEmptyGrid());
-
-    // useEffect(() => {
-    //     setTimeout(() => {
-    //         if (!gameStarted && !gameOver) {
-
-    // }, []);
 
     useEffect(() => {
         socket.on('countdown', (count) => {
@@ -42,7 +39,10 @@ const MultiPlayerGame = ({ socket }) => {
         return () => {
             socket.off('countdown');
             socket.off('startMultiplayerGame');
-    };
+            
+            particleTimeouts.current.forEach(timeoutId => clearTimeout(timeoutId));
+            particleTimeouts.current.clear();
+        };
 }, [socket]);
 
     useEffect(() => {
@@ -76,6 +76,37 @@ const MultiPlayerGame = ({ socket }) => {
             setRoom(game.room);
         });
 
+        socket.on('blockFixed', (data) => {
+            setIsShaking(true);
+            setTimeout(() => setIsShaking(false), 200);
+            
+            if (data && data.positions) {
+                const newParticles = [];
+                const currentTime = Date.now();
+                
+                data.positions.forEach((pos, index) => {
+                    for (let i = 0; i < 3; i++) {
+                        const particleId = currentTime + index * 10 + i;
+                        newParticles.push({
+                            id: particleId,
+                            x: pos.x * 34 + 10 + Math.random() * 10,
+                            y: (pos.y - 2) * 34 + 10 + Math.random() * 10,
+                            createdAt: currentTime
+                        });
+                        
+                        const timeoutId = setTimeout(() => {
+                            setParticles(prev => prev.filter(p => p.id !== particleId));
+                            particleTimeouts.current.delete(timeoutId);
+                        }, 2500);
+                        
+                        particleTimeouts.current.add(timeoutId);
+                    }
+                });
+                
+                setParticles(prev => [...prev, ...newParticles]);
+            }
+        });
+
         socket.on('gameOver', ({ score }) => {
             socket.emit('gameOver', { roomId: roomId });
             console.log('💀 Game Over! Score final:', score);
@@ -96,6 +127,7 @@ const MultiPlayerGame = ({ socket }) => {
             socket.off('refreshGame');
             socket.off('gameOver');
             socket.off('multiplayerGameEnd');
+            socket.off('blockFixed');
         };
     }, []);
 
@@ -175,19 +207,33 @@ const MultiPlayerGame = ({ socket }) => {
                     )}
                 </div>
                 <div className="test">
-                    <div className="grid">
-                        {displayGrid.slice(2).map((row, rowIndex) => (
-                            <div key={rowIndex} className="row">
-                                {row.map((cell, cellIndex) => (
-                                    <div
-                                        key={cellIndex}
-                                        className={`cell ${cell}`}
-                                    ></div>
-                                ))}
-                            </div>
-                        ))}
+                    <div className="grid-container">
+                        <div className={`grid ${isShaking ? 'shake' : ''}`}>
+                            {displayGrid.slice(2).map((row, rowIndex) => (
+                                <div key={rowIndex} className="row">
+                                    {row.map((cell, cellIndex) => (
+                                        <div
+                                            key={cellIndex}
+                                            className={`cell ${cell}`}
+                                        ></div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <div className="particles-container">
+                            {particles.map(particle => (
+                                <div
+                                    key={particle.id}
+                                    className="particle"
+                                    style={{
+                                        left: `${particle.x}px`,
+                                        top: `${particle.y}px`
+                                    }}
+                                />
+                            ))}
+                        </div>
                     </div>
-                    
 
                     <div className='info'>
                         {!gameStarted && !gameOver && (
