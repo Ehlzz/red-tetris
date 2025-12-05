@@ -5,7 +5,7 @@ const GameOverSolo = ({ score, totalLinesCleared, playerLevel, onRestart }) => {
     return (
         <>
             <div className="background-overlay"></div>
-                <div className="game-over-message">
+                <div className="game-over-message-solo">
                     <div className="game-over-text">
                         <h1>Game Over!</h1>
                         <div className="final-stats">
