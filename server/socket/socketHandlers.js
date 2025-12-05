@@ -147,6 +147,10 @@ function handleSocketConnection(socket, io) {
             }
         }
     });
+
+    socket.on('changeSpectatedPlayer', (data) => {
+        console.log(data)
+    })
 }
 
 module.exports = { handleSocketConnection };
