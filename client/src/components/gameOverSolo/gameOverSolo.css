@@ -1,9 +1,8 @@
-.game-over-message {
+.game-over-message-solo {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* background-color: rgba(0, 0, 0, 0.8); */
   background-color: #242834;
   color: #fd1e2d;
   padding: 40px;
@@ -13,7 +12,6 @@
   height: auto;
   z-index: 2;
   font-size: 3rem;
-  /* animation: pulse 2s infinite; */
   animation: slideIn 1s;
   display: flex;
   text-align: start;
@@ -22,7 +20,7 @@
   gap: 40px;
 }
 
-.game-over-message h1{
+.game-over-message-solo h1{
   margin: 0 0 20px 0;
   font-size: 3.5rem;
 }
@@ -79,5 +77,30 @@
   100% {
     transform: translate(-50%, -50%);
     opacity: 1;
+  }
+}
+
+@media (max-width: 1024px) {
+  .game-over-message-solo {
+    font-size: 2rem;
+    padding: 20px;
+    gap: 20px;
+    flex-direction: column;
+  }
+
+  .game-over-message-solo h1{
+    font-size: 2.5rem;
+  }
+
+  .play-again{
+    font-size: 1.5rem;
+    padding: 15px 30px;
+    width: 200px;
+  }
+
+
+
+  .final-stats {
+    font-size: 1.2rem;
   }
 }

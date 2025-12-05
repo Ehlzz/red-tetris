@@ -19,6 +19,9 @@ const MultiPlayerGame = ({ socket }) => {
     const [particles, setParticles] = useState([]);
     const [spectatedPlayer, setSpectatedPlayer] = useState(null)
     const particleTimeouts = useRef(new Set());
+    const [showLevelUp, setShowLevelUp] = useState(false);
+    const [newLevel, setNewLevel] = useState(false);
+    const previousLevel = useRef(1);
     
     const createEmptyGrid = () => {
         return Array(22).fill().map(() => Array(10).fill(''));
@@ -70,6 +73,13 @@ const MultiPlayerGame = ({ socket }) => {
                 console.log('🔄 Room info:', game.room);
                 setRoom(game.room);
             }
+            if (game.level > previousLevel.current) {
+                setNewLevel(game.level);
+                setShowLevelUp(true);
+                
+                setTimeout(() => setShowLevelUp(false), 2000);
+            }
+            previousLevel.current = game.level;
             setNextBlock(game.nextBlock);
             setScore(game.score);
             setDisplayGrid(game.grid);
@@ -141,16 +151,20 @@ const MultiPlayerGame = ({ socket }) => {
 			console.log(event.key);
             
             if (gameStarted && !gameOver) {
-                if (event.key === "ArrowDown") {
-                    socket.emit('moveBlock', { x: 0, y: 1 });
-                } else if (event.key === "ArrowLeft") {
-                    socket.emit('moveBlock', { x: -1, y: 0 });
-                } else if (event.key === "ArrowRight") {
-                    socket.emit('moveBlock', { x: 1, y: 0 });
-                } else if (event.key === "ArrowUp") {
-                    socket.emit('rotateBlock');
-                } else if (event.key === " ") {
-                    socket.emit('dropBlock');
+                if (event.key === "ArrowUp") {
+                    if (!event.repeat) {
+                        socket.emit('rotateBlock');
+                    }
+                } else {
+                    if (event.key === "ArrowDown") {
+                        socket.emit('moveBlock', { x: 0, y: 1 });
+                    } else if (event.key === "ArrowLeft") {
+                        socket.emit('moveBlock', { x: -1, y: 0 });
+                    } else if (event.key === "ArrowRight") {
+                        socket.emit('moveBlock', { x: 1, y: 0 });
+                    } else if (event.key === " ") {
+                        socket.emit('dropBlock');
+                    }
                 }
             }
         };
@@ -239,6 +253,20 @@ const MultiPlayerGame = ({ socket }) => {
                             ))}
                         </div>
                     </div>
+
+                    {showLevelUp && (
+                        <div className="level-up-animation">
+                            <div className="level-up-content">
+                                <h2>LEVEL UP!</h2>
+                                <p>Level {newLevel}</p>
+                                <div className="level-up-sparkles">
+                                    <span>🔥</span>
+                                    <span>🔥</span>
+                                    <span>🔥</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     <div className='info'>
                         {!gameStarted && !gameOver && (
