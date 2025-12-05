@@ -472,6 +472,11 @@
 }
 
 @media (max-width: 1024px) {
+
+  .game-container {
+    overflow: hidden;
+  }
+
   .cell {
     width: 20px !important;
     height: 20px !important;
@@ -495,5 +500,28 @@
     bottom: 50px;
     left: 50%;
     transform: translateX(-50%);
+  }
+
+  .particle {
+    width: 3px;
+    height: 3px;
+  }
+
+  @keyframes particleRise {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      box-shadow: 0 0 4px #fd1e2d;
+    }
+    50% {
+      opacity: 0.8;
+      transform: translateY(-30px) scale(0.8);
+      box-shadow: 0 0 6px #fd1e2d;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-60px) scale(0.4);
+      box-shadow: 0 0 2px #fd1e2d;
+    }
   }
 }

@@ -19,6 +19,10 @@ const SinglePlayer = ({ socket }) => {
     const [showLevelUp, setShowLevelUp] = useState(false);
     const [newLevel, setNewLevel] = useState(1);
     const previousLevel = useRef(1);
+
+    const getCellSize = () => {
+        return window.innerWidth <= 1024 ? 24 : 34;
+    };
     
     const createEmptyGrid = () => {
         return Array(22).fill().map(() => Array(10).fill(''));
@@ -71,10 +75,11 @@ const SinglePlayer = ({ socket }) => {
                 data.positions.forEach((pos, index) => {
                     for (let i = 0; i < 3; i++) {
                         const particleId = currentTime + index * 10 + i;
+                        const cellSize = getCellSize();
                         newParticles.push({
                             id: particleId,
-                            x: pos.x * 34 + 10 + Math.random() * 10,
-                            y: (pos.y - 2) * 34 + 10 + Math.random() * 10,
+                            x: pos.x * cellSize + cellSize/3 + Math.random() * (cellSize/3),
+                            y: (pos.y - 2) * cellSize + cellSize/3 + Math.random() * (cellSize/3),
                             createdAt: currentTime
                         });
                         
@@ -113,24 +118,28 @@ const SinglePlayer = ({ socket }) => {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
-			console.log(event.key);
-            
+            console.log(event.key);
+
             if (!gameStarted && !gameOver && event.key === " ") {
                 socket.emit('startGame');
                 return;
             }
             
             if (gameStarted && !gameOver) {
-                if (event.key === "ArrowDown") {
-                    socket.emit('moveBlock', { x: 0, y: 1 });
-                } else if (event.key === "ArrowLeft") {
-                    socket.emit('moveBlock', { x: -1, y: 0 });
-                } else if (event.key === "ArrowRight") {
-                    socket.emit('moveBlock', { x: 1, y: 0 });
-                } else if (event.key === "ArrowUp") {
-                    socket.emit('rotateBlock');
-                } else if (event.key === " ") {
-                    socket.emit('dropBlock');
+                if (event.key === "ArrowUp") {
+                    if (!event.repeat) {
+                        socket.emit('rotateBlock');
+                    }
+                } else {
+                    if (event.key === "ArrowDown") {
+                        socket.emit('moveBlock', { x: 0, y: 1 });
+                    } else if (event.key === "ArrowLeft") {
+                        socket.emit('moveBlock', { x: -1, y: 0 });
+                    } else if (event.key === "ArrowRight") {
+                        socket.emit('moveBlock', { x: 1, y: 0 });
+                    } else if (event.key === " ") {
+                        socket.emit('dropBlock');
+                    }
                 }
             }
         };
@@ -141,6 +150,52 @@ const SinglePlayer = ({ socket }) => {
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [gameStarted, gameOver]);
+
+    useEffect(() => {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        const handleTouchStart = (event) => {
+            touchStartX = event.touches[0].clientX;
+            touchStartY = event.touches[0].clientY;
+        };
+
+        const handleTouchMove = (event) => {
+            touchEndX = event.touches[0].clientX;
+            touchEndY = event.touches[0].clientY;
+        };
+
+        const handleTouchEnd = () => {
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > 50) {
+                    socket.emit('moveBlock', { x: 1, y: 0 });
+                } else if (deltaX < -50) {
+                    socket.emit('moveBlock', { x: -1, y: 0 });
+                }
+            } else {
+                if (deltaY > 50) {
+                    socket.emit('moveBlock', { x: 0, y: 1 });
+                } else if (deltaY < -50) {
+                    socket.emit('rotateBlock');
+                }
+            }
+        };
+
+        window.addEventListener('touchstart', handleTouchStart);
+        window.addEventListener('touchmove', handleTouchMove);
+        window.addEventListener('touchend', handleTouchEnd);
+
+        return () => {
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
+        };
+    }, [socket]);
 
     return (
 
