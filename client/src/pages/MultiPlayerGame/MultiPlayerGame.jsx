@@ -17,6 +17,7 @@ const MultiPlayerGame = ({ socket }) => {
     const [countdown, setCountdown] = useState(null);
     const [isShaking, setIsShaking] = useState(false);
     const [particles, setParticles] = useState([]);
+    const [spectatedPlayer, setSpectatedPlayer] = useState(null)
     const particleTimeouts = useRef(new Set());
     
     const createEmptyGrid = () => {
@@ -24,6 +25,10 @@ const MultiPlayerGame = ({ socket }) => {
     };
     
     const [displayGrid, setDisplayGrid] = useState(createEmptyGrid());
+
+    useEffect(() => {
+        socket.emit('changeSpectatedPlayer', spectatedPlayer)
+    }, [spectatedPlayer])
 
     useEffect(() => {
         socket.on('countdown', (count) => {
@@ -181,7 +186,7 @@ const MultiPlayerGame = ({ socket }) => {
                                                 </div>
                                             ))}
                                         </div>
-                                        <div className="leaderboard-player-info">
+                                        <div className="leaderboard-player-info" onClick={(e) => setSpectatedPlayer(player.id)}>
                                             <p className="player-name">{player.name}</p>
                                             <p className="player-score">Score: {player.score}</p>
                                             <p className="player-level">Level: {player.level}</p>
