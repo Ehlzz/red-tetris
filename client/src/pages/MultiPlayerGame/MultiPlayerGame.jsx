@@ -54,17 +54,17 @@ const MultiPlayerGame = ({ socket }) => {
 }, [socket]);
 
     useEffect(() => {
-        socket.on('receiveGame', (game) => {
+        socket.on('receiveGame', (player) => {
             console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
-            console.log('🟩 Grille initialisée:', game.grid);
-            console.log('⏭ Bloc suivant:', game.nextBlock);
+            console.log('🟩 Grille initialisée:', player.grid);
+            console.log('⏭ Bloc suivant:', player.nextBlock);
+            setSelectedPlayer(player)
             setCountdown(null);
-            setNextBlock(game.nextBlock);
-            setScore(game.score || 0);
-            setPlayerLevel(game.level || 1);
-            setTotalLinesCleared(game.totalColumnsCleared || 0);
-            setGameStarted(true);
-            setDisplayGrid(game.grid);
+            setNextBlock(player.nextBlock);
+            setScore(player.score || 0);
+            setPlayerLevel(player.level || 1);
+            setTotalLinesCleared(player.totalColumnsCleared || 0);
+            setDisplayGrid(player.grid);
         })
 
         socket.on('refreshGame', (game) => {
