@@ -254,14 +254,6 @@ const MultiPlayerGame = ({ socket }) => {
                         </div>
                     </div>
 
-                    {gameOver && 
-                        <div className="game-over-container">
-                            <div className="overlay-game-over">💀</div>
-                            <div className="overlay-title">GAME OVER</div>
-                            <div className="overlay-desc">You can spectate the others players by clicking on them</div>
-                        </div>
-                    }
-
                     {showLevelUp && (
                         <div className="level-up-animation">
                             <div className="level-up-content">
@@ -312,7 +304,7 @@ const MultiPlayerGame = ({ socket }) => {
                             </div>
                         </div>
 
-                            {/* { gameOver && (
+                            { gameOver && (
                                 <>
                                     <GameOverMulti 
                                         score={score}
@@ -323,7 +315,7 @@ const MultiPlayerGame = ({ socket }) => {
                                         playerName={room.players.find(p => p.id === socket.id).name}
                                     />
                                 </>
-                            )} */}
+                            )}
                     </div>
                 </div>
             </div>
