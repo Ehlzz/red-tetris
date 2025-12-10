@@ -17,7 +17,7 @@ const MultiPlayerGame = ({ socket }) => {
     const [countdown, setCountdown] = useState(null);
     const [isShaking, setIsShaking] = useState(false);
     const [particles, setParticles] = useState([]);
-    const [spectatedPlayer, setSpectatedPlayer] = useState(null)
+    const [selectedPlayer, setSelectedPlayer] = useState(null)
     const particleTimeouts = useRef(new Set());
     const [showLevelUp, setShowLevelUp] = useState(false);
     const [newLevel, setNewLevel] = useState(false);
@@ -30,8 +30,8 @@ const MultiPlayerGame = ({ socket }) => {
     const [displayGrid, setDisplayGrid] = useState(createEmptyGrid());
 
     useEffect(() => {
-        socket.emit('changeSpectatedPlayer', spectatedPlayer)
-    }, [spectatedPlayer])
+        socket.emit('changeSpectatedPlayer', selectedPlayer)
+    }, [selectedPlayer])
 
     useEffect(() => {
         socket.on('countdown', (count) => {
@@ -239,7 +239,7 @@ const MultiPlayerGame = ({ socket }) => {
                                 </div>
                             ))}
                         </div>
-                        
+
                         <div className="particles-container">
                             {particles.map(particle => (
                                 <div
@@ -253,6 +253,14 @@ const MultiPlayerGame = ({ socket }) => {
                             ))}
                         </div>
                     </div>
+
+                    {gameOver && 
+                        <div className="game-over-container">
+                            <div className="overlay-game-over">💀</div>
+                            <div className="overlay-title">GAME OVER</div>
+                            <div className="overlay-desc">You can spectate the others players by clicking on them</div>
+                        </div>
+                    }
 
                     {showLevelUp && (
                         <div className="level-up-animation">
@@ -304,18 +312,18 @@ const MultiPlayerGame = ({ socket }) => {
                             </div>
                         </div>
 
-                        { gameOver && (
-                            <>
-                                <GameOverMulti 
-                                    score={score}
-                                    totalLinesCleared={totalLinesCleared}
-                                    playerLevel={playerLevel}
-                                    roomName={roomId}
-                                    room={room}
-                                    playerName={room.players.find(p => p.id === socket.id).name}
-                                />
-                            </>
-                        )}
+                            {/* { gameOver && (
+                                <>
+                                    <GameOverMulti 
+                                        score={score}
+                                        totalLinesCleared={totalLinesCleared}
+                                        playerLevel={playerLevel}
+                                        roomName={roomId}
+                                        room={room}
+                                        playerName={room.players.find(p => p.id === socket.id).name}
+                                    />
+                                </>
+                            )} */}
                     </div>
                 </div>
             </div>
