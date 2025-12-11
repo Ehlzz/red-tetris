@@ -22,7 +22,6 @@ const GameOverMulti = ({ score, totalLinesCleared, playerLevel, roomName, player
                     </div>
                     
                     <div className="leaderboard-section">
-                        {/* <h2>Final Leaderboard</h2> */}
                         <div className="leaderboard-list">
                             {sortedPlayers.map((player, index) => (
                                 <div 
@@ -49,7 +48,7 @@ const GameOverMulti = ({ score, totalLinesCleared, playerLevel, roomName, player
                         </div>
                     </div>
                     <div className="game-over-btn">
-                        <div className="play-again" onClick={() => {
+                        <div onClick={() => {
                             navigate(`/lobby/${roomName}/${playerName}`, {state: {room: room}});
                         }}>
                             Back to Lobby

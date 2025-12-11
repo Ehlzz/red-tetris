@@ -53,10 +53,6 @@ function handleSocketConnection(socket, io) {
     socket.on('gameOver', (data) => {
         handleGameOver(socket, io, data)
     });
-
-    socket.on('changeSpectatedPlayer', (data) => {
-        console.log(data)
-    })
 }
 
 module.exports = { handleSocketConnection };
