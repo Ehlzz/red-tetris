@@ -32,10 +32,10 @@ const SinglePlayer = ({ socket }) => {
 
     useEffect(() => {
         socket.on('receiveGame', (game) => {
-            console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
-            console.log('🟩 Grille initialisée:', game.grid);
-            console.log('🎮 Bloc courant:', game.currentBlock);
-            console.log('⏭ Bloc suivant:', game.nextBlock);
+            // console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
+            // console.log('🟩 Grille initialisée:', game.grid);
+            // console.log('🎮 Bloc courant:', game.currentBlock);
+            // console.log('⏭ Bloc suivant:', game.nextBlock);
             setGrid(game.grid);
             setCurrentBlock(game.currentBlock);
             setNextBlock(game.nextBlock);
@@ -44,7 +44,7 @@ const SinglePlayer = ({ socket }) => {
         })
 
         socket.on('refreshGame', (game) => {
-            console.log('🔄 Jeu rafraîchi:', game);
+            // console.log('🔄 Jeu rafraîchi:', game);
             
             if (game.level > previousLevel.current) {
                 setNewLevel(game.level);
@@ -97,7 +97,7 @@ const SinglePlayer = ({ socket }) => {
         });
 
         socket.on('gameOver', ({ score }) => {
-        console.log('💀 Game Over! Score final:', score);
+        // console.log('💀 Game Over! Score final:', score);
         setGameOver(true);
         setScore(score);
         setGameStarted(false);
@@ -118,7 +118,7 @@ const SinglePlayer = ({ socket }) => {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
-            console.log(event.key);
+            // console.log(event.key);
 
             if (!gameStarted && !gameOver && event.key === " ") {
                 socket.emit('startGame');

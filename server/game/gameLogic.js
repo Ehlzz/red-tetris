@@ -8,6 +8,15 @@ function refreshGame(socket, player) {
     if (!player) return;
     const room = getRoomById(getPlayerRoom(socket.id));
     if (room) {
+        if (room.players.length === 1) {
+            room.players.forEach(p => {
+                socket.emit('multiplayerGameEnd', {
+                    winner: player,
+                    room: room
+                });
+                p.isGameOver = false;
+            });
+        }
         room.players.forEach(p => {
             if (p.id === socket.id) {
                 if (player.isGameOver) {
@@ -35,7 +44,7 @@ function refreshGame(socket, player) {
 
 function moveBlock(socket, player, direction) {
     if (!player || player.isGameOver) return false;
-    
+    console.log(`⬆️ Déplacement du bloc pour ${socket.id}:`, direction);
     if (isCollision(player, direction)) {
         if (!player.isGameOver && direction.y === 1) {
             fixBlock(player, socket);
@@ -48,7 +57,7 @@ function moveBlock(socket, player, direction) {
         if (direction.y === 1 && isCollision(player, { x: 0, y: 0 })) {
             player.isGameOver = true;
             socket.emit('gameOver', { score: player.score });
-            console.log('💀 Game Over pour:', socket.id);
+            // console.log('💀 Game Over pour:', socket.id);
         }
         return false;
     }
@@ -72,7 +81,7 @@ function canRotate(player, shape, offsetX = 0, offsetY = 0) {
                 const newY = player.position.y + y + offsetY;
                 
                 if (newX < 0 || newX >= 10 || newY >= 22) {
-                    console.log('Rotation impossible: hors limites');
+                    // console.log('Rotation impossible: hors limites');
                     return false;
                 }
                 

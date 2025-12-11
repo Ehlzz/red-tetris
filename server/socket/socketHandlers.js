@@ -4,7 +4,7 @@ const { createLobby, joinLobby, removePlayerFromLobby, toggleReadyLobby, getRoom
 const { handleStartGame, handleStartMultiplayerGame, handleGameOver } = require('../game/gameManager')
 
 function handleSocketConnection(socket, io) {
-    console.log('🔌 Utilisateur connecté:', socket.id);
+    // console.log('🔌 Utilisateur connecté:', socket.id);
 
     socket.on('startGame', () => {
         handleStartGame(socket)
@@ -17,6 +17,7 @@ function handleSocketConnection(socket, io) {
     socket.on('moveBlock', (direction) => {
         const player = getPlayer(socket.id);
         moveBlock(socket, player, direction);
+        console.log('MOVE BLOC SOCKET CALLED');
     });
 
     socket.on('rotateBlock', () => {
@@ -42,7 +43,7 @@ function handleSocketConnection(socket, io) {
     });
 
     socket.on('disconnect', () => {
-        console.log('❌ Utilisateur déconnecté:', socket.id);
+        // console.log('❌ Utilisateur déconnecté:', socket.id);
         removePlayerFromLobby(socket);
     });
 
@@ -53,10 +54,6 @@ function handleSocketConnection(socket, io) {
     socket.on('gameOver', (data) => {
         handleGameOver(socket, io, data)
     });
-
-    socket.on('changeSpectatedPlayer', (data) => {
-        console.log(data)
-    })
 }
 
 module.exports = { handleSocketConnection };

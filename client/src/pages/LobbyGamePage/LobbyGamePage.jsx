@@ -36,7 +36,7 @@ const LobbyGamePage = ({ socket }) => {
     }
     useEffect(() => {
         const handleLobbyCreated = (game) => {
-            console.log('Lobby created recu')
+            // console.log('Lobby created recu')
             setRoom(game.room);
             navigate(`/lobby/${game.room.roomId}/${playerName}`);
         };
@@ -63,13 +63,13 @@ const LobbyGamePage = ({ socket }) => {
         };
 
         const handleRefreshRoom = (game) => {
-            console.log('🔄 Room refreshed:', game);
+            // console.log('🔄 Room refreshed:', game);
             setRoom(game.room);
             let allReady = true;
             game.room.players.forEach(player => {
                 if (player.id === socket.id) {
                     setIsReady(player.isReady);
-                    console.log('🟢 Your ready status:', player.isReady);
+                    // console.log('🟢 Your ready status:', player.isReady);
                 }
                 if (!player.isReady) {
                     allReady = false;

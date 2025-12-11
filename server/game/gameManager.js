@@ -3,7 +3,7 @@ const { getRoomById } = require('./lobbyManager');
 const { moveBlock } = require('./gameLogic');
 
 function handleStartGame(socket) {
-    console.log('▶️ Jeu démarré pour:', socket.id);
+    // console.log('▶️ Jeu démarré pour:', socket.id);
 
     const player = initPlayer(socket.id);
     socket.emit('receiveGame', player);
@@ -79,7 +79,7 @@ function handleGameOver(socket, io, data) {
     const player = getPlayer(socket.id);
     if (player) {
         player.isGameOver = true;
-        console.log('💀 Game Over pour:', socket.id);
+        // console.log('💀 Game Over pour:', socket.id);
         
         if (data && data.roomId) {
             const room = getRoomById(data.roomId);
@@ -89,10 +89,10 @@ function handleGameOver(socket, io, data) {
                         p.isGameOver = true;
                     }
                 const playersAlive = room.players.filter(p => !p.isGameOver);
-                console.log(`👥👥👥 Joueurs encore vivants: ${playersAlive.length}`);
+                // console.log(`👥👥👥 Joueurs encore vivants: ${playersAlive.length}`);
                 
                 if (playersAlive.length <= 1) {
-                    console.log('🏆 Fin de la partie multijoueur!');
+                    // console.log('🏆 Fin de la partie multijoueur!');
                     room.gameStarted = false;
                     room.players.forEach(p => {
                         io.to(p.id).emit('multiplayerGameEnd', {
