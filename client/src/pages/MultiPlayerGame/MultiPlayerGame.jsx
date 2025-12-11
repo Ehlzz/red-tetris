@@ -278,16 +278,16 @@ const MultiPlayerGame = ({ socket }) => {
                         </div>
                     )}
 
+                    {!gameStarted && !gameOver && (
+                        <>
+                            {countdown !== null && (
+                                <div className="countdown">
+                                    <span>{countdown > 0 ? countdown : ''}</span>
+                                </div>
+                            )}
+                        </>
+                    )}
                     <div className='info'>
-                        {!gameStarted && !gameOver && (
-                            <>
-                                {countdown !== null && (
-                                    <div className="countdown">
-                                        <span>{countdown > 0 ? countdown : ''}</span>
-                                    </div>
-                                )}
-                            </>
-                        )}
                         
                         <div className="next-block">
                             {nextBlock && nextBlock.shape.map((row, rowIndex) => (
@@ -301,7 +301,7 @@ const MultiPlayerGame = ({ socket }) => {
                                 </div>
                             ))}
                         </div>
-                        
+                        <div className="scd-info">
                             <div className="score-board">
                                 <p>Score : {score}</p>
                             </div>
@@ -312,6 +312,7 @@ const MultiPlayerGame = ({ socket }) => {
                             <div className="lines-cleared">
                                 <p>Line : {totalLinesCleared}</p>
                             </div>
+                        </div>
                         </div>
 
                             { gameOver && (
