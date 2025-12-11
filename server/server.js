@@ -31,5 +31,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, 'localhost', () => {
-    console.log(`✅ Serveur lancé et accessible : http://localhost:${PORT}`);
+    // console.log(`✅ Serveur lancé et accessible : http://localhost:${PORT}`);
 });

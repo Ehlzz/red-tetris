@@ -17,12 +17,12 @@ const MultiPlayerGame = ({ socket }) => {
     const [countdown, setCountdown] = useState(null);
     const [isShaking, setIsShaking] = useState(false);
     const [particles, setParticles] = useState([]);
-    const [selectedPlayer, setSelectedPlayer] = useState(null)
     const particleTimeouts = useRef(new Set());
     const [showLevelUp, setShowLevelUp] = useState(false);
     const [newLevel, setNewLevel] = useState(false);
     const previousLevel = useRef(1);
-    
+    const [spectatedPlayer, setSpectatedPlayer] = useState(null);
+    const spectatedPlayerRef = useRef(null);
     const createEmptyGrid = () => {
         return Array(22).fill().map(() => Array(10).fill(''));
     };
@@ -30,17 +30,13 @@ const MultiPlayerGame = ({ socket }) => {
     const [displayGrid, setDisplayGrid] = useState(createEmptyGrid());
 
     useEffect(() => {
-        socket.emit('changeSpectatedPlayer', selectedPlayer)
-    }, [selectedPlayer])
-
-    useEffect(() => {
         socket.on('countdown', (count) => {
-            console.log('⏳ Décompte reçu:', count);
+            // console.log('⏳ Décompte reçu:', count);
             setCountdown(count);
         });
 
         socket.on('startMultiplayerGame', (data) => {
-            console.log('🎮 Partie multijoueur démarrée:', data);
+            // console.log('🎮 Partie multijoueur démarrée:', data);
             setRoom(data.room);
         });
 
@@ -55,11 +51,15 @@ const MultiPlayerGame = ({ socket }) => {
 
     useEffect(() => {
         socket.on('receiveGame', (player) => {
-            console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
-            console.log('🟩 Grille initialisée:', player.grid);
-            console.log('⏭ Bloc suivant:', player.nextBlock);
-            setSelectedPlayer(player)
+            // console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
+            // console.log('🟩 Grille initialisée:', player.grid);
+            // console.log('⏭ Bloc suivant:', player.nextBlock);
+            // setSelectedPlayer(player)
+            // console.log('Selected Player : ', player);
+            setGameStarted(true);
             setCountdown(null);
+            spectatedPlayerRef.current = socket.id;
+            setSpectatedPlayer(socket.id);
             setNextBlock(player.nextBlock);
             setScore(player.score || 0);
             setPlayerLevel(player.level || 1);
@@ -68,7 +68,7 @@ const MultiPlayerGame = ({ socket }) => {
         })
 
         socket.on('refreshGame', (game) => {
-            console.log('🔄 Jeu rafraîchi:', game);
+            // console.log('🔄 Jeu rafraîchi:', game);
             if (game.room) {
                 console.log('🔄 Room info:', game.room);
                 setRoom(game.room);
@@ -79,10 +79,14 @@ const MultiPlayerGame = ({ socket }) => {
                 
                 setTimeout(() => setShowLevelUp(false), 2000);
             }
+            const id = spectatedPlayerRef.current;
             previousLevel.current = game.level;
+            console.log('Spectated Player ID:', id);
+            const player = game.room.players.find(p => p.id === id);
+            console.log(player);
+            setDisplayGrid(player.grid);
             setNextBlock(game.nextBlock);
             setScore(game.score);
-            setDisplayGrid(game.grid);
             setPlayerLevel(game.level);
             setTotalLinesCleared(game.totalColumnsCleared);
         });
@@ -124,13 +128,13 @@ const MultiPlayerGame = ({ socket }) => {
 
         socket.on('gameOver', ({ score }) => {
             socket.emit('gameOver', { roomId: roomId });
-            console.log('💀 Game Over! Score final:', score);
+            // console.log('💀 Game Over! Score final:', score);
             setScore(score);
             setGameStarted(false);
         });
         
         socket.on('multiplayerGameEnd', (data) => {
-            console.log('🏆 Fin de la partie multijoueur:', data);
+            // console.log('🏆 Fin de la partie multijoueur:', data);
             setGameOver(true);
             setRoom(data.room);
         });
@@ -146,9 +150,15 @@ const MultiPlayerGame = ({ socket }) => {
         };
     }, []);
 
+    function requestChangePlayerPreview(playerId) {
+        setSpectatedPlayer(playerId);
+        spectatedPlayerRef.current = playerId;
+        setDisplayGrid(room.players.find(p => p.id === playerId).grid);
+    }
+
     useEffect(() => {
         const handleKeyDown = (event) => {
-			console.log(event.key);
+			// console.log(event.key);
             
             if (gameStarted && !gameOver) {
                 if (event.key === "ArrowUp") {
@@ -184,9 +194,9 @@ const MultiPlayerGame = ({ socket }) => {
                     {room && (
                         <div className="players-list">
                             {room.players.map((player) => {
-                                if (player.id === socket.id) return null;
+                                if (player.id === spectatedPlayer) return null;
                                 return (
-                                    <div className="leaderboard-player-component" key={player.id}>
+                                    <div className="leaderboard-player-component" key={player.id} onClick={(e) => {requestChangePlayerPreview(player.id)}}>
                                         {player.isGameOver && <div className="overlay-game-over">💀</div>}
                                         <div className="player-preview-grid">
                                             {player.grid && player.grid.slice(2).map((row, rowIndex) => (
@@ -200,7 +210,7 @@ const MultiPlayerGame = ({ socket }) => {
                                                 </div>
                                             ))}
                                         </div>
-                                        <div className="leaderboard-player-info" onClick={(e) => setSpectatedPlayer(player.id)}>
+                                        <div className="leaderboard-player-info">
                                             <p className="player-name">{player.name}</p>
                                             <p className="player-score">Score: {player.score}</p>
                                             <p className="player-level">Level: {player.level}</p>
