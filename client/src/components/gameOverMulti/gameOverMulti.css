@@ -14,6 +14,7 @@
   animation: slideIn 1s;
   display: flex;
   flex-direction: column;
+  align-items: start;
   text-align: start;
   gap: 40px;
 }
@@ -26,24 +27,6 @@
 .game-over-btn {
   display: flex;
   flex-direction: column;
-}
-
-.play-again{
-  text-decoration: none;
-  border: none;
-  color: #fd1e2d;
-  font-size: 3.5rem;
-  white-space: nowrap;
-  text-align: start;
-  padding: 20px 50px;
-  text-align: center;
-  z-index: 3;
-  width: 300px;
-  font-family: 'OffbitTrial-Regular', sans-serif;
-  font-weight: 700;
-  background: none;
-  cursor: pointer;
-  transition: opacity 0.3s ease;
 }
 
 .final-stats {
@@ -182,7 +165,7 @@
     flex-direction: column;
     gap: 20px;
     padding: 20px;
-    width: 90%;
+    width: 80%;
   }
   
   .leaderboard-section {
@@ -206,4 +189,11 @@
   .player-score {
     font-size: 1.3rem;
   }
+
+  .player-details {
+    font-size: 0.9rem;
+    min-width: unset;
+  }
+
+
 }

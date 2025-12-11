@@ -279,7 +279,6 @@ const SinglePlayer = ({ socket }) => {
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     {gameOver && (
                         <>
