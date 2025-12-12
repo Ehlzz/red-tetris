@@ -32,10 +32,10 @@ const SinglePlayer = ({ socket }) => {
 
     useEffect(() => {
         socket.on('receiveGame', (game) => {
-            // console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
-            // console.log('🟩 Grille initialisée:', game.grid);
-            // console.log('🎮 Bloc courant:', game.currentBlock);
-            // console.log('⏭ Bloc suivant:', game.nextBlock);
+            console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
+            console.log('🟩 Grille initialisée:', game.grid);
+            console.log('🎮 Bloc courant:', game.currentBlock);
+            console.log('⏭ Bloc suivant:', game.nextBlock);
             setGrid(game.grid);
             setCurrentBlock(game.currentBlock);
             setNextBlock(game.nextBlock);
@@ -44,7 +44,7 @@ const SinglePlayer = ({ socket }) => {
         })
 
         socket.on('refreshGame', (game) => {
-            // console.log('🔄 Jeu rafraîchi:', game);
+            console.log('🔄 Jeu rafraîchi:', game);
             
             if (game.level > previousLevel.current) {
                 setNewLevel(game.level);
@@ -97,7 +97,7 @@ const SinglePlayer = ({ socket }) => {
         });
 
         socket.on('gameOver', ({ score }) => {
-        // console.log('💀 Game Over! Score final:', score);
+        console.log('💀 Game Over! Score final:', score);
         setGameOver(true);
         setScore(score);
         setGameStarted(false);
@@ -111,6 +111,9 @@ const SinglePlayer = ({ socket }) => {
             socket.off('gameOver');
             socket.off('blockFixed');
             
+            console.log('🧹 Démontage du composant - Reset complet');
+            socket.emit('resetGame');
+
             particleTimeouts.current.forEach(timeoutId => clearTimeout(timeoutId));
             particleTimeouts.current.clear();
         };
@@ -118,7 +121,7 @@ const SinglePlayer = ({ socket }) => {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
-            // console.log(event.key);
+            console.log(event.key);
 
             if (!gameStarted && !gameOver && event.key === " ") {
                 socket.emit('startGame');
@@ -130,15 +133,19 @@ const SinglePlayer = ({ socket }) => {
                     if (!event.repeat) {
                         socket.emit('rotateBlock');
                     }
-                } else {
+                }
+                if (event.key === " ") {
+                    if (!event.repeat) {
+                        socket.emit('dropBlock');
+                    }
+                }
+                else {
                     if (event.key === "ArrowDown") {
                         socket.emit('moveBlock', { x: 0, y: 1 });
                     } else if (event.key === "ArrowLeft") {
                         socket.emit('moveBlock', { x: -1, y: 0 });
                     } else if (event.key === "ArrowRight") {
                         socket.emit('moveBlock', { x: 1, y: 0 });
-                    } else if (event.key === " ") {
-                        socket.emit('dropBlock');
                     }
                 }
             }
@@ -279,6 +286,7 @@ const SinglePlayer = ({ socket }) => {
                                 </div>
                             </div>
                         </div>
+
                     </div>
                     {gameOver && (
                         <>

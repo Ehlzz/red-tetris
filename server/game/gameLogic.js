@@ -44,7 +44,7 @@ function refreshGame(socket, player) {
 
 function moveBlock(socket, player, direction) {
     if (!player || player.isGameOver) return false;
-    console.log(`⬆️ Déplacement du bloc pour ${socket.id}:`, direction);
+    // console.log(`⬆️ Déplacement du bloc pour ${socket.id}:`, direction);
     if (isCollision(player, direction)) {
         if (!player.isGameOver && direction.y === 1) {
             fixBlock(player, socket);
@@ -57,7 +57,7 @@ function moveBlock(socket, player, direction) {
         if (direction.y === 1 && isCollision(player, { x: 0, y: 0 })) {
             player.isGameOver = true;
             socket.emit('gameOver', { score: player.score });
-            // console.log('💀 Game Over pour:', socket.id);
+            console.log('💀 Game Over pour:', socket.id);
         }
         return false;
     }
@@ -77,11 +77,11 @@ function canRotate(player, shape, offsetX = 0, offsetY = 0) {
     for (let y = 0; y < shape.length; y++) {
         for (let x = 0; x < shape[y].length; x++) {
             if (shape[y][x]) {
+
                 const newX = player.position.x + x + offsetX;
                 const newY = player.position.y + y + offsetY;
                 
                 if (newX < 0 || newX >= 10 || newY >= 22) {
-                    // console.log('Rotation impossible: hors limites');
                     return false;
                 }
                 
@@ -131,7 +131,34 @@ function rotateBlock(socket, player) {
     const rotatedShape = rotateMatrix(shape);
     const offset = getRotationOffset(type, shape, rotatedShape);
 
-    if (!canRotate(player, rotatedShape, offset.x, offset.y)) return;
+    if (!canRotate(player, rotatedShape, offset.x, offset.y)) {
+        const wallKickOffsets = type === 'I'
+        ? [
+            { x: 0, y: 0 },
+            { x: -1, y: 0 },
+            { x: 1, y: 0 },
+            { x: 0, y: -1 },
+            { x: -2, y: 0 },
+            { x: 2, y: 0 }
+        ]
+        : [
+            { x: -1, y: 0 },
+            { x: 1, y: 0 },
+            { x: 0, y: -1 }
+        ];
+
+        let rotationSucceeded = false;
+        for (const kick of wallKickOffsets) {
+            if (canRotate(player, rotatedShape, offset.x + kick.x, offset.y + kick.y)) {
+                player.position.x += offset.x + kick.x;
+                player.position.y += offset.y + kick.y;
+                rotationSucceeded = true;
+                break;
+            }
+        }
+
+        if (!rotationSucceeded) return;
+    }
 
     player.currentBlock.shape = rotatedShape;
     player.position.x += offset.x;
