@@ -11,7 +11,7 @@ function createLobby(socket) {
     };
     socket.join(roomId);
     socket.emit('lobbyCreated', { room: rooms[roomId] });
-    // console.log(`🛠️ Lobby créé: ${roomId} par ${socket.id}`);
+    console.log(`🛠️ Lobby créé: ${roomId} par ${socket.id}`);
     startRoomTimer(roomId);
     return roomId;
 }
@@ -54,7 +54,7 @@ function joinLobby(socket, io, args) {
         room.players.forEach(player => {
             io.to(player.id).emit('lobbyJoined', { roomId: args.roomId, room: room });
         });
-        // console.log(`🔑 ${socket.id} (${args.playerName}) a rejoint le lobby: ${args.roomId}`);
+        console.log(`🔑 ${socket.id} (${args.playerName}) a rejoint le lobby: ${args.roomId}`);
     } else {
         socket.emit('error', { errorType: 'lobbyNotFound' });
     }
@@ -82,7 +82,7 @@ function startRoomTimer(roomId) {
         if (room && room.players.length === 0) {
             delete rooms[roomId];
             delete roomTimers[roomId];
-            // console.log(`🗑️ Lobby supprimé: ${roomId} (vide depuis 30s)`);
+            console.log(`🗑️ Lobby supprimé: ${roomId} (vide depuis 30s)`);
         }
     }, 30000);
 }
@@ -91,7 +91,7 @@ function clearRoomTimer(roomId) {
     if (roomTimers[roomId]) {
         clearTimeout(roomTimers[roomId]);
         delete roomTimers[roomId];
-        // console.log(`⏹️ Timer annulé pour le lobby: ${roomId}`);
+        console.log(`⏹️ Timer annulé pour le lobby: ${roomId}`);
     }
 }
 
@@ -103,9 +103,9 @@ function removePlayerFromLobby(socket) {
             room.players.splice(playerIndex, 1);
             socket.leave(roomId);
             delete playersRoom[socket.id];
-            // console.log(`🚪 ${socket.id} a quitté le lobby: ${roomId}`);
+            console.log(`🚪 ${socket.id} a quitté le lobby: ${roomId}`);
             if (room.players.length === 0) {
-                // console.log('🗑️ Lobby vide, démarrage du timer de suppression:', roomId);
+                console.log('🗑️ Lobby vide, démarrage du timer de suppression:', roomId);
 
                 startRoomTimer(roomId);
                 return;

@@ -36,7 +36,7 @@ const MultiPlayerGame = ({ socket }) => {
         });
 
         socket.on('startMultiplayerGame', (data) => {
-            // console.log('🎮 Partie multijoueur démarrée:', data);
+            console.log('🎮 Partie multijoueur démarrée:', data);
             setRoom(data.room);
         });
 
@@ -51,11 +51,11 @@ const MultiPlayerGame = ({ socket }) => {
 
     useEffect(() => {
         socket.on('receiveGame', (player) => {
-            // console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
-            // console.log('🟩 Grille initialisée:', player.grid);
-            // console.log('⏭ Bloc suivant:', player.nextBlock);
-            // setSelectedPlayer(player)
-            // console.log('Selected Player : ', player);
+            console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
+            console.log('🟩 Grille initialisée:', player.grid);
+            console.log('⏭ Bloc suivant:', player.nextBlock);
+            setSelectedPlayer(player)
+            console.log('Selected Player : ', player);
             setGameStarted(true);
             setCountdown(null);
             spectatedPlayerRef.current = socket.id;
@@ -68,7 +68,7 @@ const MultiPlayerGame = ({ socket }) => {
         })
 
         socket.on('refreshGame', (game) => {
-            // console.log('🔄 Jeu rafraîchi:', game);
+            console.log('🔄 Jeu rafraîchi:', game);
             if (game.room) {
                 console.log('🔄 Room info:', game.room);
                 setRoom(game.room);
@@ -128,13 +128,13 @@ const MultiPlayerGame = ({ socket }) => {
 
         socket.on('gameOver', ({ score }) => {
             socket.emit('gameOver', { roomId: roomId });
-            // console.log('💀 Game Over! Score final:', score);
+            console.log('💀 Game Over! Score final:', score);
             setScore(score);
             setGameStarted(false);
         });
         
         socket.on('multiplayerGameEnd', (data) => {
-            // console.log('🏆 Fin de la partie multijoueur:', data);
+            console.log('🏆 Fin de la partie multijoueur:', data);
             setGameOver(true);
             setRoom(data.room);
         });
