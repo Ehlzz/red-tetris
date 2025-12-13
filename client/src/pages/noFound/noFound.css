@@ -6,12 +6,12 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: red;
+    color: #fd1e2d;
 }
 
 .content-not-found {
     font-size: 1.5rem;
-    color: #ff4d4d;
+    color: #fd1e2d;
     margin-bottom: 1.5rem;
     z-index: 3;
     text-align: center;
@@ -23,9 +23,10 @@
 
 .home-link {
     text-decoration: none;
-    color: red;
+    color: #fd1e2d;
     font-size: 3rem;
     z-index: 3;
+    margin-top: 30px;
 }
 
 .not-found-page h1 {
@@ -44,4 +45,22 @@
     font-size: 2rem;
     z-index: 3;
     margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .not-found-page h1 {
+        font-size: 8rem;
+    }
+
+    .error-text {
+        font-size: 5rem;
+    }
+
+    .content-not-found {
+        font-size: 1.2rem;
+    }
+
+    .home-link {
+        font-size: 2.5rem;
+    }
 }

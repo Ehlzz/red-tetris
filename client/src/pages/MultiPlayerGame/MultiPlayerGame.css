@@ -40,6 +40,7 @@
   height: 93%;
   left: 2vw;
   gap: 1vw;
+  animation: slideLeft 1s;
 }
 
 .leaderboard-player-component {
@@ -166,7 +167,6 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  /* background-color: rgba(0, 0, 0, 0.8); */
   background-color: #242834;
   color: #fd1e2d;
   padding: 40px;
@@ -176,7 +176,6 @@
   height: auto;
   z-index: 2;
   font-size: 3rem;
-  /* animation: pulse 2s infinite; */
   animation: slideIn 1s;
   display: flex;
   text-align: start;
@@ -337,6 +336,17 @@
   }
 }
 
+@keyframes slideLeft {
+  0% {
+    left: -12vw;
+    opacity: 0;
+  }
+  100% {
+    left: 2vw;
+    opacity: 1;
+  }
+}
+
 @keyframes slideIn {
   0% {
     transform: translate(-50%, -60%);
@@ -391,6 +401,8 @@
   color: #F0F0F0;
   font-size: 2rem;
   z-index: 2;
+  animation: countDownAnimation 1s forwards infinite;
+  text-align: center;
 }
 
 .grid-container {
@@ -406,6 +418,11 @@
   30% { transform: translateY(5px); }
   60% { transform: translateY(-2px); }
   100% { transform: translateY(0); }
+}
+
+@keyframes countDownAnimation {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2); }
 }
 
 .particles-container {

@@ -54,8 +54,6 @@ const MultiPlayerGame = ({ socket }) => {
             console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
             console.log('🟩 Grille initialisée:', player.grid);
             console.log('⏭ Bloc suivant:', player.nextBlock);
-            setSelectedPlayer(player)
-            console.log('Selected Player : ', player);
             setGameStarted(true);
             setCountdown(null);
             spectatedPlayerRef.current = socket.id;
