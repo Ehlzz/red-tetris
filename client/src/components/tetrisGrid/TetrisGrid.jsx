@@ -7,7 +7,7 @@ const TetrisGrid = ({ displayGrid, isShaking, particles, isGameOver}) => {
             <div className={`grid ${isShaking ? 'shake' : ''}`}>
                 <div className={`game-over-overlay ${isGameOver ? 'visible' : ''}`}>
                     <div className="game-over-icon">💀</div>
-                    <div className="game-over-text">Game Over</div>
+                    <div className="game-over-text-multi">Game Over</div>
                 </div>
                 {displayGrid.slice(2).map((row, rowIndex) => (
                     <div key={rowIndex} className="row">
