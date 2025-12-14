@@ -164,10 +164,12 @@ const SinglePlayer = ({ socket }) => {
         let touchStartY = 0;
         let touchEndX = 0;
         let touchEndY = 0;
+        let touchStartTime = 0;
 
         const handleTouchStart = (event) => {
             touchStartX = event.touches[0].clientX;
             touchStartY = event.touches[0].clientY;
+            touchStartTime = Date.now();
         };
 
         const handleTouchMove = (event) => {
@@ -178,17 +180,26 @@ const SinglePlayer = ({ socket }) => {
         const handleTouchEnd = () => {
             const deltaX = touchEndX - touchStartX;
             const deltaY = touchEndY - touchStartY;
+            const touchDuration = Date.now() - touchStartTime;
+            const minSwipeDistance = 30;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+            if (distance < minSwipeDistance) {
+                return;
+            }
 
             if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                if (deltaX > 50) {
+                if (deltaX > minSwipeDistance) {
                     socket.emit('moveBlock', { x: 1, y: 0 });
-                } else if (deltaX < -50) {
+                } else if (deltaX < -minSwipeDistance) {
                     socket.emit('moveBlock', { x: -1, y: 0 });
                 }
             } else {
-                if (deltaY > 50) {
+                if (deltaY > minSwipeDistance * 3 && touchDuration < 150) {
+                    socket.emit('dropBlock');
+                } else if (deltaY > minSwipeDistance * 1.5) {
                     socket.emit('moveBlock', { x: 0, y: 1 });
-                } else if (deltaY < -50) {
+                } else if (deltaY < -minSwipeDistance * 1.5) {
                     socket.emit('rotateBlock');
                 }
             }
