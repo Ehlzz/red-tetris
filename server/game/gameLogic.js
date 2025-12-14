@@ -16,6 +16,7 @@ function refreshGame(socket, player) {
                 });
                 p.isGameOver = false;
             });
+            room.gameStarted = false;
         }
         room.players.forEach(p => {
             if (p.id === socket.id) {
