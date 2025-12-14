@@ -1,0 +1,77 @@
+.grid-container {
+  position: relative;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  background-color: #353541;
+  padding: 10px;
+  border: 3px solid #fd1e2d;
+  margin-inline: 20px;
+  transition: transform 0.1s ease-out;
+}
+
+.grid.shake {
+  animation: gridShake 0.2s ease-out;
+}
+
+@keyframes gridShake {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(5px); }
+  60% { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.cell {
+  width: 30px;
+  height: 30px;
+  border: 2px solid #242834;
+}
+
+.cell.cyan {
+    background-color: #E02A43;
+}
+
+.cell.blue {
+    background-color: #B62336;
+}
+
+.cell.orange {
+    background-color: #941C2C;
+
+}
+
+.cell.yellow {
+    background-color: #ec1e28;
+
+}
+
+.cell.green {
+    background-color: #a72e3e;
+
+}
+
+.cell.purple {
+    background-color: #990c1f;
+}
+
+.cell.red {
+    background-color: #FF3E3E;
+}
+
+.cell.hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 1024px) {
+  .cell {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}

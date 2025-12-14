@@ -3,6 +3,9 @@ import './SinglePlayer.css';
 import { io } from 'socket.io-client';
 import { Link } from 'react-router-dom';
 import GameOverSolo from '../../components/gameOverSolo/gameOverSolo';
+import LevelUpAnimation from '../../components/levelUpAnimation/LevelUpAnimation';
+import TetrisGrid from '../../components/tetrisGrid/TetrisGrid';
+import GameInfo from '../../components/gameInfo/GameInfo';
 
 const SinglePlayer = ({ socket }) => {
     const [grid, setGrid] = useState(null);
@@ -205,52 +208,16 @@ const SinglePlayer = ({ socket }) => {
     }, [socket]);
 
     return (
-
         <div className="game-container">
             <div className="single-player-back">
-                <div className="test">
-                    <div className="grid-container">
-                        <div className={`grid ${isShaking ? 'shake' : ''}`}>
-                            {displayGrid.slice(2).map((row, rowIndex) => (
-                                <div key={rowIndex} className="row">
-                                {row.map((cell, cellIndex) => (
-                                    <div
-                                        key={cellIndex}
-                                        className={`cell ${cell}`}
-                                    ></div>
-                                ))}
-                            </div>
-                        ))}
-                        </div>
-                        
-                        <div className="particles-container">
-                            {particles.map(particle => (
-                                <div
-                                    key={particle.id}
-                                    className="particle"
-                                    style={{
-                                        left: `${particle.x}px`,
-                                        top: `${particle.y}px`,
-                                        animationDelay: `${particle.delay}ms`
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    </div>
+                <div style={{ display: 'flex' }}>
+                    <TetrisGrid 
+                        displayGrid={displayGrid}
+                        isShaking={isShaking}
+                        particles={particles}
+                    />
                     
-                    {showLevelUp && (
-                        <div className="level-up-animation">
-                            <div className="level-up-content">
-                                <h2>LEVEL UP!</h2>
-                                <p>Level {newLevel}</p>
-                                <div className="level-up-sparkles">
-                                    <span>🔥</span>
-                                    <span>🔥</span>
-                                    <span>🔥</span>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    <LevelUpAnimation show={showLevelUp} level={newLevel} />
                 
                     {!gameStarted && !gameOver && (
                         <>
@@ -259,35 +226,13 @@ const SinglePlayer = ({ socket }) => {
                             </div>
                         </>
                     )}
-                    <div className='info'>
-                        
-                        <div className="next-block">
-                            {nextBlock && nextBlock.shape.map((row, rowIndex) => (
-                                <div key={rowIndex} className="row">
-                                    {row.map((cell, cellIndex) => (
-                                        <div
-                                            key={cellIndex}
-                                            className={`cell ${cell ? 'filled' : ''}`}
-                                        ></div>
-                                    ))}
-                                </div>
-                            ))}
-                        </div>
-                        <div className='scd-info'>
-                            <div className="score-board">
-                                <p>Score : {score}</p>
-                            </div>
-                            <div className='info-game'>
-                                <div className="current-lvl">
-                                    <p>Level : {playerLevel}</p>
-                                </div>
-                                <div className="lines-cleared">
-                                    <p>Line : {totalLinesCleared}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
+                    
+                    <GameInfo 
+                        nextBlock={nextBlock}
+                        score={score}
+                        playerLevel={playerLevel}
+                        totalLinesCleared={totalLinesCleared}
+                    />
                     {gameOver && (
                         <>
                             <GameOverSolo 

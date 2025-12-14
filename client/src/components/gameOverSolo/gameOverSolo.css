@@ -53,22 +53,6 @@
   font-size: 1.5rem;
 }
 
-.game-over-btn {
-  display: flex;
-  flex-direction: column;
-}
-
-@keyframes background-transition {
-  0% {
-    background-color: #F0F0F0;
-    box-shadow: inset 0 0 0 22px #fd1e2d;
-  }
-  100% {
-    background-color: #242834;
-    box-shadow: inset 0 0 0 0px #fd1e2d;
-  }
-}
-
 @keyframes slideIn {
   0% {
     transform: translate(-50%, -60%);

@@ -9,14 +9,6 @@
   box-shadow: inset 0 0 0 22px #fd1e2d;
 }
 
-.main-navigation{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3rem;
-  z-index: 3;
-}
-
 .nav-input{
   text-decoration: none;
   color: #fd1e2d;

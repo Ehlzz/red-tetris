@@ -1,4 +1,4 @@
-.gridtest {
+.gridBack {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -11,15 +11,15 @@
   z-index: 0;
 }
 
-.celltest {
+.cellBack {
   background-color: transparent;
   transition: background-color 0.1s ease-in, background-color 0.5s ease-out;
 }
 
-.celltest:hover {
+.cellBack:hover {
   background-color: transparent;
 }
 
-.celltest.active {
+.cellBack.active {
   background-color: #fd1e2d;
 }

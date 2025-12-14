@@ -4,6 +4,10 @@ import { io } from 'socket.io-client';
 import { Link } from 'react-router-dom';
 import { useParams, useNavigate } from "react-router-dom";
 import GameOverMulti from '../../components/gameOverMulti/gameOverMulti';
+import ParticlesContainer from '../../components/particlesContainer/ParticlesContainer';
+import ShowLevelUpAnimation from '../../components/levelUpAnimation/LevelUpAnimation';
+import TetrisGrid from '../../components/tetrisGrid/TetrisGrid';
+import GameInfo from '../../components/gameInfo/GameInfo';
 
 const MultiPlayerGame = ({ socket }) => {
     const { roomId, playerName: urlPlayerName } = useParams();
@@ -156,22 +160,25 @@ const MultiPlayerGame = ({ socket }) => {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
-			// console.log(event.key);
             
             if (gameStarted && !gameOver) {
                 if (event.key === "ArrowUp") {
                     if (!event.repeat) {
                         socket.emit('rotateBlock');
                     }
-                } else {
+                }
+                if (event.key === " ") {
+                    if (!event.repeat) {
+                        socket.emit('dropBlock');
+                    }
+                }
+                else {
                     if (event.key === "ArrowDown") {
                         socket.emit('moveBlock', { x: 0, y: 1 });
                     } else if (event.key === "ArrowLeft") {
                         socket.emit('moveBlock', { x: -1, y: 0 });
                     } else if (event.key === "ArrowRight") {
                         socket.emit('moveBlock', { x: 1, y: 0 });
-                    } else if (event.key === " ") {
-                        socket.emit('dropBlock');
                     }
                 }
             }
@@ -185,7 +192,6 @@ const MultiPlayerGame = ({ socket }) => {
     }, [gameStarted, gameOver]);
 
     return (
-
         <div className="game-container">
             <div className="multi-player-back">
                 <div className="leaderboard">
@@ -233,48 +239,14 @@ const MultiPlayerGame = ({ socket }) => {
                         </div>
                     )}
                 </div>
-                <div className="test">
-                    <div className="grid-container">
-                        <div className={`grid ${isShaking ? 'shake' : ''}`}>
-                            {displayGrid.slice(2).map((row, rowIndex) => (
-                                <div key={rowIndex} className="row">
-                                    {row.map((cell, cellIndex) => (
-                                        <div
-                                            key={cellIndex}
-                                            className={`cell ${cell}`}
-                                        ></div>
-                                    ))}
-                                </div>
-                            ))}
-                        </div>
+                <div style={{ display: 'flex' }}>
+                    <TetrisGrid 
+                        displayGrid={displayGrid}
+                        isShaking={isShaking}
+                        particles={particles}
+                    />
 
-                        <div className="particles-container">
-                            {particles.map(particle => (
-                                <div
-                                    key={particle.id}
-                                    className="particle"
-                                    style={{
-                                        left: `${particle.x}px`,
-                                        top: `${particle.y}px`
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    </div>
-
-                    {showLevelUp && (
-                        <div className="level-up-animation">
-                            <div className="level-up-content">
-                                <h2>LEVEL UP!</h2>
-                                <p>Level {newLevel}</p>
-                                <div className="level-up-sparkles">
-                                    <span>🔥</span>
-                                    <span>🔥</span>
-                                    <span>🔥</span>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    <ShowLevelUpAnimation show={showLevelUp} level={newLevel} />
 
                     {!gameStarted && !gameOver && (
                         <>
@@ -285,47 +257,24 @@ const MultiPlayerGame = ({ socket }) => {
                             )}
                         </>
                     )}
-                    <div className='info'>
-                        
-                        <div className="next-block">
-                            {nextBlock && nextBlock.shape.map((row, rowIndex) => (
-                                <div key={rowIndex} className="row">
-                                    {row.map((cell, cellIndex) => (
-                                        <div
-                                            key={cellIndex}
-                                            className={`cell ${cell ? 'filled' : ''}`}
-                                        ></div>
-                                    ))}
-                                </div>
-                            ))}
-                        </div>
-                        <div className="scd-info">
-                            <div className="score-board">
-                                <p>Score : {score}</p>
-                            </div>
-                        <div className='info-game'>
-                            <div className="current-lvl">
-                                <p>Level : {playerLevel}</p>
-                            </div>
-                            <div className="lines-cleared">
-                                <p>Line : {totalLinesCleared}</p>
-                            </div>
-                        </div>
-                        </div>
-
-                            { gameOver && (
-                                <>
-                                    <GameOverMulti 
-                                        score={score}
-                                        totalLinesCleared={totalLinesCleared}
-                                        playerLevel={playerLevel}
-                                        roomName={roomId}
-                                        room={room}
-                                        playerName={room.players.find(p => p.id === socket.id).name}
-                                    />
-                                </>
-                            )}
-                    </div>
+                    <GameInfo 
+                        nextBlock={nextBlock}
+                        score={score}
+                        playerLevel={playerLevel}
+                        totalLinesCleared={totalLinesCleared}
+                    />
+                    { gameOver && (
+                        <>
+                            <GameOverMulti 
+                                score={score}
+                                totalLinesCleared={totalLinesCleared}
+                                playerLevel={playerLevel}
+                                roomName={roomId}
+                                room={room}
+                                playerName={room.players.find(p => p.id === socket.id).name}
+                            />
+                        </>
+                    )}
                 </div>
             </div>
         </div>
