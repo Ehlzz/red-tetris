@@ -28,9 +28,20 @@ const MultiPlayerGame = ({ socket }) => {
     const [spectatedPlayer, setSpectatedPlayer] = useState(null);
     const [spectatedPlayerGameOver, setSpectatedPlayerGameOver] = useState(false);
     const spectatedPlayerRef = useRef(null);
+    const navigate = useNavigate();
     const createEmptyGrid = () => {
         return Array(22).fill().map(() => Array(10).fill(''));
     };
+
+    useEffect(() => {
+        const checkRoomTimeout = setTimeout(() => {
+            if (!room && !countdown) {
+                navigate('/');
+            }
+        }, 1000);
+
+        return () => clearTimeout(checkRoomTimeout);
+    }, [room, navigate, countdown]);
     
     const [displayGrid, setDisplayGrid] = useState(createEmptyGrid());
 
