@@ -48,6 +48,7 @@ function handleStartMultiplayerGame(io, roomId) {
 
     room.players.forEach(playerData => {
         playerData.isReady = false;
+        playerData.isGameOver = false;
     });
 
     let countdown = 3;

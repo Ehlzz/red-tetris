@@ -38,7 +38,7 @@ const MultiPlayerGame = ({ socket }) => {
             if (!room && !countdown) {
                 navigate('/');
             }
-        }, 1000);
+        }, 5000);
 
         return () => clearTimeout(checkRoomTimeout);
     }, [room, navigate, countdown]);
@@ -47,7 +47,6 @@ const MultiPlayerGame = ({ socket }) => {
 
     useEffect(() => {
         socket.on('countdown', (count) => {
-            // console.log('⏳ Décompte reçu:', count);
             setCountdown(count);
         });
 
