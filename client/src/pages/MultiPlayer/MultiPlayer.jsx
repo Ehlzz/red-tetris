@@ -93,11 +93,13 @@ const MultiPlayer = ({ socket }) => {
                                 value={nameInput}
                                 onChange={(e) => setNameInput(e.target.value)}
                                 maxLength={12}
-                                onKeyPress={(e) => {
-                                    if (e.key === 'Enter' && roomInput.trim() === '') {
-                                        handleCreateGame();
-                                    } else if (e.key === 'Enter' && roomInput.trim() !== '') {
-                                        handleJoinGame();
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        if (roomInput.trim() === 'room-') {
+                                            handleCreateGame();
+                                        } else {
+                                            handleJoinGame();
+                                        }
                                     }
                                 }}
                             />
@@ -135,6 +137,13 @@ const MultiPlayer = ({ socket }) => {
                                     const prefix = "room-";
                                     const pos = e.target.selectionStart;
 
+                                    if (e.key === 'Enter') {
+                                        if (roomInput.trim() === 'room-') {
+                                            handleCreateGame();
+                                        } else {
+                                            handleJoinGame();
+                                        }
+                                    }
                                     if (e.key === "Backspace" && pos <= prefix.length) {
                                         setRoomInput("room-");
                                         e.preventDefault();
@@ -146,13 +155,6 @@ const MultiPlayer = ({ socket }) => {
                                     }
                                 }}
                                 maxLength={14}
-                                onKeyPress={(e) => {
-                                    if (e.key === 'Enter' && roomInput.trim() === '') {
-                                        handleCreateGame();
-                                    } else if (e.key === 'Enter' && roomInput.trim() !== '') {
-                                        handleJoinGame();
-                                    }
-                                }}
                             />
 
                             <button className="nav-button-multi" onClick={handleJoinGame}>

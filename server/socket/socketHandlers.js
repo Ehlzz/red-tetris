@@ -50,7 +50,7 @@ function handleSocketConnection(socket, io) {
     socket.on('toggleReady', (args) => {
         toggleReadyLobby(socket, io, args.roomId);
     });
-
+    
     socket.on('gameOver', (data) => {
         handleGameOver(socket, io, data)
     });
@@ -66,14 +66,16 @@ function handleSocketConnection(socket, io) {
 		console.log('🔄 Reset du jeu pour:', socket.id);
 
         initPlayer(socket.id);
+        if (socket.data.gameLoop) {
+            clearInterval(socket.data.gameLoop);
+            socket.data.gameLoop = null;
+        }
 		console.log('✨ Jeu réinitialisé pour:', socket.id);
 	});
 
     socket.on('stopGame', () => {
         const player = getPlayer(socket.id);
-        if (player && player.gameLoop) {
-            clearInterval(player.gameLoop);
-            player.gameLoop = null;
+        if (player) {
             player.gameStarted = false;
             console.log('🛑 Partie arrêtée pour:', socket.id);
         }

@@ -26,6 +26,7 @@ const MultiPlayerGame = ({ socket }) => {
     const [newLevel, setNewLevel] = useState(false);
     const previousLevel = useRef(1);
     const [spectatedPlayer, setSpectatedPlayer] = useState(null);
+    const [spectatedPlayerGameOver, setSpectatedPlayerGameOver] = useState(false);
     const spectatedPlayerRef = useRef(null);
     const createEmptyGrid = () => {
         return Array(22).fill().map(() => Array(10).fill(''));
@@ -83,14 +84,13 @@ const MultiPlayerGame = ({ socket }) => {
             }
             const id = spectatedPlayerRef.current;
             previousLevel.current = game.level;
-            console.log('Spectated Player ID:', id);
             const player = game.room.players.find(p => p.id === id);
-            console.log(player);
             setDisplayGrid(player.grid);
             setNextBlock(game.nextBlock);
             setScore(game.score);
             setPlayerLevel(game.level);
             setTotalLinesCleared(game.totalColumnsCleared);
+            setSpectatedPlayerGameOver(player.isGameOver);
         });
 
         socket.on('refreshRoom', (game) => {
@@ -98,6 +98,7 @@ const MultiPlayerGame = ({ socket }) => {
         });
 
         socket.on('blockFixed', (data) => {
+            if (spectatedPlayerRef.current !== socket.id) return;
             setIsShaking(true);
             setTimeout(() => setIsShaking(false), 200);
             
@@ -156,6 +157,7 @@ const MultiPlayerGame = ({ socket }) => {
         setSpectatedPlayer(playerId);
         spectatedPlayerRef.current = playerId;
         setDisplayGrid(room.players.find(p => p.id === playerId).grid);
+        setSpectatedPlayerGameOver(room.players.find(p => p.id === playerId).isGameOver);
     }
 
     useEffect(() => {
@@ -218,7 +220,6 @@ const MultiPlayerGame = ({ socket }) => {
                                             <p className="player-name">{player.name}</p>
                                             <p className="player-score">Score: {player.score}</p>
                                             <p className="player-level">Level: {player.level}</p>
-                                            <p className="player-level">Line cleared: {player.totalColumnsCleared}</p>
                                             <div className="next-block-other">
                                                 {player.nextBlock && player.nextBlock.shape.map((row, rowIndex) => (
                                                     <div key={rowIndex} className="row">
@@ -244,6 +245,7 @@ const MultiPlayerGame = ({ socket }) => {
                         displayGrid={displayGrid}
                         isShaking={isShaking}
                         particles={particles}
+                        isGameOver={spectatedPlayerGameOver}
                     />
 
                     <ShowLevelUpAnimation show={showLevelUp} level={newLevel} />
@@ -271,7 +273,7 @@ const MultiPlayerGame = ({ socket }) => {
                                 playerLevel={playerLevel}
                                 roomName={roomId}
                                 room={room}
-                                playerName={room.players.find(p => p.id === socket.id).name}
+                                playerName={urlPlayerName}  
                             />
                         </>
                     )}

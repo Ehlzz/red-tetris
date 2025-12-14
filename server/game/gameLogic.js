@@ -43,8 +43,9 @@ function refreshGame(socket, player) {
 }
 
 function moveBlock(socket, player, direction) {
-    if (!player || player.isGameOver) return false;
-    // console.log(`⬆️ Déplacement du bloc pour ${socket.id}:`, direction);
+    const room = getRoomById(getPlayerRoom(socket.id));
+    if (!player || ((!room && player.isGameOver) || (room && room.isGameOver))) return false;
+
     if (isCollision(player, direction)) {
         if (!player.isGameOver && direction.y === 1) {
             fixBlock(player, socket);
@@ -57,7 +58,9 @@ function moveBlock(socket, player, direction) {
         if (direction.y === 1 && isCollision(player, { x: 0, y: 0 })) {
             player.isGameOver = true;
             socket.emit('gameOver', { score: player.score });
-            console.log('💀 Game Over pour:', socket.id);
+            if (room) {
+                refreshGame(socket, player);
+            }
         }
         return false;
     }

@@ -23,7 +23,6 @@ function fixBlock(player, socket) {
     
     if (socket && fixedPositions.length > 0) {
         socket.emit('blockFixed', { positions: fixedPositions });
-        // console.log('🧱 Bloc fixé avec particules aux positions:', fixedPositions);
     }
 }
 
