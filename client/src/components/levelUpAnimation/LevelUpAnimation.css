@@ -1,0 +1,93 @@
+.level-up-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  pointer-events: none;
+  animation: levelUpFade 2s ease-out forwards;
+}
+
+.level-up-content {
+  text-align: center;
+  animation: levelUpBounce 0.8s ease-out;
+}
+
+.level-up-content h2 {
+  font-size: 4rem;
+  color: #fd1e2d;
+  margin: 0;
+  text-shadow: 0 0 20px rgba(253, 30, 45, 0.8);
+  animation: levelUpGlow 2s ease-in-out infinite alternate;
+}
+
+.level-up-content p {
+  font-size: 2rem;
+  color: #F0F0F0;
+  margin: 10px 0;
+  text-shadow: 0 0 10px rgba(240, 240, 240, 0.6);
+}
+
+.level-up-sparkles {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.level-up-sparkles span {
+  font-size: 2rem;
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+
+.level-up-sparkles span:nth-child(1) { animation-delay: 0s; }
+.level-up-sparkles span:nth-child(2) { animation-delay: 0.2s; }
+.level-up-sparkles span:nth-child(3) { animation-delay: 0.4s; }
+.level-up-sparkles span:nth-child(4) { animation-delay: 0.6s; }
+.level-up-sparkles span:nth-child(5) { animation-delay: 0.8s; }
+
+@keyframes levelUpFade {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes levelUpBounce {
+  0% { 
+    transform: scale(0.3) translateY(50px);
+    opacity: 0;
+  }
+  50% { 
+    transform: scale(1.1) translateY(-10px);
+    opacity: 1;
+  }
+  100% { 
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes levelUpGlow {
+  0% { 
+    text-shadow: 0 0 20px rgba(253, 30, 45, 0.8);
+  }
+  100% { 
+    text-shadow: 0 0 30px rgba(253, 30, 45, 1), 0 0 40px rgba(253, 30, 45, 0.8);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg);
+    opacity: 0.7;
+  }
+  50% { 
+    transform: scale(1.5) rotate(180deg);
+    opacity: 1;
+  }
+}

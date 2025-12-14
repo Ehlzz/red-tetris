@@ -3,7 +3,7 @@ import './gridBackground.css';
 
 const GridBackground = () => {
   useEffect(() => {
-    const cells = document.querySelectorAll('.celltest');
+    const cells = document.querySelectorAll('.cellBack');
     
     cells.forEach((cell) => {
       cell.addEventListener('mouseover', () => {
@@ -23,9 +23,9 @@ const GridBackground = () => {
     }, []);
 
     return (
-        <div className='gridtest'>
+        <div className='gridBack'>
           {Array.from({ length: 20 * 10 }).map((_, i) => (
-            <div key={i} className="celltest" />
+            <div key={i} className="cellBack" />
           ))}
         </div>
     );
