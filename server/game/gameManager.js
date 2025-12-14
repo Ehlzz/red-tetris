@@ -5,28 +5,38 @@ const { moveBlock } = require('./gameLogic');
 function handleStartGame(socket) {
     console.log('▶️ Jeu démarré pour:', socket.id);
 
+    if (socket.data.gameLoop) {
+        clearInterval(socket.data.gameLoop);
+        socket.data.gameLoop = null;
+    }
+
     const player = initPlayer(socket.id);
     socket.emit('receiveGame', player);
 
-    let loop;
     function startLoop() {
-        clearInterval(loop);
+        if (socket.data.gameLoop) {
+            clearInterval(socket.data.gameLoop);
+        }
+
         const p = getPlayer(socket.id);
         if (!p) return;
-        
-        loop = setInterval(() => {
+
+        socket.data.gameLoop = setInterval(() => {
             const currentPlayer = getPlayer(socket.id);
             if (!currentPlayer || currentPlayer.isGameOver) {
-                clearInterval(loop);
+                clearInterval(socket.data.gameLoop);
+                gameLoops.delete(socket.id);
                 return;
             }
+            console.log('MOVE BLOC INTERVAL FOR PLAYER:', socket.id);
             moveBlock(socket, currentPlayer, { x: 0, y: 1 });
         }, p.speed);
     }
 
     startLoop();
-    player.updateSpeed = () => startLoop();
+    player.updateSpeed = startLoop;
 }
+
 
 function handleStartMultiplayerGame(io, roomId) {
     const room = getRoomById(roomId);
@@ -36,6 +46,10 @@ function handleStartMultiplayerGame(io, roomId) {
     });
 
     room.gameStarted = true;
+
+    room.players.forEach(playerData => {
+        playerData.isReady = false;
+    });
 
     let countdown = 3;
 
@@ -56,7 +70,7 @@ function handleStartMultiplayerGame(io, roomId) {
                     
                     loop = setInterval(() => {
                         const currentPlayer = getPlayer(playerData.id);
-                        if (!currentPlayer || currentPlayer.isGameOver) {
+                        if (!currentPlayer || !room.gameStarted) {
                             clearInterval(loop);
                             return;
                         }

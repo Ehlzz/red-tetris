@@ -124,8 +124,6 @@ const SinglePlayer = ({ socket }) => {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
-            console.log(event.key);
-
             if (!gameStarted && !gameOver && event.key === " ") {
                 socket.emit('startGame');
                 return;

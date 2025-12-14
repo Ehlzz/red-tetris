@@ -1,10 +1,14 @@
 import './TetrisGrid.css';
 import ParticlesContainer from '../particlesContainer/ParticlesContainer';
 
-const TetrisGrid = ({ displayGrid, isShaking, particles }) => {
+const TetrisGrid = ({ displayGrid, isShaking, particles, isGameOver}) => {
     return (
         <div className="grid-container">
             <div className={`grid ${isShaking ? 'shake' : ''}`}>
+                <div className={`game-over-overlay ${isGameOver ? 'visible' : ''}`}>
+                    <div className="game-over-icon">💀</div>
+                    <div className="game-over-text">Game Over</div>
+                </div>
                 {displayGrid.slice(2).map((row, rowIndex) => (
                     <div key={rowIndex} className="row">
                         {row.map((cell, cellIndex) => (
