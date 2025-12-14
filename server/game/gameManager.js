@@ -25,7 +25,6 @@ function handleStartGame(socket) {
             const currentPlayer = getPlayer(socket.id);
             if (!currentPlayer || currentPlayer.isGameOver) {
                 clearInterval(socket.data.gameLoop);
-                gameLoops.delete(socket.id);
                 return;
             }
             console.log('MOVE BLOC INTERVAL FOR PLAYER:', socket.id);
