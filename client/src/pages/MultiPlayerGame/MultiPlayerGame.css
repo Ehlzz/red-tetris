@@ -25,7 +25,7 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  height: 93%;
+  height: auto;
   left: 2vw;
   gap: 1vw;
   animation: slideLeft 1s;
@@ -86,6 +86,7 @@
     margin: 0;
     width: auto;
     border: 3px solid #fd1e2d;
+    position: relative;
 }
 
 .next-block-other .row {
@@ -95,8 +96,10 @@
 .next-block-other .cell {
     width: 15px;
     height: 15px;
-    border: 3px solid #ccc;
     background-color: transparent;
+    box-sizing: border-box;
+    position: relative;
+    top: 50%;
 }
 
 .next-block-other .cell.filled {
