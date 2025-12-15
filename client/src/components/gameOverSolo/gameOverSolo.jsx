@@ -16,7 +16,7 @@ const GameOverSolo = ({ score, totalLinesCleared, playerLevel, onRestart }) => {
                     </div>
                     <div className="game-over-btn">
                         <Link to="/" className="nav-button-home">
-                            Return
+                            Back to Home
                         </Link>
                         <button className="play-again" onClick={onRestart}>
                             Play again

@@ -51,7 +51,7 @@ const GameOverMulti = ({ score, totalLinesCleared, playerLevel, roomName, player
                         <div onClick={() => {
                             navigate(`/lobby/${roomName}/${playerName}`, {state: {room: room}});
                         }}>
-                            Back to Lobby
+                            Back to Home
                         </div>
                     </div>
                     
