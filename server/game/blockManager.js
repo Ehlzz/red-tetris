@@ -20,7 +20,7 @@ function fixBlock(player, socket) {
 
                 if (gridY < 2) {
                     player.isGameOver = true;
-                    const room = socket.data.room;
+                    const room = socket.data.room || getRoomById(getPlayerRoom(socket.id));
                     if (socket) socket.emit('gameOver', { score: player.score });
                     if (room) {
                         refreshGame(socket, player);
