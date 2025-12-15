@@ -52,7 +52,14 @@ function moveBlock(socket, player, direction) {
             fixBlock(player, socket);
             checkLines(player, socket);
             player.currentBlock = player.nextBlock;
-            player.nextBlock = getRandomBlock();
+            if (room) {
+                const playerInRoom = room.players.find(p => p.id === socket.id);
+                playerInRoom.blocksFixed += 1;
+                if (!room.blocksQueue[playerInRoom.blocksFixed]) {
+                    room.blocksQueue[playerInRoom.blocksFixed] = getRandomBlock();
+                }
+                player.nextBlock = room.blocksQueue[playerInRoom.blocksFixed];
+            }
             player.position = { x: 4, y: 0 };
             refreshGame(socket, player);
         }
