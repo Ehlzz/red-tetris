@@ -96,7 +96,7 @@ function clearRoomTimer(roomId) {
 }
 
 function removePlayerFromLobby(socket) {
-    const room = socket.data.room;
+    const room = getRoomById(getPlayerRoom(socket.id));
     if (!room) return;
     const playerIndex = room.players.findIndex(p => p.id === socket.id);
     if (playerIndex !== -1) {

@@ -48,7 +48,7 @@ function socketMiddleware(socket) {
             return requestIsInGame(socket, next);
         }
 
-        if (['leaveLobby', 'toggleReady', 'startMultiplayerGame'].includes(event)) {
+        if (['toggleReady', 'startMultiplayerGame'].includes(event)) {
             return requestIsInLobby(socket, next);
         }
 
@@ -56,7 +56,7 @@ function socketMiddleware(socket) {
             return requestCreateLobby(socket, next);
         }
 
-        console.log('Aucun middleware applicable pour cet événement.');
+        console.log('Aucun middleware applicable pour cet événement. : ' + event);
         next();
     });
 }
