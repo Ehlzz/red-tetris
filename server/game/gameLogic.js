@@ -8,6 +8,7 @@ const { getPlayer } = require('./playerManager');
 function refreshGame(socket, player) {
     if (!player) return;
     const room = socket.data.room || getRoomById(getPlayerRoom(socket.id));
+    if (!socket.data.room) socket.data.room = room;
 
     if (room) {
         if (room.players.length === 1) {
@@ -48,6 +49,7 @@ function refreshGame(socket, player) {
 function moveBlock(socket, player, direction) {
     if (!player) return false;
     const room = socket.data.room || getRoomById(getPlayerRoom(socket.id));
+    if (!socket.data.room) socket.data.room = room;
     if (((!room && player.isGameOver) || (room && room.isGameOver))) return false;
 
     if (isCollision(player, direction)) {
