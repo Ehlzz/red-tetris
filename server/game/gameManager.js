@@ -78,7 +78,7 @@ function handleStartMultiplayerGame(io, roomId) {
                         }
                         const socketInstance = io.sockets.sockets.get(playerData.id);
                         if (socketInstance) {
-                            moveBlock(socketInstance, currentPlayer, { x: 0, y: 1 });
+                            moveBlock(socketInstance, { x: 0, y: 1 });
                         }
                     }, p.speed);
                 }
@@ -128,4 +128,23 @@ function handleGameOver(socket, io, data) {
     }
 }
 
-module.exports = { handleStartGame, handleStartMultiplayerGame, handleGameOver };
+function handleResetGame(socket) {
+    console.log('🔄 Reset du jeu pour:', socket.id);
+
+    initPlayer(socket.id);
+    if (socket.data.gameLoop) {
+        clearInterval(socket.data.gameLoop);
+        socket.data.gameLoop = null;
+    }
+    console.log('✨ Jeu réinitialisé pour:', socket.id);
+}
+
+function handleStopGame(socket) {
+    const player = getPlayer(socket.id);
+    if (player) {
+        player.gameStarted = false;
+        console.log('🛑 Partie arrêtée pour:', socket.id);
+    }
+}
+
+module.exports = { handleStartGame, handleStartMultiplayerGame, handleGameOver, handleResetGame, handleStopGame};

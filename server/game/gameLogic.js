@@ -3,6 +3,7 @@ const { getDynamicGrid } = require('../utils/gridUtils');
 const { isCollision } = require('./collisionManager');
 const { fixBlock, checkLines, setHoverBlock } = require('./blockManager');
 const { getPlayerRoom, getRoomById } = require('./lobbyManager');
+const { getPlayer } = require('./playerManager');
 
 function refreshGame(socket, player) {
     if (!player) return;
@@ -43,7 +44,8 @@ function refreshGame(socket, player) {
     }
 }
 
-function moveBlock(socket, player, direction) {
+function moveBlock(socket, direction) {
+    const player = getPlayer(socket.id);
     const room = getRoomById(getPlayerRoom(socket.id));
     if (!player || ((!room && player.isGameOver) || (room && room.isGameOver))) return false;
 
@@ -135,7 +137,8 @@ function getRotationOffset(type, shape, rotatedShape) {
     }
 }
 
-function rotateBlock(socket, player) {
+function rotateBlock(socket) {
+    const player = getPlayer(socket.id);
     if (!player || player.isGameOver) return;
     const { shape, type } = player.currentBlock;
 
@@ -179,10 +182,11 @@ function rotateBlock(socket, player) {
     refreshGame(socket, player);
 };
 
-function dropBlock(socket, player) {
+function dropBlock(socket) {
+    const player = getPlayer(socket.id);
     if (!player || player.isGameOver) return;
 
-    while (moveBlock(socket, player, { x: 0, y: 1 }));
+    while (moveBlock(socket, { x: 0, y: 1 }));
     refreshGame(socket, player);
 }
 
