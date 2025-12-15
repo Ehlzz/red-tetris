@@ -14,8 +14,7 @@ function initPlayer(socketId) {
         level: 1,
         isGameOver: false,
         totalColumnsCleared: 0,
-        columnsCleared: 0,
-        gameLoop: null,
+        columnsCleared: 0
     };
 
     const room = getRoomById(getPlayerRoom(socketId));

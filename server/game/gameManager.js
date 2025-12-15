@@ -78,7 +78,7 @@ function handleStartMultiplayerGame(io, roomId) {
                         }
                         const socketInstance = io.sockets.sockets.get(playerData.id);
                         if (socketInstance) {
-                            moveBlock(socketInstance, { x: 0, y: 1 });
+                            moveBlock(socketInstance, currentPlayer, { x: 0, y: 1 });
                         }
                     }, p.speed);
                 }
@@ -92,7 +92,7 @@ function handleStartMultiplayerGame(io, roomId) {
 }
 
 function handleGameOver(socket, io, data) {
-    const player = getPlayer(socket.id);
+    const player = socket.data.player;
     if (player) {
         player.isGameOver = true;
         console.log('💀 Game Over pour:', socket.id);
@@ -131,7 +131,7 @@ function handleGameOver(socket, io, data) {
 function handleResetGame(socket) {
     console.log('🔄 Reset du jeu pour:', socket.id);
 
-    initPlayer(socket.id);
+    initPlayer(socket.id); 
     if (socket.data.gameLoop) {
         clearInterval(socket.data.gameLoop);
         socket.data.gameLoop = null;
@@ -140,7 +140,7 @@ function handleResetGame(socket) {
 }
 
 function handleStopGame(socket) {
-    const player = getPlayer(socket.id);
+    const player = socket.data.player;
     if (player) {
         player.gameStarted = false;
         console.log('🛑 Partie arrêtée pour:', socket.id);

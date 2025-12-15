@@ -7,7 +7,7 @@ const { getPlayer } = require('./playerManager');
 
 function refreshGame(socket, player) {
     if (!player) return;
-    const room = getRoomById(getPlayerRoom(socket.id));
+    const room = socket.data.room;
     if (room) {
         if (room.players.length === 1) {
             room.players.forEach(p => {
@@ -44,10 +44,11 @@ function refreshGame(socket, player) {
     }
 }
 
-function moveBlock(socket, direction) {
-    const player = getPlayer(socket.id);
-    const room = getRoomById(getPlayerRoom(socket.id));
-    if (!player || ((!room && player.isGameOver) || (room && room.isGameOver))) return false;
+function moveBlock(socket, player, direction) {
+    console.log(player == null, 'dans moveBlock');
+    if (!player) return false;
+    const room = socket.data.room;
+    if (((!room && player.isGameOver) || (room && room.isGameOver))) return false;
 
     if (isCollision(player, direction)) {
         if (!player.isGameOver && direction.y === 1) {
@@ -138,7 +139,7 @@ function getRotationOffset(type, shape, rotatedShape) {
 }
 
 function rotateBlock(socket) {
-    const player = getPlayer(socket.id);
+    const player = socket.data.player;
     if (!player || player.isGameOver) return;
     const { shape, type } = player.currentBlock;
 
@@ -183,10 +184,10 @@ function rotateBlock(socket) {
 };
 
 function dropBlock(socket) {
-    const player = getPlayer(socket.id);
+    const player = socket.data.player;
     if (!player || player.isGameOver) return;
 
-    while (moveBlock(socket, { x: 0, y: 1 }));
+    while (moveBlock(socket, player, { x: 0, y: 1 }));
     refreshGame(socket, player);
 }
 

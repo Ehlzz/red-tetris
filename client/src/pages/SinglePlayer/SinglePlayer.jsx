@@ -8,8 +8,6 @@ import TetrisGrid from '../../components/tetrisGrid/TetrisGrid';
 import GameInfo from '../../components/gameInfo/GameInfo';
 
 const SinglePlayer = ({ socket }) => {
-    const [grid, setGrid] = useState(null);
-    const [currentBlock, setCurrentBlock] = useState(null);
     const [nextBlock, setNextBlock] = useState(null);
     const [score, setScore] = useState(0);
     const [gameStarted, setGameStarted] = useState(false);
@@ -37,10 +35,7 @@ const SinglePlayer = ({ socket }) => {
         socket.on('receiveGame', (game) => {
             console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
             console.log('🟩 Grille initialisée:', game.grid);
-            console.log('🎮 Bloc courant:', game.currentBlock);
             console.log('⏭ Bloc suivant:', game.nextBlock);
-            setGrid(game.grid);
-            setCurrentBlock(game.currentBlock);
             setNextBlock(game.nextBlock);
             setGameStarted(true);
             setDisplayGrid(game.grid);
@@ -58,8 +53,6 @@ const SinglePlayer = ({ socket }) => {
             
             previousLevel.current = game.level;
             
-            setGrid(game.grid);
-            setCurrentBlock(game.currentBlock);
             setNextBlock(game.nextBlock);
             setScore(game.score);
             setDisplayGrid(game.grid);
@@ -125,6 +118,7 @@ const SinglePlayer = ({ socket }) => {
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (!gameStarted && !gameOver && event.key === " ") {
+                console.log('▶️ Démarrage du jeu');
                 socket.emit('startGame');
                 return;
             }
@@ -254,7 +248,6 @@ const SinglePlayer = ({ socket }) => {
                                     setPlayerLevel(1);
                                     setTotalLinesCleared(0);
                                     setGameStarted(false);
-                                    setCurrentBlock(null);
                                     setNextBlock(null);
                                     setDisplayGrid(createEmptyGrid());
                                     socket.emit('resetGame');

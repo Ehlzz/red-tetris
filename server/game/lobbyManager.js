@@ -60,8 +60,8 @@ function joinLobby(socket, io, args) {
     }
 }
 
-function toggleReadyLobby(socket, io, roomId) {
-    const room = rooms[roomId];
+function toggleReadyLobby(socket, io) {
+    const room = socket.data.room;
     if (room) {
         const player = room.players.find(p => p.id === socket.id);
         if (player) {
@@ -96,28 +96,27 @@ function clearRoomTimer(roomId) {
 }
 
 function removePlayerFromLobby(socket) {
-    Object.keys(rooms).forEach(roomId => {
-        const room = rooms[roomId];
-        const playerIndex = room.players.findIndex(p => p.id === socket.id);
-        if (playerIndex !== -1) {
-            room.players.splice(playerIndex, 1);
-            socket.leave(roomId);
-            delete playersRoom[socket.id];
-            console.log(`🚪 ${socket.id} a quitté le lobby: ${roomId}`);
-            if (room.players.length === 0) {
-                console.log('🗑️ Lobby vide, démarrage du timer de suppression:', roomId);
+    const room = socket.data.room;
+    if (!room) return;
+    const playerIndex = room.players.findIndex(p => p.id === socket.id);
+    if (playerIndex !== -1) {
+        const roomId = room.roomId;
+        room.players.splice(playerIndex, 1);
+        socket.leave(roomId);
+        delete playersRoom[socket.id];
+        console.log(`🚪 ${socket.id} a quitté le lobby: ${roomId}`);
+        if (room.players.length === 0) {
+            console.log('🗑️ Lobby vide, démarrage du timer de suppression:', roomId);
 
-                startRoomTimer(roomId);
-                return;
-            } else if (room.chief === socket.id) {
-                room.chief = room.players[0].id;
-                // console.log(`👑 Nouveau chef du lobby ${roomId}: ${room.chief}`)
-            };
-            room.players.forEach(player => {
-                socket.to(player.id).emit('playerLeft', { room });
-            });
-        }
-    });
+            startRoomTimer(roomId);
+            return;
+        } else if (room.chief === socket.id) {
+            room.chief = room.players[0].id;
+        };
+        room.players.forEach(player => {
+            socket.to(player.id).emit('playerLeft', { room });
+        });
+    }
 }
 
 function getRoomById(roomId) {
