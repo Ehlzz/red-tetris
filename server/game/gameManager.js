@@ -28,7 +28,6 @@ function handleStartGame(socket) {
                 clearInterval(socket.data.gameLoop);
                 return;
             }
-            console.log('MOVE BLOC INTERVAL FOR PLAYER:', socket.id);
             moveBlock(socket, currentPlayer, { x: 0, y: 1 });
         }, p.speed);
     }
@@ -52,6 +51,7 @@ function handleStartMultiplayerGame(io, roomId) {
         playerData.isReady = false;
         playerData.isGameOver = false;
     });
+
 
     let countdown = 3;
 

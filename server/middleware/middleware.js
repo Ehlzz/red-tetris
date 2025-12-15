@@ -8,9 +8,12 @@ function requestIsInGame(socket, next) {
     if (!player) {
         return next(new Error("Player not initialized."));
     }
-    console.log(player);
     socket.data.player = player;
-    console.log(socket.data.player);
+    const room = getRoomById(getPlayerRoom(socket.id));
+    if (room) {
+        socket.data.room = room;
+        console.log(room == null, 'dans requestIsInGame - room');
+    }
     next();
 }
 

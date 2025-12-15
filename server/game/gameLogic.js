@@ -7,7 +7,8 @@ const { getPlayer } = require('./playerManager');
 
 function refreshGame(socket, player) {
     if (!player) return;
-    const room = socket.data.room;
+    const room = socket.data.room || getRoomById(getPlayerRoom(socket.id));
+
     if (room) {
         if (room.players.length === 1) {
             room.players.forEach(p => {
@@ -45,9 +46,8 @@ function refreshGame(socket, player) {
 }
 
 function moveBlock(socket, player, direction) {
-    console.log(player == null, 'dans moveBlock');
     if (!player) return false;
-    const room = socket.data.room;
+    const room = socket.data.room || getRoomById(getPlayerRoom(socket.id));
     if (((!room && player.isGameOver) || (room && room.isGameOver))) return false;
 
     if (isCollision(player, direction)) {
