@@ -27,10 +27,10 @@ function initPlayer(socketId) {
             playerInRoom.level = players[socketId].level;
             playerInRoom.blocksFixed = 0;
             playerInRoom.totalColumnsCleared = players[socketId].totalColumnsCleared;
-            playerInRoom.currentBlock = room.blocksQueue[playerInRoom.blocksFixed];
-            playerInRoom.nextBlock = room.blocksQueue[playerInRoom.blocksFixed + 1];
-            players[socketId].currentBlock = playerInRoom.currentBlock;
-            players[socketId].nextBlock = playerInRoom.nextBlock;
+            playerInRoom.currentBlock = { ...room.blocksQueue[playerInRoom.blocksFixed] };
+            playerInRoom.nextBlock = { ...room.blocksQueue[playerInRoom.blocksFixed + 1] };
+            players[socketId].currentBlock = { ...playerInRoom.currentBlock };
+            players[socketId].nextBlock = { ...playerInRoom.nextBlock };
             // playerInRoom.nextBlock = players[socketId].nextBlock;
         }
     }

@@ -46,9 +46,7 @@ function handleStartMultiplayerGame(io, roomId) {
     });
 
     room.gameStarted = true;
-    room.blocksQueue = {};
-    room.blocksQueue[0] = getRandomBlock();
-    room.blocksQueue[1] = getRandomBlock();
+    room.blocksQueue = [getRandomBlock(), getRandomBlock()];
 
     room.players.forEach(playerData => {
         playerData.isReady = false;

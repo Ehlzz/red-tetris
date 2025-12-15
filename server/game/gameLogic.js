@@ -58,7 +58,7 @@ function moveBlock(socket, player, direction) {
                 if (!room.blocksQueue[playerInRoom.blocksFixed]) {
                     room.blocksQueue[playerInRoom.blocksFixed] = getRandomBlock();
                 }
-                player.nextBlock = room.blocksQueue[playerInRoom.blocksFixed];
+                player.nextBlock = { ...room.blocksQueue[playerInRoom.blocksFixed]};
             }
             player.position = { x: 4, y: 0 };
             refreshGame(socket, player);
