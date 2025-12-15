@@ -17,13 +17,14 @@ function fixBlock(player, socket) {
                     player.grid[gridY][gridX] = player.currentBlock.color;
                     fixedPositions.push({ x: gridX + 1, y: gridY - 1 });
                 }
+
+                if (gridY < 2) {
+                    player.isGameOver = true;
+                    if (socket) socket.emit('gameOver', { score: player.score });
+                }
             }
         });
     });
-    
-    if (socket && fixedPositions.length > 0) {
-        socket.emit('blockFixed', { positions: fixedPositions });
-    }
 }
 
 function checkLines(player, socket) {
