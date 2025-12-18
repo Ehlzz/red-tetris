@@ -37,6 +37,7 @@
   justify-content: center;
   gap: 20px;
   margin-top: 20px;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .level-up-sparkles span {

@@ -60,13 +60,13 @@ const IndexPage = () => {
               fill="#fd1e2d" stroke="none">
               <path d="M1600 3840 l0 -320 -320 0 -320 0 0 -320 0 -320 640 0 640 0 0 -320
               0 -320 320 0 320 0 0 -320 0 -320 -640 0 -640 0 0 320 0 320 -320 0 -320 0 0
-              -320 0 -320 320 0 320 0 0 -320 0 -320 960 0 960 0 0 320 0 320 320 0 320 0 0
-              320 0 320 -640 0 -640 0 0 320 0 320 -320 0 -320 0 0 320 0 320 640 0 640 0 0
-              -320 0 -320 320 0 320 0 0 320 0 320 -320 0 -320 0 0 320 0 320 -960 0 -960 0
-              0 -320z"/>
+              -320 0 -320 320 0 320 0 0 -320 0 -320 640 0 640 0 0 320 0 320 640 0 640 0 0
+              320 0 320 -320 0 -320 0 0 320 0 320 320 0 320 0 0 320 0 320 -320 0 -320 0 0
+              320 0 320 -960 0 -960 0 0 -320z m1920 -640 l0 -320 -640 0 -640 0 0 320 0
+              320 640 0 640 0 0 -320z"/>
               </g>
               </svg>
-          <h1 className='index-title'>Glyph</h1>
+          <h1 className='index-title'>Gömbloc</h1>
           </div>
           <main>
             <nav className="main-navigation">
@@ -80,7 +80,7 @@ const IndexPage = () => {
           </main>
         </div>
         <div className="footer">
-          &copy; 2025 Red Tetris. Made with ❤️ by 
+          &copy; 2025 Gömbloc (Red Tetris). Made with ❤️ by 
           <a href="https://mathisd.fr" target="_blank" rel="noopener noreferrer"> madegryc</a> &
           <a href="https://github.com/Ehlzz" target="_blank" rel="noopener noreferrer"> ehalliez</a>.
         </div>

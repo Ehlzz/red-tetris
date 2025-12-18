@@ -1,32 +1,12 @@
 @font-face {
-  font-family: 'Mail Sans Roman Bold';
-  src: url('./assets/fonts/MailSansRoman-Bold.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'OffbitTrial-101';
-  src: url('./assets/fonts/OffBitTrial-101.otf') format('opentype');
-}
-
-@font-face {
-  font-family: 'OffbitTrial-101Bold';
-  src: url('./assets/fonts/OffBitTrial-101Bold.otf') format('opentype');
-}
-
-@font-face {
-  font-family: 'OffbitTrial-Regular';
-  src: url('./assets/fonts/OffBitTrial-Regular.otf') format('opentype');
-}
-
-@font-face {
-  font-family: 'OffbitTrial-Bold';
-  src: url('./assets/fonts/OffBitTrial-Bold.otf') format('opentype');
+  font-family: 'Offbit-Regular';
+  src: url('./assets/fonts/OffBit-Regular.ttf') format('truetype');
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-family: 'Offbit-Regular', sans-serif;
   font-weight: 700;
   letter-spacing: 0.12rem;
   user-select: none;

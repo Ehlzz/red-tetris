@@ -18,7 +18,7 @@
   align-items: center;
   background-color: #1d212b;
   border: none;
-  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-family: 'Offbit-Regular', sans-serif;
   font-weight: 700;
   display: flex;
   justify-content: center;
@@ -50,7 +50,7 @@
   width: auto;
   text-align: center;
   z-index: 3;
-  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-family: 'Offbit-Regular', sans-serif;
   font-weight: 700;
 }
 

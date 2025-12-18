@@ -269,12 +269,18 @@ const MultiPlayerGame = ({ socket }) => {
                             )}
                         </>
                     )}
-                    <GameInfo 
-                        nextBlock={nextBlock}
-                        score={score}
-                        playerLevel={playerLevel}
-                        totalLinesCleared={totalLinesCleared}
-                    />
+                    {(() => {
+                        const spectated = room?.players?.find(p => p.id === spectatedPlayer);
+                        return (
+                            <GameInfo 
+                                nextBlock={spectated?.nextBlock || nextBlock}
+                                score={spectated?.score ?? score}
+                                playerLevel={spectated?.level ?? playerLevel}
+                                totalLinesCleared={spectated?.totalColumnsCleared ?? totalLinesCleared}
+                                playerName={spectated?.name || urlPlayerName}
+                            />
+                        );
+                    })()}
                     { gameOver && (
                         <>
                             <GameOverMulti 

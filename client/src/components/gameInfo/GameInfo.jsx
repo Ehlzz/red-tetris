@@ -1,6 +1,6 @@
 import './GameInfo.css';
 
-const GameInfo = ({ nextBlock, score, playerLevel, totalLinesCleared }) => {
+const GameInfo = ({ nextBlock, score, playerLevel, totalLinesCleared, playerName }) => {
     return (
         <div className='info'>
             <div className="next-block">
@@ -28,6 +28,11 @@ const GameInfo = ({ nextBlock, score, playerLevel, totalLinesCleared }) => {
                     </div>
                 </div>
             </div>
+            {playerName && (
+            <div className='pseudo-multi'>
+                <p>{playerName || ''}</p>
+            </div>
+            )}
         </div>
     );
 };

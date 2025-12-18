@@ -38,14 +38,14 @@
   font-size: 2rem;
   color: #fd1e2d;
   margin: 0 0 15px 0;
-  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-family: 'Offbit-Regular', sans-serif;
   font-weight: 700;
 }
 
 .room-code {
   font-size: 1.2rem;
   color: #fd1e2d;
-  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-family: 'Offbit-Regular', sans-serif;
   font-weight: 700;
 }
 
@@ -62,7 +62,7 @@
   margin-left: 15px;
   padding: 5px 10px;
   font-size: 1rem;
-  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-family: 'Offbit-Regular', sans-serif;
   font-weight: 700;
   color: #fd1e2d;
   background-color: #1d212b;
@@ -87,7 +87,7 @@
   font-size: 1.8rem;
   margin: 0 0 20px 0;
   text-align: center;
-  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-family: 'Offbit-Regular', sans-serif;
   font-weight: 700;
 }
 
@@ -133,7 +133,7 @@
 .player-name {
   color: #fd1e2d;
   font-size: 1.4rem;
-  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-family: 'Offbit-Regular', sans-serif;
   font-weight: 700;
 }
 
@@ -148,7 +148,7 @@
 
 .ready-status {
   font-size: 1.1rem;
-  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-family: 'Offbit-Regular', sans-serif;
   font-weight: 700;
 }
 
@@ -170,7 +170,7 @@
 .ready-button, .start-game-button {
   padding: 15px 40px;
   font-size: 1.8rem;
-  font-family: 'OffbitTrial-Regular', sans-serif;
+  font-family: 'Offbit-Regular', sans-serif;
   font-weight: 700;
   border: 3px solid #fd1e2d;
   background-color: #1d212b;
