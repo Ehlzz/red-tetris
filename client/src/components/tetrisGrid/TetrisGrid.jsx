@@ -1,7 +1,13 @@
 import './TetrisGrid.css';
 import ParticlesContainer from '../particlesContainer/ParticlesContainer';
+import { useEffect } from 'react';
 
 const TetrisGrid = ({ displayGrid, isShaking, particles, isGameOver}) => {
+
+    useEffect(() => {
+        console.log('Particules updated:', particles);
+    }, [particles]);
+
     return (
         <div className="grid-container">
             <div className={`grid ${isShaking ? 'shake' : ''}`}>

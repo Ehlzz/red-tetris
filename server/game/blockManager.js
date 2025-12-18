@@ -2,6 +2,7 @@ const { getRandomBlock } = require('../utils/blockUtils');
 const { isCollision } = require('./collisionManager');
 const { getPlayerRoom, getRoomById } = require('./lobbyManager');
 const { getPlayer } = require('./playerManager');
+const { refreshGame } = require('./gameLogic');
 
 function fixBlock(player, socket) {
     if (!player) return;
@@ -29,6 +30,9 @@ function fixBlock(player, socket) {
             }
         });
     });
+    if (socket && fixedPositions.length > 0) {
+        socket.emit('blockFixed', { positions: fixedPositions });
+    }
 }
 
 function checkLines(player, socket) {
