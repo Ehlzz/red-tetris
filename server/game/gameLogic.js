@@ -59,6 +59,10 @@ function moveBlock(socket, player, direction) {
             player.currentBlock = player.nextBlock;
             if (room) {
                 const playerInRoom = room.players.find(p => p.id === socket.id);
+                if (!playerInRoom) return false;
+                if (typeof playerInRoom.blocksFixed === 'undefined') {
+                    playerInRoom.blocksFixed = 0;
+                }
                 playerInRoom.blocksFixed += 1;
                 if (!room.blocksQueue[playerInRoom.blocksFixed]) {
                     room.blocksQueue[playerInRoom.blocksFixed] = getRandomBlock();
