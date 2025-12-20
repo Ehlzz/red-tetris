@@ -20,6 +20,7 @@ const SinglePlayer = ({ socket }) => {
     const [showLevelUp, setShowLevelUp] = useState(false);
     const [newLevel, setNewLevel] = useState(1);
     const previousLevel = useRef(1);
+    const sizeScreen = window.innerWidth <= 1024 ? 'small' : 'large';
 
     const getCellSize = () => {
         return window.innerWidth <= 1024 ? 24 : 34;
@@ -172,6 +173,16 @@ const SinglePlayer = ({ socket }) => {
         };
 
         const handleTouchEnd = () => {
+            if (!gameStarted && !gameOver && sizeScreen === 'small') {
+                console.log('▶️ Démarrage du jeu par tap');
+                socket.emit('startGame');
+                return;
+            }
+
+            if (!gameStarted || gameOver) {
+                return;
+            }
+
             const deltaX = touchEndX - touchStartX;
             const deltaY = touchEndY - touchStartY;
             const touchDuration = Date.now() - touchStartTime;
@@ -208,7 +219,7 @@ const SinglePlayer = ({ socket }) => {
             window.removeEventListener('touchmove', handleTouchMove);
             window.removeEventListener('touchend', handleTouchEnd);
         };
-    }, [socket]);
+    }, [socket, gameStarted, gameOver, sizeScreen]);
 
     return (
         <div className="game-container">
@@ -224,9 +235,16 @@ const SinglePlayer = ({ socket }) => {
                 
                     {!gameStarted && !gameOver && (
                         <>
+                        {sizeScreen === 'small' && (
+                            <div className="start-message">
+                                <p>Tap the <strong>SCREEN</strong> to start the game !</p>
+                            </div>
+                        )}
+                        {sizeScreen === 'large' && (
                             <div className="start-message">
                                 <p>Press <strong>SPACE</strong> to start the game !</p>
                             </div>
+                        )}
                         </>
                     )}
                     
