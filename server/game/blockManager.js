@@ -2,7 +2,7 @@ const { getRandomBlock } = require('../utils/blockUtils');
 const { isCollision } = require('./collisionManager');
 const { getPlayerRoom, getRoomById } = require('./lobbyManager');
 const { getPlayer } = require('./playerManager');
-const { refreshGame } = require('./gameLogic');
+const { refreshGame } = require('./refreshGame');
 
 function fixBlock(player, socket) {
     if (!player) return;

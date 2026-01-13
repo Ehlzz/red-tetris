@@ -29,6 +29,7 @@ const MultiPlayerGame = ({ socket }) => {
     const [spectatedPlayerGameOver, setSpectatedPlayerGameOver] = useState(false);
     const spectatedPlayerRef = useRef(null);
     const navigate = useNavigate();
+    
     const createEmptyGrid = () => {
         return Array(22).fill().map(() => Array(10).fill(''));
     };
@@ -202,6 +203,67 @@ const MultiPlayerGame = ({ socket }) => {
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [gameStarted, gameOver]);
+
+    useEffect(() => {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+        let touchStartTime = 0;
+
+        const handleTouchStart = (event) => {
+            touchStartX = event.touches[0].clientX;
+            touchStartY = event.touches[0].clientY;
+            touchStartTime = Date.now();
+        };
+
+        const handleTouchMove = (event) => {
+            touchEndX = event.touches[0].clientX;
+            touchEndY = event.touches[0].clientY;
+        };
+
+        const handleTouchEnd = () => {
+            if (!gameStarted || gameOver) {
+                return;
+            }
+
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            const touchDuration = Date.now() - touchStartTime;
+            const minSwipeDistance = 30;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+            if (distance < minSwipeDistance) {
+                return;
+            }
+
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > minSwipeDistance) {
+                    socket.emit('moveBlock', { x: 1, y: 0 });
+                } else if (deltaX < -minSwipeDistance) {
+                    socket.emit('moveBlock', { x: -1, y: 0 });
+                }
+            } else {
+                if (deltaY > minSwipeDistance * 3 && touchDuration < 150) {
+                    socket.emit('dropBlock');
+                } else if (deltaY > minSwipeDistance * 1.5) {
+                    socket.emit('moveBlock', { x: 0, y: 1 });
+                } else if (deltaY < -minSwipeDistance * 1.5) {
+                    socket.emit('rotateBlock');
+                }
+            }
+        };
+
+        window.addEventListener('touchstart', handleTouchStart);
+        window.addEventListener('touchmove', handleTouchMove);
+        window.addEventListener('touchend', handleTouchEnd);
+
+        return () => {
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
+        };
+    }, [socket, gameStarted, gameOver]);
 
     return (
         <div className="game-container">
