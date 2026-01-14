@@ -116,6 +116,7 @@ function removePlayerFromLobby(socket) {
         room.players.forEach(player => {
             socket.to(player.id).emit('playerLeft', { room });
         });
+        socket.data.room = null;
     }
 }
 

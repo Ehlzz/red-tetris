@@ -62,6 +62,7 @@ const SinglePlayer = ({ socket }) => {
         });
         
         socket.on('blockFixed', (data) => {
+            console.log('📌 Bloc fixé aux positions:', data.positions);
             setIsShaking(true);
             setTimeout(() => setIsShaking(false), 200);
             

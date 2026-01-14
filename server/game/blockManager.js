@@ -67,19 +67,15 @@ function checkLines(player, socket) {
                 const targetPlayer = getPlayer(p.id);
                 if (targetPlayer) {
                     targetPlayer.indestructibleLines = (targetPlayer.indestructibleLines || 0) + 1;
-                    applyIndestructibleLines(targetPlayer);
+                    while (p.indestructibleLines > 0) {
+                        p.grid.shift();
+                        p.grid.push(Array(10).fill('indestructible'));
+                        p.position.y -= 1;
+                        p.indestructibleLines--;
+                    }
                 }
             });
         }
-    }
-}
-
-function applyIndestructibleLines(player) {
-    while (player.indestructibleLines > 0) {
-        player.grid.shift();
-        player.grid.push(Array(10).fill('indestructible'));
-        player.position.y -= 1;
-        player.indestructibleLines--;
     }
 }
 

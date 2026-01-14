@@ -1,10 +1,11 @@
-const { initPlayer, getPlayer } = require('./playerManager');
+const { initPlayer, getPlayer, deletePlayer } = require('./playerManager');
 const { getRoomById } = require('./lobbyManager');
 const { moveBlock } = require('./gameLogic');
 const { getRandomBlock } = require('../utils/blockUtils');
 
 function handleStartGame(socket) {
     console.log('▶️ Jeu démarré pour:', socket.id);
+    deletePlayer(socket.id);
 
     if (socket.data.gameLoop) {
         clearInterval(socket.data.gameLoop);
@@ -12,6 +13,7 @@ function handleStartGame(socket) {
     }
 
     const player = initPlayer(socket.id);
+    socket.data.player = player;
     socket.emit('receiveGame', player);
 
     function startLoop() {

@@ -1,5 +1,5 @@
 function isCollision(player, direction) {
-    if (!player || !player.currentBlock) return false;
+    if (!player) return false;
 
     for (let y = 0; y < player.currentBlock.shape.length; y++) {
         for (let x = 0; x < player.currentBlock.shape[y].length; x++) {
