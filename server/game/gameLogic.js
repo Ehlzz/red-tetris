@@ -6,6 +6,7 @@ const { refreshGame } = require('./refreshGame');
 
 function moveBlock(socket, player, direction) {
     if (!player) return false;
+
     const room = socket.data.room || getRoomById(getPlayerRoom(socket.id));
     if (!socket.data.room && room) socket.data.room = room;
     if (((!room && player.isGameOver) || (room && room.isGameOver))) return false;
@@ -14,35 +15,50 @@ function moveBlock(socket, player, direction) {
         if (!player.isGameOver && direction.y === 1) {
             fixBlock(player, socket);
             checkLines(player, socket);
+
             player.currentBlock = player.nextBlock;
+
             if (room) {
                 const playerInRoom = room.players.find(p => p.id === socket.id);
                 if (!playerInRoom) return false;
+
                 if (typeof playerInRoom.blocksFixed === 'undefined') {
                     playerInRoom.blocksFixed = 0;
                 }
+
                 playerInRoom.blocksFixed += 1;
+
                 if (!room.blocksQueue[playerInRoom.blocksFixed]) {
                     room.blocksQueue[playerInRoom.blocksFixed] = getRandomBlock();
                 }
-                player.nextBlock = { ...room.blocksQueue[playerInRoom.blocksFixed]};
-            }
-            else {
+
+                player.nextBlock = { ...room.blocksQueue[playerInRoom.blocksFixed] };
+            } else {
                 player.nextBlock = getRandomBlock();
             }
+
             player.position = { x: 4, y: 0 };
+
+            if (isCollision(player, { x: 0, y: 0 })) {
+                player.isGameOver = true;
+                socket.emit('gameOver', { score: player.score });
+                return false;
+            }
+
             refreshGame(socket, player);
         }
-        if (direction.y === 1 && isCollision(player, { x: 0, y: 0 })) {
-            player.isGameOver = true;
-            socket.emit('gameOver', { score: player.score });
-            if (room) {
-                refreshGame(socket, player);
+
+        if (direction.y === 1 && player.position.y <= 0) {
+            if (isCollision(player, { x: 0, y: 0 })) {
+                player.isGameOver = true;
+                socket.emit('gameOver', { score: player.score });
+                if (room) refreshGame(socket, player);
             }
         }
+
         return false;
     }
-    
+
     player.position.x += direction.x;
     player.position.y += direction.y;
 
@@ -54,24 +70,27 @@ function moveBlock(socket, player, direction) {
 
 function canRotate(player, shape, offsetX = 0, offsetY = 0) {
     if (!player) return false;
-    
+
     for (let y = 0; y < shape.length; y++) {
         for (let x = 0; x < shape[y].length; x++) {
-            if (shape[y][x]) {
+            if (!shape[y][x]) continue;
 
-                const newX = player.position.x + x + offsetX;
-                const newY = player.position.y + y + offsetY;
-                
-                if (newX < 0 || newX >= 10 || newY >= 22) {
-                    return false;
-                }
-                
-                if (newY >= 0 && player.grid[newY][newX] && player.grid[newY][newX] !== 'hover') {
+            const newX = player.position.x + x + offsetX;
+            const newY = player.position.y + y + offsetY;
+
+            if (newX < 0 || newX >= 10 || newY >= 22) {
+                return false;
+            }
+
+            if (newY >= 0) {
+                const cell = player.grid[newY][newX];
+                if (cell !== null && cell !== 'hover') {
                     return false;
                 }
             }
         }
     }
+
     return true;
 }
 
@@ -86,11 +105,11 @@ function getRotationOffset(type, shape, rotatedShape) {
     const currentHeight = shape.length;
     const newWidth = rotatedShape[0].length;
     const newHeight = rotatedShape.length;
-    
+
     const offsetX = Math.floor((currentWidth - newWidth) / 2);
     const offsetY = Math.floor((currentHeight - newHeight) / 2);
-    
-    switch(type) {
+
+    switch (type) {
         case 'O':
             return { x: 0, y: 0 };
         case 'I':
@@ -108,28 +127,29 @@ function getRotationOffset(type, shape, rotatedShape) {
 function rotateBlock(socket) {
     const player = socket.data.player;
     if (!player || player.isGameOver) return;
-    const { shape, type } = player.currentBlock;
 
+    const { shape, type } = player.currentBlock;
     const rotatedShape = rotateMatrix(shape);
     const offset = getRotationOffset(type, shape, rotatedShape);
 
     if (!canRotate(player, rotatedShape, offset.x, offset.y)) {
         const wallKickOffsets = type === 'I'
-        ? [
-            { x: 0, y: 0 },
-            { x: -1, y: 0 },
-            { x: 1, y: 0 },
-            { x: 0, y: -1 },
-            { x: -2, y: 0 },
-            { x: 2, y: 0 }
-        ]
-        : [
-            { x: -1, y: 0 },
-            { x: 1, y: 0 },
-            { x: 0, y: -1 }
-        ];
+            ? [
+                { x: 0, y: 0 },
+                { x: -1, y: 0 },
+                { x: 1, y: 0 },
+                { x: 0, y: -1 },
+                { x: -2, y: 0 },
+                { x: 2, y: 0 }
+            ]
+            : [
+                { x: -1, y: 0 },
+                { x: 1, y: 0 },
+                { x: 0, y: -1 }
+            ];
 
         let rotationSucceeded = false;
+
         for (const kick of wallKickOffsets) {
             if (canRotate(player, rotatedShape, offset.x + kick.x, offset.y + kick.y)) {
                 player.position.x += offset.x + kick.x;
@@ -148,7 +168,7 @@ function rotateBlock(socket) {
 
     setHoverBlock(player);
     refreshGame(socket, player);
-};
+}
 
 function dropBlock(socket) {
     const player = socket.data.player;
@@ -158,4 +178,9 @@ function dropBlock(socket) {
     refreshGame(socket, player);
 }
 
-module.exports = { refreshGame, moveBlock, rotateBlock, dropBlock, rotateBlock };
+module.exports = {
+    refreshGame,
+    moveBlock,
+    rotateBlock,
+    dropBlock
+};

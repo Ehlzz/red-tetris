@@ -146,3 +146,7 @@
     display: none;
   }
 }
+
+.indestructible {
+  background-color: #555555 !important;
+}
