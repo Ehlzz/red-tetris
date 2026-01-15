@@ -7,14 +7,16 @@ const { handleSocketConnection } = require('./socket/socketHandlers');
 const app = express();
 const server = http.createServer(app);
 
+const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || 'localhost';
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: CLIENT_ORIGIN,
         methods: ["GET", "POST"]
     }
 });
-
-const PORT = 5000;
 
 // Middleware
 app.use(cors());
@@ -30,6 +32,6 @@ io.on('connection', (socket) => {
     handleSocketConnection(socket, io);
 });
 
-server.listen(PORT, 'localhost', () => {
-    console.log(`✅ Serveur lancé et accessible : http://localhost:${PORT}`);
+server.listen(PORT, HOST, () => {
+    console.log(`✅ Serveur lancé et accessible : http://${HOST}:${PORT}`);
 });
