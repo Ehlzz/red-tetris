@@ -34,16 +34,16 @@ const SinglePlayer = ({ socket }) => {
 
     useEffect(() => {
         socket.on('receiveGame', (game) => {
-            console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
-            console.log('🟩 Grille initialisée:', game.grid);
-            console.log('⏭ Bloc suivant:', game.nextBlock);
+            // console.log('🔌 Connecté au serveur avec l\'ID:', socket.id)
+            // console.log('🟩 Grille initialisée:', game.grid);
+            // console.log('⏭ Bloc suivant:', game.nextBlock);
             setNextBlock(game.nextBlock);
             setGameStarted(true);
             setDisplayGrid(game.grid);
         })
 
         socket.on('refreshGame', (game) => {
-            console.log('🔄 Jeu rafraîchi:', game);
+            // console.log('🔄 Jeu rafraîchi:', game);
             
             if (game.level > previousLevel.current) {
                 setNewLevel(game.level);
@@ -62,7 +62,7 @@ const SinglePlayer = ({ socket }) => {
         });
         
         socket.on('blockFixed', (data) => {
-            console.log('📌 Bloc fixé aux positions:', data.positions);
+            // console.log('📌 Bloc fixé aux positions:', data.positions);
             setIsShaking(true);
             setTimeout(() => setIsShaking(false), 200);
             
@@ -95,7 +95,7 @@ const SinglePlayer = ({ socket }) => {
         });
 
         socket.on('gameOver', ({ score }) => {
-        console.log('💀 Game Over! Score final:', score);
+        // console.log('💀 Game Over! Score final:', score);
         setGameOver(true);
         setScore(score);
         setGameStarted(false);
@@ -109,7 +109,7 @@ const SinglePlayer = ({ socket }) => {
             socket.off('gameOver');
             socket.off('blockFixed');
             
-            console.log('🧹 Démontage du composant - Reset complet');
+            // console.log('🧹 Démontage du composant - Reset complet');
             socket.emit('resetGame');
 
             particleTimeouts.current.forEach(timeoutId => clearTimeout(timeoutId));
@@ -120,7 +120,7 @@ const SinglePlayer = ({ socket }) => {
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (!gameStarted && !gameOver && event.key === " ") {
-                console.log('▶️ Démarrage du jeu');
+                // console.log('▶️ Démarrage du jeu');
                 socket.emit('startGame');
                 return;
             }
@@ -175,7 +175,7 @@ const SinglePlayer = ({ socket }) => {
 
         const handleTouchEnd = () => {
             if (!gameStarted && !gameOver && sizeScreen === 'small') {
-                console.log('▶️ Démarrage du jeu par tap');
+                // console.log('▶️ Démarrage du jeu par tap');
                 socket.emit('startGame');
                 return;
             }

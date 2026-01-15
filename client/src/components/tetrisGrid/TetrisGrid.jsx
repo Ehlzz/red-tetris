@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 const TetrisGrid = ({ displayGrid, isShaking, particles, isGameOver}) => {
 
     useEffect(() => {
-        console.log('Particules updated:', particles);
+        // console.log('Particules updated:', particles);
     }, [particles]);
 
     return (

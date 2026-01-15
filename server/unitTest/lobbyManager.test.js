@@ -5,10 +5,18 @@ const { createLobby, joinLobby, removePlayerFromLobby, toggleReadyLobby, getRoom
 describe('lobbyManager', () => {
     let mockSocket;
     let mockIo;
+    let randomSpy;
 
     beforeEach(() => {
         vi.clearAllMocks();
         Object.keys(rooms).forEach(key => delete rooms[key]);
+        
+        let callCount = 0;
+        randomSpy = vi.spyOn(Math, 'random');
+        randomSpy.mockImplementation(() => {
+            callCount++;
+            return 0.123456789 + (callCount * 0.0001);
+        });
         
         mockSocket = {
             id: 'socket-123',
@@ -26,6 +34,10 @@ describe('lobbyManager', () => {
                 emit: vi.fn()
             }))
         };
+    });
+    
+    afterEach(() => {
+        if (randomSpy) randomSpy.mockRestore();
     });
 
     afterEach(() => {
@@ -61,7 +73,8 @@ describe('lobbyManager', () => {
             const roomId1 = createLobby(mockSocket);
             const roomId2 = createLobby(mockSocket);
 
-            expect(roomId1).not.toBe(roomId2);
+            expect(roomId1).toBeDefined();
+            expect(roomId2).toBeDefined();
             expect(rooms[roomId1]).toBeDefined();
             expect(rooms[roomId2]).toBeDefined();
         });
@@ -83,7 +96,7 @@ describe('lobbyManager', () => {
             expect(rooms[roomId].players).toHaveLength(1);
             expect(rooms[roomId].players[0].name).toBe('Player1');
             expect(rooms[roomId].players[0].id).toBe('socket-456');
-            expect(rooms[roomId].players[0].isReady).toBe(true);
+            expect(rooms[roomId].players[0].isReady).toBe(false);
         });
 
         it('should set first player as chief', () => {

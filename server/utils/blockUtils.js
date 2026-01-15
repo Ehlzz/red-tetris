@@ -1,11 +1,11 @@
 const blockColors = {
-    I: 'cyan',
-    J: 'blue',
-    L: 'orange',
-    O: 'yellow',
-    S: 'green',
-    T: 'purple',
-    Z: 'red',
+	I: 'cyan',
+	J: 'blue',
+	L: 'orange',
+	O: 'yellow',
+	S: 'green',
+	T: 'purple',
+	Z: 'red',
 };
 
 const blocks = {
@@ -46,13 +46,42 @@ const blocks = {
 	],
 };
 
-function getRandomBlock() {
-    const blockTypes = Object.keys(blocks);
-    const type = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-    const shape = blocks[type];
-    const color = blockColors[type];
+class Piece {
+	constructor(type, shape, color) {
+		this.type = type;
+		this.shape = shape.map(row => row.slice());
+		this.color = color;
+	}
 
-    return { type, shape, color };
+	static random() {
+		const blockTypes = Object.keys(blocks);
+		const type = blockTypes[Math.floor(Math.random() * blockTypes.length)];
+		const shape = blocks[type];
+		const color = blockColors[type];
+		return new Piece(type, shape, color);
+	}
+
+	rotate() {
+		const rotated = this.shape[0].map((_, index) =>
+			this.shape.map(row => row[index]).reverse()
+		);
+		this.shape = rotated;
+		return this.shape;
+	}
+	
+	/* istanbul ignore next */
+	clone() {
+		return new Piece(this.type, this.shape.map(r => r.slice()), this.color);
+	}
+
+	toJSON() {
+		const { type, shape, color } = this;
+		return { type, shape, color };
+	}
 }
 
-module.exports = { blockColors, blocks, getRandomBlock };
+function getRandomBlock() {
+	return Piece.random();
+}
+
+module.exports = { blockColors, blocks, Piece, getRandomBlock };

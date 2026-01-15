@@ -4,12 +4,10 @@ import * as matchers from '@testing-library/jest-dom/matchers';
 
 expect.extend(matchers);
 
-// Cleanup after each test
 afterEach(() => {
   cleanup();
 });
 
-// Mock socket.io-client
 vi.mock('socket.io-client', () => ({
   default: vi.fn(() => ({
     on: vi.fn(),

@@ -18,7 +18,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<IndexPage />} />
-        <Route path="/singleplayer" element={<SinglePlayer socket={socket} />} />
+        <Route path="/singleplayer/room-solo/player" element={<SinglePlayer socket={socket} />} />
         <Route path="/multiplayer" element={<MultiPlayer socket={socket} />} />
         <Route path="/lobby/:roomId/:playerName" element={<LobbyGamePage socket={socket} />} />
         <Route path="/lobby/:roomId" element={<LobbyGamePage socket={socket} />} />

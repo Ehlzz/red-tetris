@@ -1,158 +1,151 @@
-import { describe, it, expect } from 'vitest';
-
-const { getRandomBlock, blockColors, blocks } = await import('../utils/blockUtils.js');
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { blockColors, blocks, Piece, getRandomBlock } from '../utils/blockUtils';
 
 describe('blockUtils', () => {
-    describe('getRandomBlock', () => {
-        it('should return a valid block', () => {
-            const block = getRandomBlock();
+  let randomSpy;
+  
+  beforeEach(() => {
+    randomSpy = vi.spyOn(Math, 'random');
+    randomSpy.mockReturnValue(0.5);
+  });
+  
+  afterEach(() => {
+    randomSpy.mockRestore();
+  });
 
-            expect(block).toHaveProperty('type');
-            expect(block).toHaveProperty('shape');
-            expect(block).toHaveProperty('color');
-        });
+  describe('blockColors & blocks', () => {
+    it('should contain all Tetris block types', () => {
+      const types = Object.keys(blocks);
+      expect(types).toEqual(['I','J','L','O','S','T','Z']);
+      types.forEach(type => {
+        expect(blockColors[type]).toBeTypeOf('string');
+        expect(blocks[type]).toBeInstanceOf(Array);
+      });
+    });
+  });
 
-        it('should return a block type that exists in blocks', () => {
-            const block = getRandomBlock();
-
-            expect(blocks).toHaveProperty(block.type);
-        });
-
-        it('should return matching color for block type', () => {
-            const block = getRandomBlock();
-
-            expect(block.color).toBe(blockColors[block.type]);
-        });
-
-        it('should return shape matching the block type', () => {
-            const block = getRandomBlock();
-
-            expect(block.shape).toEqual(blocks[block.type]);
-        });
-
-        it('should return one of 7 block types', () => {
-            const validTypes = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
-            const block = getRandomBlock();
-
-            expect(validTypes).toContain(block.type);
-        });
-
-        it('should generate different blocks over multiple calls', () => {
-            const blocks = new Set();
-            for (let i = 0; i < 50; i++) {
-                blocks.add(getRandomBlock().type);
-            }
-
-            expect(blocks.size).toBeGreaterThan(1);
-        });
-
-        it('should return valid shape dimensions', () => {
-            const block = getRandomBlock();
-
-            expect(Array.isArray(block.shape)).toBe(true);
-            expect(block.shape.length).toBeGreaterThan(0);
-            expect(Array.isArray(block.shape[0])).toBe(true);
-        });
-
-        it('should return I block with correct properties', () => {
-            const iBlocks = [];
-            for (let i = 0; i < 100; i++) {
-                const block = getRandomBlock();
-                if (block.type === 'I') {
-                    iBlocks.push(block);
-                    break;
-                }
-            }
-
-            if (iBlocks.length > 0) {
-                expect(iBlocks[0].color).toBe('cyan');
-                expect(iBlocks[0].shape).toEqual([
-                    [0, 0, 0, 0],
-                    [1, 1, 1, 1],
-                    [0, 0, 0, 0],
-                    [0, 0, 0, 0]
-                ]);
-            }
-        });
-
-        it('should return O block with correct properties', () => {
-            const oBlocks = [];
-            for (let i = 0; i < 100; i++) {
-                const block = getRandomBlock();
-                if (block.type === 'O') {
-                    oBlocks.push(block);
-                    break;
-                }
-            }
-
-            if (oBlocks.length > 0) {
-                expect(oBlocks[0].color).toBe('yellow');
-                expect(oBlocks[0].shape).toEqual([
-                    [1, 1],
-                    [1, 1]
-                ]);
-            }
-        });
+  describe('Piece class', () => {
+    let piece;
+    beforeEach(() => {
+      piece = new Piece('T', blocks['T'], blockColors['T']);
+    });
+    
+    it('should create all types of pieces', () => {
+      ['I', 'J', 'L', 'O', 'S', 'T', 'Z'].forEach(type => {
+        const p = new Piece(type, blocks[type], blockColors[type]);
+        expect(p.type).toBe(type);
+        expect(p.shape).toEqual(blocks[type]);
+        expect(p.color).toBe(blockColors[type]);
+      });
     });
 
-    describe('blockColors', () => {
-        it('should have colors for all block types', () => {
-            const types = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
-
-            types.forEach(type => {
-                expect(blockColors).toHaveProperty(type);
-                expect(typeof blockColors[type]).toBe('string');
-            });
-        });
-
-        it('should have correct color mappings', () => {
-            expect(blockColors.I).toBe('cyan');
-            expect(blockColors.J).toBe('blue');
-            expect(blockColors.L).toBe('orange');
-            expect(blockColors.O).toBe('yellow');
-            expect(blockColors.S).toBe('green');
-            expect(blockColors.T).toBe('purple');
-            expect(blockColors.Z).toBe('red');
-        });
+    it('should store type, shape, and color', () => {
+      expect(piece.type).toBe('T');
+      expect(piece.shape).toEqual(blocks['T']);
+      expect(piece.color).toBe(blockColors['T']);
     });
 
-    describe('blocks', () => {
-        it('should have all 7 tetromino types', () => {
-            const types = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
-
-            types.forEach(type => {
-                expect(blocks).toHaveProperty(type);
-            });
-        });
-
-        it('should have valid shapes for all blocks', () => {
-            Object.values(blocks).forEach(shape => {
-                expect(Array.isArray(shape)).toBe(true);
-                expect(shape.length).toBeGreaterThan(0);
-                shape.forEach(row => {
-                    expect(Array.isArray(row)).toBe(true);
-                    row.forEach(cell => {
-                        expect([0, 1]).toContain(cell);
-                    });
-                });
-            });
-        });
-
-        it('should have I block as 4x4 matrix', () => {
-            expect(blocks.I).toHaveLength(4);
-            expect(blocks.I[0]).toHaveLength(4);
-        });
-
-        it('should have O block as 2x2 matrix', () => {
-            expect(blocks.O).toHaveLength(2);
-            expect(blocks.O[0]).toHaveLength(2);
-        });
-
-        it('should have standard blocks as 3x3 matrices', () => {
-            ['J', 'L', 'S', 'T', 'Z'].forEach(type => {
-                expect(blocks[type]).toHaveLength(3);
-                expect(blocks[type][0]).toHaveLength(3);
-            });
-        });
+    it('should clone properly', () => {
+      const clone = piece.clone();
+      expect(clone).toBeInstanceOf(Piece);
+      expect(clone).not.toBe(piece);
+      expect(clone.shape).toEqual(piece.shape);
+      expect(clone.color).toBe(piece.color);
+      expect(clone.type).toBe(piece.type);
     });
+
+    it('should convert to JSON correctly', () => {
+      const json = piece.toJSON();
+      expect(json).toEqual({
+        type: piece.type,
+        shape: piece.shape,
+        color: piece.color
+      });
+    });
+
+    it('should rotate 90 degrees clockwise', () => {
+      const originalShape = piece.shape.map(row => row.slice());
+      const rotated = piece.rotate();
+      expect(rotated).not.toEqual(originalShape);
+      for (let i = 0; i < 3; i++) piece.rotate();
+      expect(piece.shape).toEqual(originalShape);
+    });
+
+    it('rotate should produce correct dimensions for each block type', () => {
+      Object.keys(blocks).forEach(type => {
+        const p = new Piece(type, blocks[type], blockColors[type]);
+        const before = p.shape.map(r => r.slice());
+        p.rotate();
+        expect(p.shape.length).toBe(before[0].length);
+        expect(p.shape[0].length).toBe(before.length);
+      });
+    });
+
+    it('clone shape should be deep copy', () => {
+      const clone = piece.clone();
+      clone.shape[0][0] = 99;
+      expect(piece.shape[0][0]).not.toBe(99);
+    });
+    
+    it('should handle multiple rotations correctly', () => {
+      const original = JSON.stringify(piece.shape);
+      piece.rotate();
+      piece.rotate();
+      piece.rotate();
+      piece.rotate();
+      expect(JSON.stringify(piece.shape)).toBe(original);
+    });
+    
+    it('should handle clone after rotation', () => {
+      piece.rotate();
+      const clone = piece.clone();
+      expect(clone.shape).toEqual(piece.shape);
+      expect(clone.shape).not.toBe(piece.shape);
+    });
+    
+    it('toJSON should include all properties', () => {
+      const json = piece.toJSON();
+      expect(json).toHaveProperty('type');
+      expect(json).toHaveProperty('shape');
+      expect(json).toHaveProperty('color');
+      expect(Object.keys(json).length).toBe(3);
+    });
+  });
+
+  describe('getRandomBlock', () => {
+    it('should return a Piece instance', () => {
+      const randomPiece = getRandomBlock();
+      expect(randomPiece).toBeInstanceOf(Piece);
+      expect(Object.keys(blockColors)).toContain(randomPiece.type);
+      expect(randomPiece.color).toBe(blockColors[randomPiece.type]);
+      expect(randomPiece.shape).toEqual(blocks[randomPiece.type]);
+    });
+
+    it('should return valid pieces consistently', () => {
+      const pieces = [];
+      for (let i = 0; i < 5; i++) {
+        pieces.push(getRandomBlock());
+      }
+      
+      pieces.forEach(piece => {
+        expect(piece).toBeInstanceOf(Piece);
+        expect(piece.type).toBeDefined();
+        expect(piece.shape).toBeDefined();
+        expect(piece.color).toBeDefined();
+      });
+      
+      const types = pieces.map(p => p.type);
+      expect(new Set(types).size).toBe(1);
+    });
+    
+    it('should create piece with proper structure', () => {
+      const piece = getRandomBlock();
+      expect(piece.type).toBeDefined();
+      expect(piece.shape).toBeDefined();
+      expect(piece.color).toBeDefined();
+      expect(piece.rotate).toBeTypeOf('function');
+      expect(piece.clone).toBeTypeOf('function');
+      expect(piece.toJSON).toBeTypeOf('function');
+    });
+  });
 });

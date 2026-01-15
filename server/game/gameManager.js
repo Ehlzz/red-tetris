@@ -4,7 +4,7 @@ const { moveBlock } = require('./gameLogic');
 const { getRandomBlock } = require('../utils/blockUtils');
 
 function handleStartGame(socket) {
-    console.log('▶️ Jeu démarré pour:', socket.id);
+    // console.log('▶️ Jeu démarré pour:', socket.id);
     deletePlayer(socket.id);
 
     if (socket.data.gameLoop) {
@@ -41,6 +41,10 @@ function handleStartGame(socket) {
 
 function handleStartMultiplayerGame(io, roomId) {
     const room = getRoomById(roomId);
+
+    if (!room) {
+        return;
+    }
 
     room.players.forEach(player => {
         io.to(player.id).emit('startMultiplayerGame', {name: player.name, room: room});
@@ -97,7 +101,7 @@ function handleGameOver(socket, io, data) {
     const player = socket.data.player;
     if (player) {
         player.isGameOver = true;
-        console.log('💀 Game Over pour:', socket.id);
+        // console.log('💀 Game Over pour:', socket.id);
         
         if (data && data.roomId) {
             const room = getRoomById(data.roomId);
@@ -107,10 +111,10 @@ function handleGameOver(socket, io, data) {
                         p.isGameOver = true;
                     }
                 const playersAlive = room.players.filter(p => !p.isGameOver);
-                console.log(`👥 Joueurs encore vivants: ${playersAlive.length}`);
+                // console.log(`👥 Joueurs encore vivants: ${playersAlive.length}`);
                 
                 if (playersAlive.length <= 1) {
-                    console.log('🏆 Fin de la partie multijoueur!');
+                    // console.log('🏆 Fin de la partie multijoueur!');
                     room.gameStarted = false;
                     room.players.forEach(p => {
                         io.to(p.id).emit('multiplayerGameEnd', {
@@ -131,21 +135,21 @@ function handleGameOver(socket, io, data) {
 }
 
 function handleResetGame(socket) {
-    console.log('🔄 Reset du jeu pour:', socket.id);
+    // console.log('🔄 Reset du jeu pour:', socket.id);
 
     initPlayer(socket.id); 
     if (socket.data.gameLoop) {
         clearInterval(socket.data.gameLoop);
         socket.data.gameLoop = null;
     }
-    console.log('✨ Jeu réinitialisé pour:', socket.id);
+    // console.log('✨ Jeu réinitialisé pour:', socket.id);
 }
 
 function handleStopGame(socket) {
     const player = socket.data.player;
     if (player) {
         player.gameStarted = false;
-        console.log('🛑 Partie arrêtée pour:', socket.id);
+        // console.log('🛑 Partie arrêtée pour:', socket.id);
     }
 }
 

@@ -67,11 +67,11 @@ function checkLines(player, socket) {
                 const targetPlayer = getPlayer(p.id);
                 if (targetPlayer) {
                     targetPlayer.indestructibleLines = (targetPlayer.indestructibleLines || 0) + 1;
-                    while (p.indestructibleLines > 0) {
-                        p.grid.shift();
-                        p.grid.push(Array(10).fill('indestructible'));
-                        p.position.y -= 1;
-                        p.indestructibleLines--;
+                    while (targetPlayer.indestructibleLines > 0) {
+                        targetPlayer.grid.shift();
+                        targetPlayer.grid.push(Array(10).fill('indestructible'));
+                        targetPlayer.position.y -= 1;
+                        targetPlayer.indestructibleLines--;
                     }
                 }
             });

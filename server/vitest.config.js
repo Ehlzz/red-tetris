@@ -4,6 +4,13 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
+    fileParallelism: false,
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: true
+      }
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'json'],
@@ -14,9 +21,9 @@ export default defineConfig({
         'server.js'
       ],
       thresholds: {
-        statements: 66,
-        functions: 65,
-        lines: 67,
+        statements: 70,
+        functions: 68,
+        lines: 70,
         branches: 58
       }
     }

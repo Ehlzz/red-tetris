@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import App from '../App';
 
-// Mock socket.io-client
 vi.mock('socket.io-client', () => ({
     io: vi.fn(() => ({
         on: vi.fn(),
@@ -24,7 +23,6 @@ describe('App Component', () => {
     it('should contain BrowserRouter', () => {
         render(<App />);
         
-        // Should render something
         expect(document.body).toBeInTheDocument();
     });
 });

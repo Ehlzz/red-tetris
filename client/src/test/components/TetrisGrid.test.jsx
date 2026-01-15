@@ -100,7 +100,7 @@ describe('TetrisGrid Component', () => {
         );
         
         const rows = document.querySelectorAll('.grid > .row');
-        expect(rows).toHaveLength(20); // 22 - 2
+        expect(rows).toHaveLength(20);
     });
 
     it('should render filled cells correctly', () => {
@@ -136,7 +136,6 @@ describe('TetrisGrid Component', () => {
             />
         );
         
-        // ParticlesContainer should be rendered
         expect(document.querySelector('.grid-container')).toBeInTheDocument();
     });
 

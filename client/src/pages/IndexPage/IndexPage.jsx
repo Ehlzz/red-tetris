@@ -70,7 +70,7 @@ const IndexPage = () => {
           </div>
           <main>
             <nav className="main-navigation">
-              <Link to="/singleplayer" className="nav-button">
+              <Link to="/singleplayer/room-solo/player" className="nav-button">
                 Singleplayer
               </Link>
               <Link to="/multiplayer" className="nav-button">

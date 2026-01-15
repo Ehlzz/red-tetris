@@ -22,7 +22,7 @@ app.use(express.json());
 
 // Routes
 app.get('/', (req, res) => {
-    res.json({ message: 'Bonjour depuis le serveur Node.js 🚀' });
+    res.json({ message: 'Gombloc 🚀' });
 });
 
 // Socket.io

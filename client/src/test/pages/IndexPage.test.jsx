@@ -20,7 +20,7 @@ describe('IndexPage Component', () => {
         
         const singleplayerLink = screen.getByText('Singleplayer');
         expect(singleplayerLink).toBeInTheDocument();
-        expect(singleplayerLink).toHaveAttribute('href', '/singleplayer');
+        expect(singleplayerLink).toHaveAttribute('href', '/singleplayer/room-solo/player');
     });
 
     it('should render multiplayer link', () => {
@@ -75,14 +75,11 @@ describe('IndexPage Component', () => {
         const firstButton = navButtons[0];
         const originalText = firstButton.dataset.originalText;
         
-        // Simulate mouseenter
         const event = new MouseEvent('mouseenter', { bubbles: true });
         firstButton.dispatchEvent(event);
         
-        // Advance timers to complete animation
         vi.advanceTimersByTime(1000);
         
-        // After animation, should be back to original text
         expect(firstButton.textContent).toBe(originalText);
         
         vi.useRealTimers();
@@ -102,7 +99,6 @@ describe('IndexPage Component', () => {
         const navButtons = container.querySelectorAll('.nav-button');
         expect(navButtons.length).toBeGreaterThan(0);
         
-        // Should unmount without errors
         expect(() => unmount()).not.toThrow();
     });
 

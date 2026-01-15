@@ -31,11 +31,10 @@ describe('gridUtils', () => {
         it('should place block at correct position', () => {
             const dynamicGrid = getDynamicGrid(mockPlayer);
 
-            // T block shape at position (3, 10)
-            expect(dynamicGrid[10][4]).toBe('purple'); // Top middle
-            expect(dynamicGrid[11][3]).toBe('purple'); // Bottom left
-            expect(dynamicGrid[11][4]).toBe('purple'); // Bottom middle
-            expect(dynamicGrid[11][5]).toBe('purple'); // Bottom right
+            expect(dynamicGrid[10][4]).toBe('purple');
+            expect(dynamicGrid[11][3]).toBe('purple');
+            expect(dynamicGrid[11][4]).toBe('purple');
+            expect(dynamicGrid[11][5]).toBe('purple');
         });
 
         it('should not modify original grid', () => {
@@ -86,7 +85,6 @@ describe('gridUtils', () => {
 
             const dynamicGrid = getDynamicGrid(mockPlayer);
 
-            // Check no cells are undefined or have invalid indices
             dynamicGrid.forEach(row => {
                 expect(row).toHaveLength(10);
             });
@@ -136,7 +134,6 @@ describe('gridUtils', () => {
 
             const dynamicGrid = getDynamicGrid(mockPlayer);
 
-            // Current block should overlay on existing block
             expect(dynamicGrid[11][4]).toBe('purple');
         });
 
@@ -153,12 +150,12 @@ describe('gridUtils', () => {
 
             const dynamicGrid = getDynamicGrid(mockPlayer);
 
-            expect(dynamicGrid[10][3]).toBeNull(); // Empty cell
-            expect(dynamicGrid[10][4]).toBe('green'); // Filled cell
-            expect(dynamicGrid[10][5]).toBe('green'); // Filled cell
-            expect(dynamicGrid[11][3]).toBe('green'); // Filled cell
-            expect(dynamicGrid[11][4]).toBe('green'); // Filled cell
-            expect(dynamicGrid[11][5]).toBeNull(); // Empty cell
+            expect(dynamicGrid[10][3]).toBeNull();
+            expect(dynamicGrid[10][4]).toBe('green');
+            expect(dynamicGrid[10][5]).toBe('green');
+            expect(dynamicGrid[11][3]).toBe('green');
+            expect(dynamicGrid[11][4]).toBe('green');
+            expect(dynamicGrid[11][5]).toBeNull();
         });
 
         it('should handle block with negative position attempt', () => {
@@ -166,7 +163,6 @@ describe('gridUtils', () => {
 
             const dynamicGrid = getDynamicGrid(mockPlayer);
 
-            // Should only place blocks within valid grid range
             dynamicGrid.forEach(row => {
                 expect(row).toHaveLength(10);
             });

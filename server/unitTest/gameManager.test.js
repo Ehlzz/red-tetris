@@ -1,211 +1,144 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-const mockInitPlayer = vi.fn(() => ({
-    grid: Array(22).fill(null).map(() => Array(10).fill(null)),
-    currentBlock: { type: 'T', shape: [[0, 1, 0], [1, 1, 1], [0, 0, 0]], color: 'purple' },
-    nextBlock: { type: 'I', shape: [[1, 1, 1, 1]], color: 'cyan' },
-    position: { x: 4, y: 0 },
-    score: 0,
-    speed: 1000,
-    level: 1,
-    isGameOver: false,
-    updateSpeed: vi.fn()
-}));
+let mathRandomSeed = 54321;
+Math.random = () => {
+  mathRandomSeed = (mathRandomSeed * 9301 + 49297) % 233280;
+  return mathRandomSeed / 233280;
+};
 
-const mockGetPlayer = vi.fn();
-const mockGetRoomById = vi.fn();
-const mockMoveBlock = vi.fn();
-const mockGetRandomBlock = vi.fn(() => ({ type: 'T', shape: [[0, 1, 0], [1, 1, 1], [0, 0, 0]], color: 'purple' }));
+import { 
+  handleStartGame, 
+  handleStartMultiplayerGame, 
+  handleGameOver, 
+  handleResetGame, 
+  handleStopGame 
+} from '../game/gameManager.js';
+import { getRoomById, createLobby, rooms } from '../game/lobbyManager.js';
+import { players, deletePlayer } from '../game/playerManager.js';
 
-vi.mock('../game/playerManager.js', () => ({
-    initPlayer: mockInitPlayer,
-    getPlayer: mockGetPlayer
-}));
+describe('gameHandlers', () => {
+  let mockSocket;
+  let mockIo;
+  let roomId;
 
-vi.mock('../game/lobbyManager.js', () => ({
-    getRoomById: mockGetRoomById
-}));
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+    
+    Object.keys(rooms).forEach(key => delete rooms[key]);
+    Object.keys(players).forEach(key => delete players[key]);
 
-vi.mock('../game/gameLogic.js', () => ({
-    moveBlock: mockMoveBlock
-}));
+    mockSocket = {
+      id: 'socket1',
+      data: {},
+      join: vi.fn(),
+      emit: vi.fn(),
+    };
 
-vi.mock('../utils/blockUtils.js', () => ({
-    getRandomBlock: mockGetRandomBlock
-}));
+    mockIo = {
+      to: vi.fn().mockReturnThis(),
+      sockets: { sockets: new Map([[mockSocket.id, mockSocket]]) },
+      emit: vi.fn(),
+    };
 
-const { handleStartGame, handleStartMultiplayerGame, handleGameOver, handleResetGame, handleStopGame } = await import('../game/gameManager.js');
+    roomId = createLobby(mockSocket);
+    const room = getRoomById(roomId);
+    
+    if (room) {
+      room.players.push({ id: mockSocket.id, name: 'Player1', isReady: true, isGameOver: false });
+      room.players.push({ id: 'socket2', name: 'Player2', isReady: true, isGameOver: false });
+    }
+  });
 
-describe('gameManager', () => {
-    let mockSocket;
-    let mockIo;
+  afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
+    Object.keys(rooms).forEach(key => delete rooms[key]);
+    Object.keys(players).forEach(key => delete players[key]);
+  });
 
-    beforeEach(() => {
-        vi.clearAllMocks();
-        vi.useFakeTimers();
-        
-        mockSocket = {
-            id: 'socket-123',
-            emit: vi.fn(),
-            data: {
-                gameLoop: null
-            }
-        };
+  it('handleStartGame initializes player and starts loop', () => {
+    handleStartGame(mockSocket);
 
-        mockIo = {
-            to: vi.fn(() => ({
-                emit: vi.fn()
-            })),
-            sockets: {
-                sockets: new Map([
-                    ['socket-123', mockSocket]
-                ])
-            }
-        };
+    expect(mockSocket.data.player).toBeDefined();
+    expect(mockSocket.data.player.id).toBe(mockSocket.id);
+    expect(mockSocket.emit).toHaveBeenCalledWith('receiveGame', mockSocket.data.player);
+    expect(mockSocket.data.gameLoop).toBeDefined();
+    expect(typeof mockSocket.data.gameLoop).toBe('object');
+    
+    vi.advanceTimersByTime(1000);
+    
+  });
 
-        const player = mockInitPlayer();
-        mockGetPlayer.mockReturnValue(player);
-    });
+  it('handleStartMultiplayerGame sets up room and emits events', () => {
+    const roomBefore = getRoomById(roomId);
+    expect(roomBefore).toBeDefined();
+    expect(roomBefore.players.length).toBeGreaterThanOrEqual(2);
 
-    afterEach(() => {
-        vi.clearAllTimers();
-        vi.useRealTimers();
-    });
+    expect(() => handleStartMultiplayerGame(mockIo, roomId)).not.toThrow();
+    
+    vi.advanceTimersByTime(3000);
+  });
 
-    describe('handleStartGame', () => {
-        it('should initialize player', () => {
-            handleStartGame(mockSocket);
+  it('handleGameOver sets player and room states', () => {
+    const fakePlayer = { id: mockSocket.id, isGameOver: false };
+    mockSocket.data.player = fakePlayer;
+    const room = getRoomById(roomId);
 
-            expect(mockSocket.emit).toHaveBeenCalledWith('receiveGame', expect.any(Object));
-        });
+    handleGameOver(mockSocket, mockIo, { roomId });
 
-        it('should clear existing game loop', () => {
-            const oldInterval = setInterval(() => {}, 1000);
-            mockSocket.data.gameLoop = oldInterval;
+    expect(fakePlayer.isGameOver).toBe(true);
+  });
 
-            handleStartGame(mockSocket);
+  it('handleGameOver ends multiplayer game if one player left', () => {
+    const fakePlayer = { id: mockSocket.id, isGameOver: false };
+    mockSocket.data.player = fakePlayer;
+    const room = getRoomById(roomId);
 
-            expect(mockSocket.data.gameLoop).not.toBe(oldInterval);
-        });
+    expect(room).toBeDefined();
+    expect(room.players).toBeDefined();
+    expect(room.players.length).toBeGreaterThanOrEqual(2);
+    
+    room.gameStarted = true;
+    
+    room.players[1].isGameOver = true;
 
-        it('should start game loop', () => {
-            handleStartGame(mockSocket);
+    handleGameOver(mockSocket, mockIo, { roomId });
 
-            expect(mockSocket.data.gameLoop).toBeDefined();
-        });
+    expect(fakePlayer.isGameOver).toBe(true);
+  });
 
-        it('should create game loop', () => {
-            handleStartGame(mockSocket);
+  it('handleResetGame clears the game loop and re-inits player', () => {
+    mockSocket.data.gameLoop = setInterval(() => {}, 1000);
 
-            vi.advanceTimersByTime(1000);
+    handleResetGame(mockSocket);
 
-            // Game loop should be running
-            expect(mockSocket.data.gameLoop).toBeDefined();
-        });
+    expect(mockSocket.data.gameLoop).toBeNull();
+  });
 
-        it('should stop loop when game is over', () => {
-            const gameOverPlayer = { ...mockInitPlayer(), isGameOver: true };
-            mockGetPlayer.mockReturnValue(gameOverPlayer);
+  it('handleStopGame sets player gameStarted to false', () => {
+    const fakePlayer = { id: mockSocket.id, gameStarted: true };
+    mockSocket.data.player = fakePlayer;
 
-            handleStartGame(mockSocket);
-            vi.advanceTimersByTime(1000);
+    handleStopGame(mockSocket);
 
-            expect(mockSocket.data.gameLoop).toBeDefined();
-        });
-    });
-
-    describe('handleStartMultiplayerGame', () => {
-        it('should be defined', () => {
-            expect(handleStartMultiplayerGame).toBeDefined();
-        });
-    });
-
-    describe('handleGameOver', () => {
-        it('should set player game over status', () => {
-            const player = mockInitPlayer();
-            mockSocket.data.player = player;
-
-            handleGameOver(mockSocket, mockIo, {});
-
-            expect(player.isGameOver).toBe(true);
-        });
-
-        it('should handle multiplayer game over', () => {
-            const mockRoom = {
-                players: [
-                    { id: 'socket-123', name: 'Player1', isGameOver: false },
-                    { id: 'socket-456', name: 'Player2', isGameOver: false }
-                ],
-                gameStarted: true
-            };
-
-            mockGetRoomById.mockReturnValue(mockRoom);
-            const player = mockInitPlayer();
-            mockSocket.data.player = player;
-
-            handleGameOver(mockSocket, mockIo, { roomId: 'room-123' });
-
-            // Player is marked as game over
-            expect(player.isGameOver).toBe(true);
-        });
-
-        it('should handle end game with one player', () => {
-            const mockRoom = {
-                players: [
-                    { id: 'socket-123', name: 'Player1', isGameOver: false },
-                    { id: 'socket-456', name: 'Player2', isGameOver: true }
-                ],
-                gameStarted: true
-            };
-
-            mockGetRoomById.mockReturnValue(mockRoom);
-            const player = mockInitPlayer();
-            mockSocket.data.player = player;
-
-            handleGameOver(mockSocket, mockIo, { roomId: 'room-123' });
-
-            expect(player.isGameOver).toBe(true);
-        });
-
-        it('should handle null player', () => {
-            mockSocket.data.player = null;
-
-            expect(() => handleGameOver(mockSocket, mockIo, {})).not.toThrow();
-        });
-    });
-
-    describe('handleResetGame', () => {
-        it('should reinitialize player', () => {
-            handleResetGame(mockSocket);
-
-            // Function is called through real imports
-            expect(mockSocket.data.gameLoop).toBeNull();
-        });
-
-        it('should clear game loop', () => {
-            mockSocket.data.gameLoop = setInterval(() => {}, 1000);
-
-            handleResetGame(mockSocket);
-
-            expect(mockSocket.data.gameLoop).toBeNull();
-        });
-    });
-
-    describe('handleStopGame', () => {
-        it('should stop game', () => {
-            const player = mockInitPlayer();
-            player.gameStarted = true;
-            mockSocket.data.player = player;
-
-            handleStopGame(mockSocket);
-
-            expect(player.gameStarted).toBe(false);
-        });
-
-        it('should handle null player', () => {
-            mockSocket.data.player = null;
-
-            expect(() => handleStopGame(mockSocket)).not.toThrow();
-        });
-    });
+    expect(fakePlayer.gameStarted).toBe(false);
+  });
+  
+  it('handleResetGame should work even if no gameLoop exists', () => {
+    mockSocket.data.gameLoop = null;
+    expect(() => handleResetGame(mockSocket)).not.toThrow();
+  });
+  
+  it('handleStopGame should not throw if no player', () => {
+    mockSocket.data.player = null;
+    expect(() => handleStopGame(mockSocket)).not.toThrow();
+  });
+  
+  it('handleStartGame should clear existing gameLoop', () => {
+    mockSocket.data.gameLoop = setInterval(() => {}, 100);
+    const oldLoop = mockSocket.data.gameLoop;
+    handleStartGame(mockSocket);
+    expect(mockSocket.data.gameLoop).not.toBe(oldLoop);
+  });
 });

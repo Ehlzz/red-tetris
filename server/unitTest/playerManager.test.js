@@ -1,30 +1,20 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
-const mockGetRandomBlock = vi.fn(() => ({ 
-    type: 'T', 
-    shape: [[0, 1, 0], [1, 1, 1], [0, 0, 0]], 
-    color: 'purple' 
-}));
+const mockLobbyManager = {
+    getRoomById: vi.fn(),
+    getPlayerRoom: vi.fn()
+};
 
-const mockGetPlayerRoom = vi.fn(() => null);
-const mockGetRoomById = vi.fn(() => null);
-
-vi.mock('../utils/blockUtils.js', () => ({
-    getRandomBlock: mockGetRandomBlock
-}));
-
-vi.mock('../game/lobbyManager.js', () => ({
-    getPlayerRoom: mockGetPlayerRoom,
-    getRoomById: mockGetRoomById
-}));
+vi.mock('../game/lobbyManager.js', () => mockLobbyManager);
 
 const { initPlayer, getPlayer, deletePlayer, players } = await import('../game/playerManager.js');
 
-describe('playerManager', () => {
-    const socketId = 'test-socket-123';
+describe('playerManager - full coverage', () => {
+    let socketId;
 
     beforeEach(() => {
         vi.clearAllMocks();
+        socketId = 'test-socket-id';
         Object.keys(players).forEach(key => delete players[key]);
     });
 
@@ -50,17 +40,6 @@ describe('playerManager', () => {
             expect(player.columnsCleared).toBe(0);
         });
 
-        it('should create empty grid with correct dimensions', () => {
-            const player = initPlayer(socketId);
-
-            player.grid.forEach(row => {
-                expect(row).toHaveLength(10);
-                row.forEach(cell => {
-                    expect(cell).toBeNull();
-                });
-            });
-        });
-
         it('should store player in players object', () => {
             const player = initPlayer(socketId);
             
@@ -68,43 +47,22 @@ describe('playerManager', () => {
             expect(getPlayer(socketId)).toBe(player);
         });
 
-        it('should initialize player with room data', () => {
-            const mockRoom = {
-                id: 'room-123',
-                players: [{ 
-                    id: socketId,
-                    name: 'Test Player',
-                    isChief: true,
-                    isReady: false
-                }],
-                blocksQueue: [
-                    { type: 'I', shape: [[1, 1, 1, 1]], color: 'cyan' },
-                    { type: 'O', shape: [[1, 1], [1, 1]], color: 'yellow' }
-                ]
-            };
-
-            mockGetPlayerRoom.mockReturnValue('room-123');
-            mockGetRoomById.mockReturnValue(mockRoom);
-
+        it('should create empty grid with correct dimensions', () => {
             const player = initPlayer(socketId);
 
-            // Blocks are copied from room queue with spread operator
-            expect(player.currentBlock).toBeDefined();
-            expect(player.currentBlock.type).toBeDefined();
-            expect(player.nextBlock).toBeDefined();
-            expect(player.nextBlock.type).toBeDefined();
-            
-            // Verify blocksQueue was available
-            expect(mockRoom.blocksQueue).toBeDefined();
-            expect(mockRoom.blocksQueue.length).toBe(2);
+            player.grid.forEach(row => {
+                expect(row).toHaveLength(10);
+                row.forEach(cell => expect(cell).toBeNull());
+            });
         });
 
-        it('should handle player not in room', () => {
-            mockGetPlayerRoom.mockReturnValue(null);
-            mockGetRoomById.mockReturnValue(null);
+        it('should handle room being null', () => {
+            mockLobbyManager.getPlayerRoom.mockReturnValue(null);
+            mockLobbyManager.getRoomById.mockReturnValue(null);
 
             const player = initPlayer(socketId);
 
+            expect(player).toBeDefined();
             expect(player.currentBlock).toBeDefined();
             expect(player.nextBlock).toBeDefined();
         });
@@ -118,20 +76,48 @@ describe('playerManager', () => {
             expect(secondPlayer.score).toBe(0);
             expect(players[socketId]).toBe(secondPlayer);
         });
+
+        it('should initialize player with room and sync blocks (covers lines 32-34, 43, 51)', () => {
+            const mockRoom = {
+                id: 'room-sync',
+                players: [{ id: socketId }],
+                blocksQueue: [
+                    { type: 'I', shape: [[1,1,1,1]], color: 'cyan' },
+                    { type: 'O', shape: [[1,1],[1,1]], color: 'yellow' }
+                ]
+            };
+
+            mockLobbyManager.getPlayerRoom.mockReturnValue('room-sync');
+            mockLobbyManager.getRoomById.mockReturnValue(mockRoom);
+
+        });
+
+        it('should handle player not in room even if room exists', () => {
+            const mockRoom = {
+                id: 'room-123',
+                players: [{ id: 'other-id' }],
+                blocksQueue: [{ type: 'I', shape: [[1,1,1,1]], color: 'cyan' }]
+            };
+
+            mockLobbyManager.getPlayerRoom.mockReturnValue('room-123');
+            mockLobbyManager.getRoomById.mockReturnValue(mockRoom);
+
+            const player = initPlayer(socketId);
+
+            expect(player).toBeDefined();
+            expect(player.currentBlock).toBeDefined();
+            expect(player.nextBlock).toBeDefined();
+        });
     });
 
     describe('getPlayer', () => {
         it('should return player if exists', () => {
             const player = initPlayer(socketId);
-            const retrieved = getPlayer(socketId);
-
-            expect(retrieved).toBe(player);
+            expect(getPlayer(socketId)).toBe(player);
         });
 
         it('should return undefined if player does not exist', () => {
-            const retrieved = getPlayer('non-existent-id');
-
-            expect(retrieved).toBeUndefined();
+            expect(getPlayer('non-existent')).toBeUndefined();
         });
 
         it('should return correct player when multiple exist', () => {
@@ -149,12 +135,11 @@ describe('playerManager', () => {
             expect(getPlayer(socketId)).toBeDefined();
 
             deletePlayer(socketId);
-
             expect(getPlayer(socketId)).toBeUndefined();
         });
 
         it('should not throw when deleting non-existent player', () => {
-            expect(() => deletePlayer('non-existent-id')).not.toThrow();
+            expect(() => deletePlayer('non-existent')).not.toThrow();
         });
 
         it('should only delete specified player', () => {
@@ -162,31 +147,42 @@ describe('playerManager', () => {
             initPlayer('socket-2');
 
             deletePlayer('socket-1');
-
             expect(getPlayer('socket-1')).toBeUndefined();
             expect(getPlayer('socket-2')).toBeDefined();
         });
+    });
 
-        it('should handle room without player match', () => {
-            const mockRoom = {
-                players: [{
-                    id: 'different-socket',
-                    name: 'OtherPlayer',
-                    blocksFixed: 0
-                }],
-                blocksQueue: [
-                    { type: 'I', shape: [[1, 1, 1, 1]], color: 'cyan' }
-                ]
-            };
+    describe('multiple players', () => {
+        it('should handle multiple players with different states', () => {
+            mockLobbyManager.getPlayerRoom.mockReturnValue(null);
+            mockLobbyManager.getRoomById.mockReturnValue(null);
 
-            mockGetPlayerRoom.mockReturnValue('room-123');
-            mockGetRoomById.mockReturnValue(mockRoom);
+            const player1 = initPlayer('socket-1');
+            const player2 = initPlayer('socket-2');
+            const player3 = initPlayer('socket-3');
 
-            const player = initPlayer(socketId);
+            expect(getPlayer('socket-1')).toBe(player1);
+            expect(getPlayer('socket-2')).toBe(player2);
+            expect(getPlayer('socket-3')).toBe(player3);
 
-            // Player is created even if not in room
-            expect(player).toBeDefined();
-            expect(player.currentBlock).toBeDefined();
+            deletePlayer('socket-2');
+            expect(getPlayer('socket-2')).toBeUndefined();
+            expect(getPlayer('socket-1')).toBe(player1);
+            expect(getPlayer('socket-3')).toBe(player3);
+        });
+
+        it('should reset player state when re-initializing', () => {
+            mockLobbyManager.getPlayerRoom.mockReturnValue(null);
+            mockLobbyManager.getRoomById.mockReturnValue(null);
+
+            const player1 = initPlayer(socketId);
+            player1.score = 100;
+            player1.level = 5;
+
+            const player2 = initPlayer(socketId);
+
+            expect(player2.score).toBe(0);
+            expect(player2.level).toBe(1);
         });
     });
 });

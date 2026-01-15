@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Red Tetris - Multiplayer Tetris Game",
   "scripts": {
-    "test": "npm run test:server && npm run test:client",
+    "coverage": "npm run test:server && npm run test:client",
     "test:server": "cd server && npm test -- run --coverage",
     "test:client": "cd client && npm run test:coverage",
     "test:all": "node run-all-tests.js"

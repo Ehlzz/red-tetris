@@ -3,7 +3,7 @@ const { getRoomById, getPlayerRoom } = require('../game/lobbyManager');
 
 function requestIsInGame(socket, next) {
     const player = getPlayer(socket.id);
-    console.log(player == null, 'dans requestIsInGame');
+    // console.log(player == null, 'dans requestIsInGame');
 
     if (!player) {
         return next(new Error("Player not initialized."));
@@ -12,7 +12,7 @@ function requestIsInGame(socket, next) {
     const room = getRoomById(getPlayerRoom(socket.id));
     if (room) {
         socket.data.room = room;
-        console.log(room == null, 'dans requestIsInGame - room');
+        // console.log(room == null, 'dans requestIsInGame - room');
     }
     next();
 }
@@ -20,7 +20,7 @@ function requestIsInGame(socket, next) {
 
 function requestIsInLobby(socket, next) {
     const room = getRoomById(getPlayerRoom(socket.id));
-    console.log(room == null, 'dans requestIsInLobby');
+    // console.log(room == null, 'dans requestIsInLobby');
     if (!room) {
         return next(new Error("Player not in a lobby."));
     }
@@ -34,7 +34,7 @@ function requestIsInLobby(socket, next) {
 
 function requestCreateLobby(socket, next) {
     const roomId = getPlayerRoom(socket.id);
-    console.log(roomId == null, 'dans requestCreateLobby');
+    // console.log(roomId == null, 'dans requestCreateLobby');
 
     if (roomId) {
         return next(new Error("Player is already in a game."));
@@ -45,7 +45,7 @@ function requestCreateLobby(socket, next) {
 function socketMiddleware(socket) {
     socket.use((packet, next) => {
         const event = packet[0];
-        console.log(`🔔 Événement reçu: ${event} de ${socket.id}`);
+        // console.log(`🔔 Événement reçu: ${event} de ${socket.id}`);
 
         if (['moveBlock', 'rotateBlock', 'dropBlock', 'stopGame', 'gameOver'].includes(event)) {
             return requestIsInGame(socket, next);
@@ -59,7 +59,7 @@ function socketMiddleware(socket) {
             return requestCreateLobby(socket, next);
         }
 
-        console.log('Aucun middleware applicable pour cet événement. : ' + event);
+        // console.log('Aucun middleware applicable pour cet événement. : ' + event);
         next();
     });
 }
