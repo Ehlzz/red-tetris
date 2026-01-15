@@ -10,12 +10,15 @@ const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || 'localhost';
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+const API_PREFIX = process.env.API_PREFIX || '/api';
+const SOCKET_PATH = process.env.SOCKET_PATH || `${API_PREFIX}/socket.io`;
 
 const io = new Server(server, {
     cors: {
         origin: CLIENT_ORIGIN,
         methods: ["GET", "POST"]
-    }
+    },
+    path: SOCKET_PATH
 });
 
 // Middleware
@@ -23,8 +26,8 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.get('/', (req, res) => {
-    res.json({ message: 'Gombloc 🚀' });
+app.get(`${API_PREFIX}/health`, (req, res) => {
+    res.json({ status: 'ok', message: 'Gombloc 🚀' });
 });
 
 // Socket.io

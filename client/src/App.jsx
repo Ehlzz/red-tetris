@@ -4,7 +4,11 @@ import SinglePlayer from './pages/SinglePlayer/SinglePlayer';
 import MultiPlayerGame from './pages/MultiPlayerGame/MultiPlayerGame';
 import NotFound from './pages/noFound/noFound';
 import { io } from "socket.io-client";
-const socket = io('http://localhost:5000', {
+
+const socketBaseUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin;
+const socketPath = import.meta.env.VITE_SOCKET_PATH || '/api/socket.io';
+const socket = io(socketBaseUrl, {
+  path: socketPath,
   reconnection: true,
   reconnectionDelay: 1000,
   reconnectionAttempts: 5
