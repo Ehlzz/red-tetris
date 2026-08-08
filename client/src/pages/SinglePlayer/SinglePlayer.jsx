@@ -9,6 +9,8 @@ import GameInfo from '../../components/gameInfo/GameInfo';
 
 const SinglePlayer = ({ socket }) => {
     const [nextBlock, setNextBlock] = useState(null);
+    const [holdBlock, setHoldBlock] = useState(null);
+    const [canHold, setCanHold] = useState(true);
     const [score, setScore] = useState(0);
     const [gameStarted, setGameStarted] = useState(false);
     const [gameOver, setGameOver] = useState(false);
@@ -38,6 +40,8 @@ const SinglePlayer = ({ socket }) => {
             // console.log('🟩 Grille initialisée:', game.grid);
             // console.log('⏭ Bloc suivant:', game.nextBlock);
             setNextBlock(game.nextBlock);
+            setHoldBlock(game.holdBlock);
+            setCanHold(game.canHold ?? true);
             setGameStarted(true);
             setDisplayGrid(game.grid);
         })
@@ -55,6 +59,8 @@ const SinglePlayer = ({ socket }) => {
             previousLevel.current = game.level;
             
             setNextBlock(game.nextBlock);
+            setHoldBlock(game.holdBlock);
+            setCanHold(game.canHold ?? true);
             setScore(game.score);
             setDisplayGrid(game.grid);
             setPlayerLevel(game.level);
@@ -134,6 +140,11 @@ const SinglePlayer = ({ socket }) => {
                 if (event.key === " ") {
                     if (!event.repeat) {
                         socket.emit('dropBlock');
+                    }
+                }
+                else if (event.key.toLowerCase() === "c" || event.key === "Shift") {
+                    if (!event.repeat) {
+                        socket.emit('holdBlock');
                     }
                 }
                 else {
@@ -249,8 +260,10 @@ const SinglePlayer = ({ socket }) => {
                         </>
                     )}
                     
-                    <GameInfo 
+                    <GameInfo
                         nextBlock={nextBlock}
+                        holdBlock={holdBlock}
+                        canHold={canHold}
                         score={score}
                         playerLevel={playerLevel}
                         totalLinesCleared={totalLinesCleared}
@@ -268,6 +281,8 @@ const SinglePlayer = ({ socket }) => {
                                     setTotalLinesCleared(0);
                                     setGameStarted(false);
                                     setNextBlock(null);
+                                    setHoldBlock(null);
+                                    setCanHold(true);
                                     setDisplayGrid(createEmptyGrid());
                                     socket.emit('resetGame');
                                 }}

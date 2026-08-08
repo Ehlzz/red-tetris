@@ -12,6 +12,8 @@ import GameInfo from '../../components/gameInfo/GameInfo';
 const MultiPlayerGame = ({ socket }) => {
     const { roomId, playerName: urlPlayerName } = useParams();
     const [nextBlock, setNextBlock] = useState(null);
+    const [holdBlock, setHoldBlock] = useState(null);
+    const [canHold, setCanHold] = useState(true);
     const [score, setScore] = useState(0);
     const [gameStarted, setGameStarted] = useState(false);
     const [gameOver, setGameOver] = useState(false);
@@ -75,6 +77,8 @@ const MultiPlayerGame = ({ socket }) => {
             spectatedPlayerRef.current = socket.id;
             setSpectatedPlayer(socket.id);
             setNextBlock(player.nextBlock);
+            setHoldBlock(player.holdBlock);
+            setCanHold(player.canHold ?? true);
             setScore(player.score || 0);
             setPlayerLevel(player.level || 1);
             setTotalLinesCleared(player.totalColumnsCleared || 0);
@@ -98,6 +102,8 @@ const MultiPlayerGame = ({ socket }) => {
             const player = game.room.players.find(p => p.id === id);
             setDisplayGrid(player.grid);
             setNextBlock(game.nextBlock);
+            setHoldBlock(game.holdBlock);
+            setCanHold(game.canHold ?? true);
             setScore(game.score);
             setPlayerLevel(game.level);
             setTotalLinesCleared(game.totalColumnsCleared);
@@ -183,6 +189,11 @@ const MultiPlayerGame = ({ socket }) => {
                 if (event.key === " ") {
                     if (!event.repeat) {
                         socket.emit('dropBlock');
+                    }
+                }
+                else if (event.key.toLowerCase() === "c" || event.key === "Shift") {
+                    if (!event.repeat) {
+                        socket.emit('holdBlock');
                     }
                 }
                 else {
@@ -334,8 +345,10 @@ const MultiPlayerGame = ({ socket }) => {
                     {(() => {
                         const spectated = room?.players?.find(p => p.id === spectatedPlayer);
                         return (
-                            <GameInfo 
+                            <GameInfo
                                 nextBlock={spectated?.nextBlock || nextBlock}
+                                holdBlock={spectated?.holdBlock || holdBlock}
+                                canHold={spectated?.canHold ?? canHold}
                                 score={spectated?.score ?? score}
                                 playerLevel={spectated?.level ?? playerLevel}
                                 totalLinesCleared={spectated?.totalColumnsCleared ?? totalLinesCleared}

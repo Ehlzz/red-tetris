@@ -1,8 +1,20 @@
 import './GameInfo.css';
 
-const GameInfo = ({ nextBlock, score, playerLevel, totalLinesCleared, playerName }) => {
+const GameInfo = ({ nextBlock, holdBlock, canHold, score, playerLevel, totalLinesCleared, playerName }) => {
     return (
         <div className='info'>
+            <div className={`hold-block ${canHold === false ? 'disabled' : ''}`}>
+                {holdBlock && holdBlock.shape.map((row, rowIndex) => (
+                    <div key={rowIndex} className="row">
+                        {row.map((cell, cellIndex) => (
+                            <div
+                                key={cellIndex}
+                                className={`cell ${cell ? 'filled' : ''}`}
+                            ></div>
+                        ))}
+                    </div>
+                ))}
+            </div>
             <div className="next-block">
                 {nextBlock && nextBlock.shape.map((row, rowIndex) => (
                     <div key={rowIndex} className="row">

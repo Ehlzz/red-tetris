@@ -1,8 +1,29 @@
-const { getRandomBlock } = require('../utils/blockUtils');
+const { getRandomBlock, getBlockByType } = require('../utils/blockUtils');
 const { isCollision } = require('./collisionManager');
 const { fixBlock, checkLines, setHoverBlock } = require('./blockManager');
 const { getPlayerRoom, getRoomById } = require('./lobbyManager');
 const { refreshGame } = require('./refreshGame');
+
+function drawNextBlock(player, room, socket) {
+    if (room) {
+        const playerInRoom = room.players.find(p => p.id === socket.id);
+        if (!playerInRoom) return player.bag ? player.bag.next() : getRandomBlock();
+
+        if (typeof playerInRoom.blocksFixed === 'undefined') {
+            playerInRoom.blocksFixed = 0;
+        }
+
+        playerInRoom.blocksFixed += 1;
+
+        if (!room.blocksQueue[playerInRoom.blocksFixed]) {
+            room.blocksQueue[playerInRoom.blocksFixed] = room.bag ? room.bag.next() : getRandomBlock();
+        }
+
+        return { ...room.blocksQueue[playerInRoom.blocksFixed] };
+    }
+
+    return player.bag ? player.bag.next() : getRandomBlock();
+}
 
 class Game {
     constructor(socket, player) {
@@ -36,25 +57,8 @@ class Game {
                 checkLines(player, this.socket);
 
                 player.currentBlock = player.nextBlock;
-
-                if (room) {
-                    const playerInRoom = room.players.find(p => p.id === this.socket.id);
-                    if (!playerInRoom) return false;
-
-                    if (typeof playerInRoom.blocksFixed === 'undefined') {
-                        playerInRoom.blocksFixed = 0;
-                    }
-
-                    playerInRoom.blocksFixed += 1;
-
-                    if (!room.blocksQueue[playerInRoom.blocksFixed]) {
-                        room.blocksQueue[playerInRoom.blocksFixed] = getRandomBlock();
-                    }
-
-                    player.nextBlock = { ...room.blocksQueue[playerInRoom.blocksFixed] };
-                } else {
-                    player.nextBlock = getRandomBlock();
-                }
+                player.canHold = true;
+                player.nextBlock = drawNextBlock(player, room, this.socket);
 
                 player.position = { x: 4, y: 0 };
 
@@ -140,6 +144,38 @@ class Game {
         while (this.moveBlock({ x: 0, y: 1 }));
         refreshGame(this.socket, player);
     }
+
+    holdBlock() {
+        const player = this.player || this.socket.data.player;
+        if (!player || player.isGameOver) return;
+        if (!player.canHold) return;
+
+        const room = this.updateRoom();
+        const freshCurrent = getBlockByType(player.currentBlock.type);
+
+        if (!player.holdBlock) {
+            player.holdBlock = freshCurrent;
+            player.currentBlock = player.nextBlock;
+            player.nextBlock = drawNextBlock(player, room, this.socket);
+        } else {
+            const freshHold = getBlockByType(player.holdBlock.type);
+            player.holdBlock = freshCurrent;
+            player.currentBlock = freshHold;
+        }
+
+        player.canHold = false;
+        player.position = { x: 4, y: 0 };
+
+        if (isCollision(player, { x: 0, y: 0 })) {
+            player.isGameOver = true;
+            this.socket.emit('gameOver', { score: player.score });
+            if (room) refreshGame(this.socket, player);
+            return;
+        }
+
+        setHoverBlock(player);
+        refreshGame(this.socket, player);
+    }
 }
 
 function canRotate(player, shape, offsetX = 0, offsetY = 0) {
@@ -223,6 +259,10 @@ function dropBlock(socket) {
     return getGame(socket).dropBlock();
 }
 
+function holdBlock(socket) {
+    return getGame(socket).holdBlock();
+}
+
 module.exports = {
     Game,
     games,
@@ -230,5 +270,6 @@ module.exports = {
     refreshGame,
     moveBlock,
     rotateBlock,
-    dropBlock
+    dropBlock,
+    holdBlock
 };

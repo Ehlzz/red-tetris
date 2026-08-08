@@ -24,6 +24,8 @@ function refreshGame(socket, player) {
                 }
                 p.grid = getDynamicGrid(player);
                 p.nextBlock = player.nextBlock;
+                p.holdBlock = player.holdBlock;
+                p.canHold = player.canHold;
                 p.score = player.score;
                 p.level = player.level;
                 p.totalColumnsCleared = player.totalColumnsCleared;

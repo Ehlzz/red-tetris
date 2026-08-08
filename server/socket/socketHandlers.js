@@ -1,5 +1,5 @@
 const { initPlayer, getPlayer } = require('../game/playerManager');
-const { moveBlock, rotateBlock, dropBlock } = require('../game/gameLogic');
+const { moveBlock, rotateBlock, dropBlock, holdBlock } = require('../game/gameLogic');
 const { createLobby, joinLobby, removePlayerFromLobby, toggleReadyLobby, getRoomById } = require('../game/lobbyManager');
 const { handleStartGame, handleStartMultiplayerGame, handleGameOver, handleResetGame, handleStopGame } = require('../game/gameManager')
 const { socketMiddleware } = require('../middleware/middleware');
@@ -18,6 +18,8 @@ function handleSocketConnection(socket, io) {
     socket.on('rotateBlock', () => rotateBlock(socket));
     
     socket.on('dropBlock', () => dropBlock(socket));
+
+    socket.on('holdBlock', () => holdBlock(socket));
     
     socket.on('gameOver', (data) => handleGameOver(socket, io, data));
     

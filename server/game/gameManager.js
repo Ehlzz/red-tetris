@@ -1,7 +1,7 @@
 const { initPlayer, getPlayer, deletePlayer } = require('./playerManager');
 const { getRoomById } = require('./lobbyManager');
 const { moveBlock } = require('./gameLogic');
-const { getRandomBlock } = require('../utils/blockUtils');
+const { createBag } = require('../utils/blockUtils');
 
 function handleStartGame(socket) {
     // console.log('▶️ Jeu démarré pour:', socket.id);
@@ -51,7 +51,8 @@ function handleStartMultiplayerGame(io, roomId) {
     });
 
     room.gameStarted = true;
-    room.blocksQueue = [getRandomBlock(), getRandomBlock()];
+    Object.defineProperty(room, 'bag', { value: createBag(), writable: true, enumerable: false, configurable: true });
+    room.blocksQueue = [room.bag.next(), room.bag.next()];
 
     room.players.forEach(playerData => {
         playerData.isReady = false;

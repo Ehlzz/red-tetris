@@ -1,12 +1,15 @@
-const { getRandomBlock } = require('../utils/blockUtils');
+const { createBag } = require('../utils/blockUtils');
 const { getPlayerRoom, getRoomById } = require('./lobbyManager');
 
 class Player {
     constructor(id) {
         this.id = id;
         this.grid = Array.from({ length: 22 }, () => Array(10).fill(null));
-        this.currentBlock = getRandomBlock();
-        this.nextBlock = getRandomBlock();
+        Object.defineProperty(this, 'bag', { value: createBag(), writable: true, enumerable: false, configurable: true });
+        this.currentBlock = this.bag.next();
+        this.nextBlock = this.bag.next();
+        this.holdBlock = null;
+        this.canHold = true;
         this.position = { x: 4, y: 0 };
         this.score = 0;
         this.speed = 1000;
@@ -30,13 +33,16 @@ class Player {
         playerInRoom.totalColumnsCleared = this.totalColumnsCleared;
         playerInRoom.currentBlock = { ...room.blocksQueue[playerInRoom.blocksFixed] };
         playerInRoom.nextBlock = { ...room.blocksQueue[playerInRoom.blocksFixed + 1] };
+        playerInRoom.holdBlock = null;
         this.currentBlock = { ...playerInRoom.currentBlock };
         this.nextBlock = { ...playerInRoom.nextBlock };
+        this.holdBlock = null;
+        this.canHold = true;
     }
 
     toJSON() {
-        const { id, grid, currentBlock, nextBlock, position, score, speed, level, isGameOver, totalColumnsCleared, columnsCleared, indestructibleLines } = this;
-        return { id, grid, currentBlock, nextBlock, position, score, speed, level, isGameOver, totalColumnsCleared, columnsCleared, indestructibleLines };
+        const { id, grid, currentBlock, nextBlock, holdBlock, canHold, position, score, speed, level, isGameOver, totalColumnsCleared, columnsCleared, indestructibleLines } = this;
+        return { id, grid, currentBlock, nextBlock, holdBlock, canHold, position, score, speed, level, isGameOver, totalColumnsCleared, columnsCleared, indestructibleLines };
     }
 }
 

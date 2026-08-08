@@ -84,4 +84,36 @@ function getRandomBlock() {
 	return Piece.random();
 }
 
-module.exports = { blockColors, blocks, Piece, getRandomBlock };
+function getBlockByType(type) {
+	return { type, shape: blocks[type].map(row => row.slice()), color: blockColors[type] };
+}
+
+function shuffle(array) {
+	for (let i = array.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[array[i], array[j]] = [array[j], array[i]];
+	}
+	return array;
+}
+
+class BlockBag {
+	constructor() {
+		this.queue = [];
+	}
+
+	refill() {
+		this.queue.push(...shuffle(Object.keys(blocks)));
+	}
+
+	next() {
+		if (this.queue.length === 0) this.refill();
+		const type = this.queue.shift();
+		return new Piece(type, blocks[type], blockColors[type]);
+	}
+}
+
+function createBag() {
+	return new BlockBag();
+}
+
+module.exports = { blockColors, blocks, Piece, getRandomBlock, getBlockByType, BlockBag, createBag };
